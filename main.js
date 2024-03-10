@@ -75,6 +75,11 @@ function changeState(){
     rotdeg = 0
     normscale = 1
     document.getElementById('Audio-react').style.transform = `rotate(${rotdeg}deg) scale(${normscale})`
+    setTimeout(() => {
+      if(rotdeg === 0){
+      document.getElementById('track-info').style.opacity = '70%'
+      document.getElementById('track-info').style.right = '-50px'}
+    }, 1500)
   } else{
     setTimeout(() => {
       document.getElementById('filter').style.opacity = '50%'
@@ -84,6 +89,8 @@ function changeState(){
     rotdeg = 11
     normscale = 1.3
     document.getElementById('Audio-react').style.transform = `rotate(${rotdeg}deg) scale(${normscale})`
+    document.getElementById('track-info').style.opacity = '0%'
+    document.getElementById('track-info').style.right = '-550px'
   }
 }
 
@@ -221,9 +228,13 @@ function PrevSong(playlist, position){
 function PlayPause(audio){
   const btn = document.getElementById('play-pause')
   if(!audio.isPlaying()){
+    document.getElementById('state-track').innerHTML = 'Now Playing'
+    document.getElementById('disk').style.animationPlayState = 'running'
     btn.src = './Addons/icons/play.png'
     audio.play()
   } else{
+    document.getElementById('disk').style.animationPlayState = 'paused'
+    document.getElementById('state-track').innerHTML = 'Paused'
     btn.src = './Addons/icons/pause.png'
     audio.pause()
   }

@@ -191,6 +191,7 @@ function ManageData(data){
     console.log(data[0])
     //console.log(data)
     if(data[1].length > 0){
+        console.log('err0')
         var iter = 0
         data[1].forEach((link) => { 
             iter++
@@ -267,10 +268,12 @@ function ManageData(data){
 
 async function fetchPlaylist(){
     const data = await fetch(`http://localhost:${PORT}/ParseLinks`)
-    if(data.status === 209){
-        return 'nothing'
+    try {
+        return await data.json()   
+    } catch (e) {
+        console.error(e)
+        return [[], []]
     }
-        return await data.json()
 }
 
 function getMetadataDB(element){

@@ -4,6 +4,7 @@ var isPlaying = true;
 var release = true
 var state = 'paused'
 var plpos = 0;
+var prevnul = false
 var refreshbuttons = []
 var started = false
 var audioreact = document.getElementById('alternate-audio-react')
@@ -53,19 +54,51 @@ function setup(){
     volumeSlider = document.getElementById('volslide')}
 }
 
+document.getElementById('div-inp').addEventListener('change', () => {
+    addPlaylist()
+
+    fetchPlaylist().then((data) => {
+        if(data === 'nothing') console.log('nothing')
+        else{
+        ManageData(data)
+        playlist = data}
+    })
+    var interval = setInterval(() => {
+        if(playlist && playlist[0].length > 0){
+            prevnul = true
+            document.getElementById('refr-alt').click()
+            clearInterval(interval)}
+    }, 10)
+})
+
 refreshbuttons.push(document.getElementById('refr-alt'))
-            refreshbuttons.push(document.getElementById('Refresh'))
+refreshbuttons.push(document.getElementById('Refresh'))
+
 refreshbuttons.forEach((refresh) => {
     refresh.addEventListener('click', () => {
-        plpos = 0
+        if(prevnul) {
+            plpos = 0; 
+            prevnul = false
+            console.log(playlist)
+            try {
+                audio = loadSound(playlist[0][plpos].url, loaded)
+            } catch (e) {
+                console.error(e)
+                prevnul = true
+        }}
         started = false
         ready = false
         document.getElementById('play-pause').style.opacity = '0%'
         document.getElementById('loading').style.opacity = '100%'
         deletePLCache().then(() => fetchPlaylist().then((data) => {
-            if(data === 'nothing') console.log('nothing')
+            console.log(data)
+            if(data === 'nothing') {
+                console.log('nothing')
+                }
             else{
+        console.log('refreshed')
             ManageData(data); playlist = data}}))
+            if(audio){
         var interval = setInterval(() => {
             if(playlist){
                 console.log(playlist)
@@ -83,7 +116,7 @@ refreshbuttons.forEach((refresh) => {
                 }
                 clearInterval(interval)
             }
-        }, 10)
+        }, 10)}
     })
 })
 
@@ -191,6 +224,10 @@ function loaded(){
                     }
         
                 switch(key){
+                    case 'f':{
+                        document.getElementById('change-state').click()
+                    }break;
+
                     case ' ':{
                         playpausebtn.click()
                     }break;
@@ -223,18 +260,19 @@ function loaded(){
 document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
 
 var trackinterval = setInterval(() => {
+    if(audio){
     try {
         if(audio.isLoaded()){
             clearInterval(trackinterval)
-
         }   
     } catch (e) {
         console.log('not loaded')
-    }
+    }}
 }, 100)
 
 function draw(){
     try {
+        if(audio){
         if(started){
             try {
                 var vol = amplitude.getLevel()
@@ -256,7 +294,7 @@ function draw(){
                 document.getElementById('timeslide').value = (audio.currentTime())
                if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1){
                 document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
-                document.getElementById('alternate-audio-react').style.animationDuration =`${50/(vol*100)}s`
+                //document.getElementById('gradient').style.animationDuration =`${50/(vol*100)}s`
                 }
                 if(release){
                 audio.setVolume(volumeSlider.value / 20)}
@@ -269,6 +307,8 @@ function draw(){
                 } else{
                     document.getElementById('vol-btn').src = './Addons/icons/vol.png'
                 }
+                document.getElementById('track-artist').innerHTML = playlist[0][plpos].artist || 'Unknown'
+                document.getElementById('track-name').innerHTML = playlist[0][plpos].title || 'Unknown'
             }
             audio.onended(() => {
                 document.getElementById('timeslide').max = 100
@@ -292,10 +332,13 @@ function draw(){
             })} else{
                 document.getElementById('play-pause').style.opacity = '0%'
                 document.getElementById('loading').style.opacity = '100%'
-                console.log('not loaded')
-            }   
+                //console.log('not loaded')
+            }   } else{
+                prevnul = true
+                //console.log('not started')
+            }
     } catch (e) {
-            console.error(e)
+            //console.error(e)
     }
 }
 

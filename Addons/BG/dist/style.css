@@ -9,13 +9,12 @@
 .gradient {
   --size: 250px;
   --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-  --speed: 50s; 
+  --speed: 30s; 
   width: var(--size);
   height: var(--size);
   filter: blur(calc(var(--size) / 5));
   background-image: linear-gradient(rgba(55, 235, 169, 0.85), #5b37eb);
-  animation: rotate var(--easing) alternate infinite;
-  animation-duration: 50s;
+  animation: rotate var(--speed) var(--easing) alternate infinite;
   border-radius: 30% 70% 70% 30%/30% 30% 70% 70%;
 }
 

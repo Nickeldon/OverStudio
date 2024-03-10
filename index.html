@@ -103,7 +103,7 @@
                         Add a directory
                     </a>
 
-                    <input id="div-inp" type="file" style="visibility: hidden;" onchange="addPlaylist()" webkitdirectory>
+                    <input id="div-inp" type="file" style="visibility: hidden;" webkitdirectory>
 
                     <div id="btn-add-dir" class="btn-add-dir" style="width: 70%; height: 100px; position:absolute; background-color:rgb(135, 135, 135); transition:all 1.2s ease-out; opacity:80%; left:40px; border-radius:10px; bottom:0" onclick="document.getElementById('div-inp').click()">
                         <a style="top: 35%; left:30px; color:white; filter:invert(80%)">Open explorer</a>
@@ -160,16 +160,17 @@
                 </i>
             </div>
     
-            <div class="now-p" id="current-notif" style="width:350px; height:120px; border-radius:15px; border-color:#86ecfc; position:absolute; bottom:170px; right:0; border-style:solid;">
+           <!-- <div class="now-p" id="current-notif" style="width:350px; height:120px; border-radius:15px; border-color:#86ecfc; position:absolute; bottom:170px; right:0; border-style:solid;">
                 <h4 style="color:white; position:absolute; top:20px; left:25px; font-family:Blocky, sans-serif; font-weight:100; font-size:15px; letter-spacing:1px ">
                     Now Playing
                 </h4>
-            </div>
+            </div>-->
         </div>
 
         
 
         <div class="control-bar" id="cont-bar" style="width: 100%; height:150px; position:absolute; bottom:0;">
+
             <div class="control" style="position: absolute; left:45%; bottom:40%">
                 <i>
                     <img src="./Addons/icons/back.png" id="back">                
@@ -193,7 +194,7 @@
                 </i>
             </div>
 
-            <i style="position: absolute; bottom:40%; right:10%; transform:rotate(-20deg)" onclick="changeState()">
+            <i style="position: absolute; bottom:40%; right:10%; transform:rotate(-20deg)" id="change-state" onclick="changeState()">
                 <img src="./Addons/icons/zoom-in.png" style="height: 40px;">
             </i>
 
@@ -226,12 +227,71 @@
             </div>
         </div>
 
+        <div class="track-info" id="track-info" style="position: absolute; height:250px; width: 700px; top:200px; display:block; opacity:0%; pointer-events:none; user-select:none; transform:scale(0.95)">
+            
+            <h3 id="state-track" style="font-size: 30px; right:120px; top:0;">
+                Paused
+            </h3>
+
+            <div id="disk" class="disk">
+
+            </div>
+
+            <div style="position: absolute; right:40px; top:15%; width:90%; height:70%;">
+                <h3 id="track-name">
+                    Unknown
+                </h3>
+                <h3 style="font-size: 20px; top:60px; right:20px" id="track-artist">
+                    Unknown
+                </h3>
+            </div>
+        </div>
+
     </div>
 
     
 </body>
 
 <style>
+
+    .track-info{
+        right: -550px;
+        transition: all 1s ease-out;
+        background: linear-gradient(to left blue, transparent 90%);
+        background-size: 100% 100%;
+
+        h3{ 
+            font-family: PS, sans-serif;
+            font-size: 25px;
+            color:white;
+            position:absolute;
+            top:20px;
+            right:20px;
+            width: 80%;
+            overflow:hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .disk{
+            position:absolute;
+            top:60px;
+            left:20px;
+            height:60px;
+            width: 65px;
+            border-radius: 50%;
+            background-color:transparent;
+            opacity:100%;
+            transition:all 1s ease-out;
+            border-width: 5px;
+            border-style: solid;
+            border-color: white;
+            border-right-width: 0;
+            border-left-width: 0;
+            animation: load 1.5s linear infinite;
+            animation-play-state: paused;
+        }
+    }
 
     @keyframes load {
         from{

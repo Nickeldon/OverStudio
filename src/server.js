@@ -196,7 +196,6 @@ app.get('/ParseLinks', (req, res, next) => {
             console.log(savedPL.meta)
             if(savedPL.meta.links.length === 0){
                 console.log('no links')
-                res.sendStatus(209)
             }
             else{
             savedPL.meta.links.forEach((elem) => {
@@ -233,7 +232,7 @@ app.get('/ParseLinks', (req, res, next) => {
 
 
     var finalArray = []
-
+    var completeArray = []
     //console.log(mediaarr.length)
     //console.log(mediaarr)
     if(combinedArray.length > 1){
@@ -284,19 +283,14 @@ app.get('/ParseLinks', (req, res, next) => {
     }
 
     //console.log(finalArray)
-    const completeArray = []
     completeArray.push(finalArray)
     completeArray.push(savedPL.meta.links)
    // console.log(completeArray)
    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
    logfile += '\n' + 'sending data to client'
    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
-
-    res.json(completeArray)}
-    else{
-        console.log('no links')
-        //res.sendStatus(209)
     }
+    res.json(completeArray)
 })
 
 function verifyURIIntegrity(URI){
