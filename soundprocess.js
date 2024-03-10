@@ -65,9 +65,13 @@ document.getElementById('div-inp').addEventListener('change', () => {
     })
     var interval = setInterval(() => {
         if(playlist && playlist[0].length > 0){
+            console.log('entered')
             prevnul = true
             document.getElementById('refr-alt').click()
             clearInterval(interval)}
+            else{
+                console.log(playlist)
+            }
     }, 10)
 })
 
@@ -164,7 +168,7 @@ function loaded(){
         
             next.addEventListener('click',  () => {
                 console.log('clicked')
-                if(plpos <= playlist[0].length - 1 && started){
+                if(playlist[0][plpos+1] && started){
                 plpos++
                 document.getElementById('play-pause').style.opacity = '0%'
                 document.getElementById('loading').style.opacity = '100%'

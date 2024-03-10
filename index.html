@@ -89,6 +89,12 @@
                         Reverse the selection
                     </a>
                 </div>
+
+                <div class="opt-txt" style="opacity:0%; top:600px" id="theme-change" onclick="options(2)">
+                    <a  style="left: 170px;">
+                        Change the theme
+                    </a>
+                </div>
         
                     <div class="opt-txt" style="opacity:0%; bottom:25px"> 
                         <a style="left: 170px;">
@@ -127,6 +133,53 @@
                         </h1>
                     </div>
             </div>
+
+            <div class="opt-menu3" id="opt-menu3" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+                <h1 style="position: absolute; top: 150px; left:55px; font-size:40px; font-family:PS, sans-serif; color:white">
+                    Themes
+                </h1>
+
+                <div id="theme-selector" style="height: 80%; width:90%; position:absolute; top:200px; left:55px">
+                    <div id="themes" class="themes" style="width: 100%; height:100%;">
+                        <i id="thm1" class="thm1" style="top:100px" onclick="
+                            localStorage.setItem('theme', 'default');
+                            document.getElementById('main').style.opacity = '0%'
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                            ">
+
+                        </i>
+                        <i id="thm2" class="thm2" style="top:230px" onclick="
+                            localStorage.setItem('theme', 'dark');
+                            document.getElementById('main').style.opacity = '0%'
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                            ">
+
+                        </i>
+                        <i id="thm3" class="thm3" style="top:360px" onclick="
+                            localStorage.setItem('theme', 'orangeRed');
+                            document.getElementById('main').style.opacity = '0%'
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                            ">
+
+                        </i>
+                        <i id="thm4" class="thm4" style="top:490px" onclick="
+                            localStorage.setItem('theme', 'pinkPurple');
+                            document.getElementById('main').style.opacity = '0%'
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                            ">
+
+                        </i>
+                    </div>
+                </div>
+            </div>
                 
          </div>
  
@@ -151,7 +204,7 @@
 
          
             <div class="nav-bar" id="nav-bar" style="width: 100%; height:100px; position:absolute; top:60px">
-                <h1 style="text-align: center; font-family:PS, sans-serif; color:rgb(98, 57, 57); margin-top:20px">
+                <h1 id="app-title" style="text-align: center; font-family:PS, sans-serif; color:rgb(98, 57, 57); margin-top:20px">
                     Over<span>Player</span>
                 </h1>
     
@@ -254,6 +307,43 @@
 
 <style>
 
+    .thm1{
+        background-image: linear-gradient(rgba(55, 235, 169, 0.85), #5b37eb);
+    }
+
+    .thm2{
+        background-image: linear-gradient(rgba(255, 255, 255, 0.881), #545454);
+    }
+
+    .thm3{
+        background-image: linear-gradient(rgba(235, 181, 55, 0.85), #eb3737);
+    }
+
+    .thm4{
+        background-image: linear-gradient(rgba(166, 55, 235, 0.85), #eb37c9);
+    }
+
+    .themes{
+        i{
+            left: 10px;
+            height:80px;
+            width:80px;
+            position: absolute;
+            border-radius: 50%;
+            border-width: 3px;
+            border-color: white;
+            border-style: solid;
+            position: absolute;
+            transition: all .5s ease-out;
+            animation: load 2s linear infinite;
+            animation-play-state: paused;
+        }
+        i:hover{
+            cursor: pointer;
+            animation-play-state: running;
+        }
+    }
+
     .track-info{
         right: -550px;
         transition: all 1s ease-out;
@@ -335,12 +425,15 @@
         }  
     }
 
+    
+
     .time-bar{
         input::-webkit-slider-thumb{
+            --bgthumb: linear-gradient(rgb(255, 255, 255), #73aafa);
             transition: all .7s ease-out;
             appearance: none;
             /*background-image: linear-gradient(#ff4500, #ff4500);*/
-            background-image: linear-gradient(rgb(255, 255, 255), #73aafa);
+            background-image: var(--bgthumb);
             background-repeat: no-repeat;
             width: 20px;
             transform: scaleY(0.85);
@@ -624,6 +717,7 @@
     }
 </style>
 
+<script src="themeselect.js"></script>
 <script src="main.js"></script>
 <script src="soundprocess.js"></script>
 </html>

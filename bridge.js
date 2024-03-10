@@ -41,16 +41,18 @@ try {
                 } catch (e) {
                     console.error('could not filter array', e)
                 }
-                fetchPlaylist().then((data) => {
+                /*fetchPlaylist().then((data) => {
                     console.log(data)
                     if(data === 'nothing'){
                         console.log('Nothing')
                     }
                     else{
-                    try{ManageData(data)}
+                    try{
+                        ManageData(data)
+                        return data}
                     catch(e){console.error(e)}}
                 })
-                .catch((e) => console.error(e))
+                .catch((e) => console.error(e))*/
                 console.log('err2')
                 document.getElementById('div-selector').style.opacity = '80%'
                 document.getElementById('no-div-err').style.opacity = '0%'

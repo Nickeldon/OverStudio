@@ -100,9 +100,11 @@ function openMENU(){
   var optprev = document.getElementById('opt-preview')
   var optprevicns = document.getElementsByClassName('menu-icns')
   document.getElementById('opt-menu2').style.opacity = '0%'
+  document.getElementById('opt-menu3').style.opacity = '0%'
   optprev.style.display = 'block'
   setTimeout(() => {
     document.getElementById('opt-menu2').style.display = 'none'
+    document.getElementById('opt-menu3').style.display = 'none'
   }, 800)
 
   document.getElementsByClassName('opt-txt').forEach((elem) => {
@@ -112,6 +114,7 @@ function openMENU(){
 
   if(opt.style.left === '-380px'){
   document.getElementById('opt-menu2').style.opacity = '0%'
+  document.getElementById('opt-menu3').style.opacity = '0%'
   document.getElementById('opt-menu1').style.opacity = '100%'
   document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(60%)'
   document.getElementById('current-track').style.filter = 'blur(5px) brightness(60%)'
@@ -163,6 +166,23 @@ function options(choice){
       }, 1000)
 
     }break;
+
+    case 2: {
+      document.getElementById('options').style.left = '-380px'
+      document.getElementById('opt-menu1').style.opacity = '0%'
+      document.getElementById('opt-preview').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('opt-menu3').style.display = 'block'
+        setTimeout(() => {
+          setTimeout(() => {
+            document.getElementById('opt-preview').style.display = 'none'
+          }, 200)
+          
+          document.getElementById('options').style.left = '0%'
+          document.getElementById('opt-menu3').style.opacity = '100%'
+        }, 10)
+      }, 1000)
+    }break;
   }
 }
 
@@ -177,21 +197,25 @@ function NextSong(playlist, position){
     elem.style.top = `${fpos}px`}
   })}
   else{
-    var bottompos = document.getElementById('current-track').childNodes[3].style.top
-    document.getElementById('current-track').childNodes.forEach((elem) => {
-    if(elem.id === 'child-track'){
-    var ipos = elem.style.top 
-    ipos = ipos.replace('px', '')
-    const fpos = parseInt(ipos) - 150
-    elem.style.top = `${fpos}px`}
-  })
+    try {
+      var bottompos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
+      document.getElementById('current-track').childNodes.forEach((elem) => {
+      if(elem.id === 'child-track' && parseInt(bottompos.replace('px', '')) > 290){
+      var ipos = elem.style.top 
+      ipos = ipos.replace('px', '')
+      const fpos = parseInt(ipos) - 150
+      elem.style.top = `${fpos}px`}
+    }) 
+    } catch (e) {
+      console.log(e)
+    }
   }
-  if(position <= playlist[0].length - 1){
+  if(playlist[0][position] !== undefined){
   const audio = loadSound(playlist[0][position].url, loaded)
   console.log(playlist[0][position].url, audio)
   return audio
   } else{
-    console.log('did not passed', position, playlist.length - 1)
+    console.log('did not passed', position, playlist[0].length - 1, playlist[0])
     return undefined
   }
 }
@@ -206,13 +230,15 @@ function PrevSong(playlist, position){
     const fpos = parseInt(ipos) - 150
     elem.style.top = `${fpos}px`}
   })}else{
+    var toppos = document.getElementById('current-track').childNodes[3].style.top
     document.getElementById('current-track').childNodes.forEach((elem) => {
-      var toppos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
-      if(elem.id === 'child-track'){
-      var ipos = elem.style.top 
-      ipos = ipos.replace('px', '')
-      const fpos = parseInt(ipos) + 150
-      elem.style.top = `${fpos}px`}
+        if(elem.id === 'child-track' && parseInt(toppos.replace('px', '')) < 280){
+        var ipos = elem.style.top 
+        ipos = ipos.replace('px', '')
+        const fpos = parseInt(ipos) + 150
+        elem.style.top = `${fpos}px`} else {
+          //console.log(document.getElementById('current-track').childNodes)
+        }
     })
   }
   if(position > -1){
