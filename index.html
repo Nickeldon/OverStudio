@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @font-face { font-family: FlappyBirdy; src: url('./Addons/FlappyBirdy.ttf');}
+        @font-face { font-family: FlappyBirdFont; src: url('./Addons/FlappyBirdFont.ttf');}
+        @font-face { font-family: PS; src: url('./Addons/PixelifySans.ttf');}
+        @font-face { font-family: Blocky; src: url('./Addons/Blocky.TTF');}
+    </style>
+    <script src="./Addons/Packages/Soundhandler/howler.min.js"></script>
+    <script src="./Addons/Packages/SoundListener/p5.min.js"></script>
+    <script src="./Addons/Packages/SoundListener/p5.sound.min.js"></script>
+    <script src="./Addons/Packages/JQuery 3.1.1/jquery-3.1.1.min.js"></script>
+    <script src="bridge.js"></script>
+</head>
+<script  src="./Addons/BG/dist/script.js"></script>
+<link rel="stylesheet" href="./Addons/BG/dist/Packages/normalize.min.css">
+<link rel="stylesheet" href="./Addons/BG/dist/style.css">
+<script src="./Addons/BG/dist/Packages/prefixfree.min.js"></script>
+<body>
+
+    <audio src="./Addons/SF/startup.mp3" autoplay style="visibility: hidden;"></audio>
+
+    <div id="splash-scr" style="transition:all .6s ease-out; opacity:100%; display:block; width:100%; height:100%; position:absolute; top:0; left:0; z-index:99; background-color:black">
+        <object data="./splashscr.html" style="width: 1777px; height:1000px; position:absolute; top:0; left:0; z-index:99; pointer-events:none; user-select:none; border-radius:20px"></object>
+    </div>
+
+    <div class="main" id="main" style="width: 1777px; height:1000px; position:relative; background-color:black; border-radius:20px; top:0; left:0">
+
+        <div class="draggable" style="background-color: transparent; z-index:99; position:absolute; top:0; right:0; width:80%; height:130px">
+
+        </div>
+        <div style=" position: relative; width: 100%; height: 100%; user-select:none;" class="BG-anim" id="BG-anim">
+            <object id="Audio-react" data="" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out">
+            </object>
+
+            <div id="alternate-audio-react" style="transition:all 1s ease-out; display:block; position:absolute; width:100%; height:100%;">
+                <div class="gradient" id="gradient" style="margin:auto; position:absolute; top:27%; left:36%"></div>
+            </div>
+            
+            <div id="filter" style="opacity: 50%; background-color:black; position:absolute; top:0; width:100%; height:100%; transition:all 1s ease-out"></div>
+        </div>
+
+        <div class="UI-scr1" id="UI-scr1" style="opacity:100%; transition:all 1s ease-out">
+        
+        <div class="err-message" id="err-message" style="position:absolute; top:0; right:-400px; width:400px; height:120px; background-color:#974141; opacity:80%; border-radius:20px; border-top-left-radius:0px; border-bottom-right-radius:0px; opacity:0%; color:white; transition:all.5s ease-out">
+
+            <i style="position: absolute; top:20%; left:10%; filter:invert(80%)" id="err-icon-parent">
+                <img src="./Addons/icons/warning.png" style="height: 60px;" id="err-icon">
+            </i>
+
+            <div style="position: absolute; top:20%; right:10%;">
+                <h3 style="width: 200px; font-size:23px">
+                    This directory already exists
+                </h3>
+            </div>
+        </div>
+            
+        <div class="current-track" id="current-track" style="position: absolute; width:70%; height:70%; background-color:transparent; top:12%; left:20%; border-radius: 10px; filter:blur(.5px) brightness(120%) sepia(10%); opacity:200%;">
+            
+
+
+            <div class="fadeout"></div>
+        </div>
+
+        <div id="options" class="options" style="display:block; height: 85%; width:600px; position:absolute; top:0; left:-380px; border-radius:20px; border-bottom-left-radius:-10px; ;transition:all 1s ease-in-out; opacity:30%;">
+            
+            <div id="opt-menu1" style="display: block; transition:all .7s ease-out">
+                <div class="opt-txt" style="opacity:0%; top:230px" onclick="options(1)">
+                    <a  style="left: 170px;">
+                        Add Directories
+                    </a>
+                </div>
+                   
+                   <div class="opt-txt" style="opacity:0%; top:400px" id="refr-alt">
+                        <a  style="left: 170px;">
+                            Refresh the selection
+                        </a>
+                   </div>
+
+                <div class="opt-txt" style="opacity:0%; top:500px" onclick="
+                if(reversed){
+                    localStorage.setItem('reversed', false);} 
+                    else{localStorage.setItem('reversed', true)} 
+                    window.location.reload()">
+                    <a style="left: 170px;">
+                        Reverse the selection
+                    </a>
+                </div>
+        
+                    <div class="opt-txt" style="opacity:0%; bottom:25px"> 
+                        <a style="left: 170px;">
+                            Close the app
+                        </a>  
+                    </div>
+            </div>
+
+            <div id="opt-menu2" class="opt-menu2" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+                <div id="add-div" class="add-div" style="position: absolute; height:180px; width:100%; top:200px">
+                    <a class="lbl-opt1" style="transition: all .7s ease-out;top:0; left:20px; pointer-events:none;">
+                        Add a directory
+                    </a>
+
+                    <input id="div-inp" type="file" style="visibility: hidden;" onchange="addPlaylist()" webkitdirectory>
+
+                    <div id="btn-add-dir" class="btn-add-dir" style="width: 70%; height: 100px; position:absolute; background-color:rgb(135, 135, 135); transition:all 1.2s ease-out; opacity:80%; left:40px; border-radius:10px; bottom:0" onclick="document.getElementById('div-inp').click()">
+                        <a style="top: 35%; left:30px; color:white; filter:invert(80%)">Open explorer</a>
+                    </div>
+                </div>
+
+                    <div id="manage-div" class="manage-div" style="position: absolute; height:400px; width:100%; top:430px">
+                        <a class="lbl-opt1" style="transition: all .7s ease-out;top:0; left:20px">
+                            Manage saved Directories
+                        </a>
+    
+                        <div id="div-selector" class="div-select" style="width: 85%; height: 340px; position:absolute; background-color:rgb(135, 135, 135); transition:all .5s ease-out; opacity:80%; left:40px; border-radius:10px; bottom:0; overflow-y:scroll">
+                            
+                        </div>
+                        
+                        <div class="div-sel-filter" id="div-set-filter" style="width: 82.2%; height: 340px; position:absolute; background-color:rgb(135, 135, 135); transition:all .5s ease-out; opacity:30%; left:40px; border-radius:10px; bottom:0;">
+
+                        </div>
+                        <h1 id="no-div-err" style="font-family: PS, sans-serif; display:block; position:absolute; width:85%; transition:all .5s ease-out; left:30px; opacity:0%; color:white; filter:invert(40%); top:30%; pointer-events:none">
+                            There is no saved directories <br> <span style="font-size: 17px;">Start adding directories by pressing the button above</span>
+                        </h1>
+                    </div>
+            </div>
+                
+         </div>
+ 
+         <div id="opt-preview" class="opt-preview" style="display:block; height: 80%; width:100px; background-color:transparent; position:absolute; top:130px; left:55px; opacity:20%">
+             <i class="menu-icns">  
+                 <img src="./Addons/icons/folder.png" style="height: 65px; filter:invert(70%); left:20px; top:120px; position:absolute" onclick="openMENU(); options(1)">
+             </i>
+     
+             <i class="menu-icns">
+                 <img id="Refresh" src="./Addons/icons/refresh.png" style="height: 55px; filter:invert(70%); left:30px; top:300px; position:absolute">
+             </i>
+     
+             <i class="menu-icns">
+                 <img src="./Addons/icons/logout.png" style="height: 55px; filter:invert(70%); left:30px; bottom:120px; position:absolute">
+             </i>
+         </div>
+
+         
+            <div class="nav-bar" id="nav-bar" style="width: 100%; height:100px; position:absolute; top:60px">
+                <h1 style="text-align: center; font-family:PS, sans-serif; color:rgb(98, 57, 57); margin-top:20px">
+                    Over<span>Player</span>
+                </h1>
+    
+                <i class="side" style="position: absolute; top: -5px; left: 60px; height:100px; width:100px">
+                    <img onclick="openMENU()" id="side" src="./Addons/icons/menu.png" style="height: 50px; transition:all 1.5s ease-out; position:absolute; top:25px; left:25px">
+                </i>
+            </div>
+    
+            <div class="now-p" id="current-notif" style="width:350px; height:120px; border-radius:15px; border-color:#86ecfc; position:absolute; bottom:170px; right:0; border-style:solid;">
+                <h4 style="color:white; position:absolute; top:20px; left:25px; font-family:Blocky, sans-serif; font-weight:100; font-size:15px; letter-spacing:1px ">
+                    Now Playing
+                </h4>
+            </div>
+        </div>
+
+        
+
+        <div class="control-bar" id="cont-bar" style="width: 100%; height:150px; position:absolute; bottom:0;">
+            <div class="control" style="position: absolute; left:45%; bottom:40%">
+                <i>
+                    <img src="./Addons/icons/back.png" id="back">                
+                </i>
+    
+                <i>
+                    <img src="./Addons/icons/pause.png" id="play-pause" style="opacity: 100%; transition:all .5s ease-out;">
+                    <div id="loading" class="loading" style="width: 35px; height:35px; border-width:7px; border-style:solid; border-color:white; background-color:transparent; border-radius:50%; position:absolute; top:0; left:33.5%; animation:load .8s infinite; border-right: 0;
+                    border-left: 0;
+                    opacity: 0%;
+                    display:block;
+                    pointer-events: none;
+                    user-select: none;
+                    transition:all .5s ease-out;
+                    border-bottom: 0;">
+                    </div>  
+                </i>
+    
+                <i>
+                    <img src="./Addons/icons/next.png" id="next">
+                </i>
+            </div>
+
+            <i style="position: absolute; bottom:40%; right:10%; transform:rotate(-20deg)" onclick="changeState()">
+                <img src="./Addons/icons/zoom-in.png" style="height: 40px;">
+            </i>
+
+            <div id="time-bar" style="position: absolute; width:800px; height:50px; bottom:15px; left:28%">
+                <div id="timer" class="timer">
+                    <h3 style="font-family: PS, sans-serif; font-size: 20px; color:white; position:absolute; bottom:19%; left:20px" id="current-time">
+                        0:00
+                    </h3>
+                    <h3 style="font-family: PS, sans-serif; font-size: 20px; color:white; position:absolute; bottom:19%; right:20px" id="total-time">
+                        0:00
+                    </h3>
+                </div>
+
+                <div id="input-time" class="time-bar" style="height: 100%; width:70%; position:absolute; bottom:0; left:15%;">
+                    <input type="range" id="timeslide" class="timeslide" name="time" min="0" max="100" style="width:95%; position:absolute; bottom:30%; left:2.5%" value="0" step="1"/>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div style="position: absolute; right:37%; bottom:4.5%" id="volume-slider">
+            <div id="bg-vol" style="height:70px; width:50px; border-radius:40px; border-style:solid; background-color:transparent; opacity:70%; border-color:transparent; transition:all 1s ease-in-out">
+                <i style="height: 40px; position:absolute; bottom:20px; right: 12%" class="vol-btn">
+                    <img src="./Addons/icons/vol.png" style="height: 44px; filter:invert(70%)" id="vol-btn">
+                </i>
+                <div id="input-vol" class="input-vol" style="height: 57px; width:260px; position:absolute; bottom:180px; transform:rotate(270deg); right:-105px;">
+                    <input type="range" id="volslide" class="volslide" name="volume" min="0" max="20" style="width:250px; position:absolute; top:17px" value="50" step="1"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    
+</body>
+
+<style>
+
+    @keyframes load {
+        from{
+            transform: rotate(0deg);
+        }to{
+            transform: rotate(360deg);
+        }
+    }
+
+    .loading{
+        display: block;
+        
+        animation: load 1s linear infinite;
+    }
+
+    .timeslide{
+        user-select: none;
+        width: 100%;
+        height: 10px;
+        border-radius: 20px;
+        appearance:none;
+        transition: none;
+        /*background-image: linear-gradient(#ff4500, #ff4500);*/
+        background-image: linear-gradient(rgb(255, 255, 255), #73aafa);
+        background-repeat: no-repeat;
+    }
+
+    .timeslide::-webkit-slider-runnable-track{
+        background-color: rgba(255, 255, 255, 0.275);
+        border-radius: 20px;
+    }
+
+    .time-bar:hover{
+        input::-webkit-slider-thumb{
+            border-radius: 100%;
+            transform:scaleY(2) scale(1.3);
+        }  
+    }
+
+    .time-bar{
+        input::-webkit-slider-thumb{
+            transition: all .7s ease-out;
+            appearance: none;
+            /*background-image: linear-gradient(#ff4500, #ff4500);*/
+            background-image: linear-gradient(rgb(255, 255, 255), #73aafa);
+            background-repeat: no-repeat;
+            width: 20px;
+            transform: scaleY(0.85);
+            height:10px;
+            border-radius: 0;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }  
+
+        input::-webkit-slider-thumb:hover{
+            cursor: pointer;
+        }  
+
+        input{
+            background-color: transparent
+        }
+    }
+
+    .volslide{
+        border-radius: 30px;
+        appearance: none;
+        background-color: white;
+        transition: all 1s ease-in-out;
+    }
+
+    .input-vol:hover{
+        input::-webkit-slider-thumb{
+            transform: scale(2);
+            border-radius: 100%;
+        }       
+    }
+
+    .volslide::-webkit-slider-thumb{
+        transition: all .7s ease-out;
+        transform: scale(0.9);
+        color: #7ed1fb;
+        border-color:#737272;
+        border-style: solid;
+        border-width: 1px;
+    }
+
+    .vol-btn img:hover{
+        cursor: pointer;
+        transform: scale(0.9);
+        filter: invert(60%) blur(0.5px);   
+    }
+
+    .volume-slider{
+        input {
+        margin: 0.4rem;
+            }
+    }
+
+    @keyframes jumping {
+        from{
+            transform: translateY(0px);
+        }
+        to{
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes shake {
+        0% {transform: rotate(0deg);}
+        25% {transform: rotate(5deg);}
+        50% {transform: rotate(0deg);}
+        75% {transform: rotate(-5deg);}
+        100% {transform: rotate(0deg);}
+      }
+
+    .jump{
+        transition: all .2s ease-in;
+        animation: jumping .4s alternate infinite;
+    }
+
+    .shake{
+        animation: shake .2s alternate infinite;
+    }
+
+    .track-info{
+        transition:all 1s ease-out;
+        
+        h3{
+            font-size: 25px;
+        }
+    }
+
+    .current-track{
+        color:white;
+        mask-image: linear-gradient(to bottom, transparent, black 50%, transparent 100%);
+        mask-size: 100% 100%;
+        mask-position: 50% 100%;
+        height:  150px;
+        width: 300px;
+    }      
+
+    .div-btn:hover{
+        cursor: pointer;
+        transform: scale(0.9);
+        filter: invert(15%);
+    }
+
+    .btn-add-dir:hover{
+        cursor: pointer;
+        width: 100%;
+        transform: scale(0.95);  
+        filter:invert(15%); 
+        letter-spacing: 1px;
+    }
+    
+    .div-select::-webkit-scrollbar-track {
+        border: 1px solid #000;
+        padding: 2px 0;
+        background-color: #404040;
+    }
+
+    .div-select::-webkit-scrollbar {
+        border-radius: 20px;
+        width: 20px;
+    }
+
+    .div-select::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #737272;
+        border: 1px solid #000;
+    }
+
+    .div-sel-filter{
+        pointer-events: none;
+        user-select: none;
+        -webkit-mask-image: linear-gradient(to top, black 0%, transparent 80%);
+        mask-image: linear-gradient(to top, black 0%, transparent 80%);
+    }
+
+    .opt-menu2{
+        .child-div{
+            margin-bottom: 20px;
+            width: 100%; 
+            height:30px;
+        }
+    }
+
+    h3{
+        font-family: PS, sans-serif;
+    }
+
+    .draggable{
+        pointer-events: all;
+        user-select: all;
+        -webkit-app-region: drag;
+    }
+
+    body{
+        background-color: transparent; 
+        transform:scale(0.70); 
+        width: fit-content; height:fit-content; 
+        border-radius:20px; 
+        transform-origin:0 0 0;
+        display: flex;
+        align-items:center;
+        justify-content: center;
+    }
+
+    .options{
+
+        background-image: linear-gradient(to right, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0));
+
+        .opt-txt{
+            left: 0;
+            width: 100%;
+            height:100px;
+            position: absolute;
+
+            a{
+                transition:all .5s ease-out; 
+                top:35%
+            }
+        }
+        .opt-txt:hover{
+            cursor: pointer;
+            width: 100%;
+            transform: scale(0.9);  
+
+                filter:invert(85%); 
+            letter-spacing: 1px;
+        }
+        a{
+        pointer-events: none;
+        font-family: PS, sans-serif;
+        text-decoration: none;
+        font-size: 30px; 
+        color:black;
+        filter:invert(70%); 
+        position: absolute;}
+
+    }
+
+    .pop{
+        animation: 1s pop both;
+    }
+    
+    @keyframes pop {
+        from{
+            transform: scale(1);
+        }
+        to{
+            transform: scale(0.7);
+        }
+    }
+
+   .BG-anim{
+    pointer-events: none;
+    object{
+        user-select: none;
+        cursor:none;
+    }
+    }
+
+    .opt-preview{
+
+        i{
+
+            img:hover{
+            cursor: pointer;
+            transform: scale(0.9);
+            filter:blur(1px) invert(70%);
+            }
+        }
+    }
+
+    .rotate{
+        position: absolute;
+        transform: rotate(-40deg);
+    }
+
+    .control-bar{
+        border-color: white;
+        border-width: 0;
+        border-style: solid;
+        border-top-width: 1px;
+        border-radius: 20px;
+        i{
+        margin-right: 30px;
+        img{
+        background-color: transparent;
+        height:35px;
+        filter: invert(70%);}
+        img:hover{
+            cursor: pointer;
+            transform: scale(0.9);
+            filter:blur(1px) invert(70%);
+        }
+    }
+    }
+
+
+    .side img:hover{
+        cursor: pointer;
+        transform: scale(0.95) rotate(20deg);
+        filter:blur(0.5px) grayscale(70%)
+    }
+
+    *{
+        user-select: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        transition: all 1.5s ease-out;
+    }
+    .nav-bar h1{
+        background: linear-gradient(to right, rgb(255, 255, 255), #73aafa, #7ed1fb, #86ecfc);
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-bar h1:hover{
+        filter:blur(1px) grayscale(20%);
+        letter-spacing: 1px;
+    }
+</style>
+
+<script src="main.js"></script>
+<script src="soundprocess.js"></script>
+</html>
