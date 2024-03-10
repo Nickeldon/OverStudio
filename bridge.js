@@ -42,8 +42,13 @@ try {
                     console.error('could not filter array', e)
                 }
                 fetchPlaylist().then((data) => {
+                    console.log(data)
+                    if(data === 'nothing'){
+                        console.log('Nothing')
+                    }
+                    else{
                     try{ManageData(data)}
-                    catch(e){console.error(e)}
+                    catch(e){console.error(e)}}
                 })
                 .catch((e) => console.error(e))
                 console.log('err2')
@@ -262,6 +267,9 @@ function ManageData(data){
 
 async function fetchPlaylist(){
     const data = await fetch(`http://localhost:${PORT}/ParseLinks`)
+    if(data.status === 209){
+        return 'nothing'
+    }
         return await data.json()
 }
 

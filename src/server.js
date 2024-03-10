@@ -14,6 +14,10 @@ var mediaarray = []
 app.use(cors())
 app.listen(PORT, () => {
     console.log('Server is listening on port', PORT)
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'Server is listening on port' + PORT
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
 }).addListener('error', (e) => {
     console.error('there was an error', e)
 })
@@ -25,16 +29,34 @@ app.get('/follow', (req, res, next) => {
     } catch (e) {
         res.json('Could not fetch data')
         console.error('Could not fetch data', e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
 })
 
 app.get('/addPL', (req, res, next) => {
-    const jsonPL = fs.readFileSync(__dirname + '/saved_paths.json')
-    var object = JSON.parse(jsonPL)
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'request to add playlist received'
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+    var jsonPL, savedPL
+    try {
+        jsonPL = fs.readFileSync(__dirname + '/saved_paths.json')
+        var object = JSON.parse(jsonPL)
+    } catch (e) {
+        console.error('Could not fetch data', e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+        
+    } 
     try {
         PlaylistURL = JSON.parse(req.query.METADATA)
     } catch (e) {
         console.error('Error while parsing', e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
 
     if(PlaylistURL){
@@ -55,6 +77,10 @@ app.get('/addPL', (req, res, next) => {
                 else{
                     res.sendStatus(207)
                     console.log('already exists')
+                    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+                    logfile += '\n' + 'already exists'
+                    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
                     return undefined
                 }
 
@@ -70,6 +96,9 @@ app.get('/addPL', (req, res, next) => {
             res.sendStatus(204)
         } else{
             console.log('invalid uri')
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + 'invalid uri'
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
             res.sendStatus(206)
             return undefined
         }
@@ -80,15 +109,22 @@ app.get('/addPL', (req, res, next) => {
     }
 
     try {
-        fs.writeFileSync('./src/saved_paths.json', JSON.stringify(object, null, 2))
+        fs.writeFileSync(__dirname + '\\saved_paths.json', JSON.stringify(object, null, 2))
     } catch (e) {
         console.error('Could not fetch data', e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
     //console.log(object)
 
 })
 
 app.get('/delPath', (req, res, next) => {
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'request to delete path received'
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
     try {
         const targetpath = req.query.link
         
@@ -109,6 +145,9 @@ app.get('/delPath', (req, res, next) => {
             fs.writeFileSync(__dirname + '\\saved_paths.json', JSON.stringify(object, null, 2))
         } catch (e) {
             console.log(e)
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + e
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
         if(linkarray.length > 0){
         res.sendStatus(201)}
@@ -117,6 +156,9 @@ app.get('/delPath', (req, res, next) => {
         }
     } catch (e) {
         console.log(e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         res.sendStatus(206)
     }
 })
@@ -124,26 +166,49 @@ app.get('/delPath', (req, res, next) => {
 app.get('/ParseLinks', (req, res, next) => {
 
     console.log('received call')
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'received call'
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
 
-    const jsonPL = fs.readFileSync('./src/saved_paths.json')
-    const savedPL = JSON.parse(jsonPL)
+    var jsonPL, savedPL
+    try {
+        jsonPL = fs.readFileSync(__dirname + '\\saved_paths.json')
+        savedPL = JSON.parse(jsonPL)   
+    } catch (e) {
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+        process.exit(1)
+    }
     var mediaarr = []
     if(!savedPL){
         try {
             mediaarr = getMediaArray(path.resolve('../Media'))
         } catch (e) {
             console.error('Could not fetch data', e)
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + e
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
     } else{
         try {
             console.log('passed')
+            console.log(savedPL.meta)
+            if(savedPL.meta.links.length === 0){
+                console.log('no links')
+                res.sendStatus(209)
+            }
+            else{
             savedPL.meta.links.forEach((elem) => {
-                //console.log(getMediaArray(elem))
+                console.log(getMediaArray(elem))
                 if(getMediaArray(elem).length > 0){
                 mediaarr.push(getMediaArray(elem))}
-            })
+            })}
         } catch (e) {
             console.error('Could not fetch data', e)
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + e
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
         //console.log(mediaarr)
     }
@@ -151,6 +216,7 @@ app.get('/ParseLinks', (req, res, next) => {
     //console.log(mediaarr)
     //console.log(savedPL)
     //console.log(mediaarr)
+    if(savedPL.meta.links.length > 0){
     var combinedArray = []
     mediaarr.forEach((elem) => {
         elem.forEach((alt) => {
@@ -161,6 +227,10 @@ app.get('/ParseLinks', (req, res, next) => {
     mediaarr = mediaarr[1]
     
     console.log(mediaarr)
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'generated media array'
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
 
     var finalArray = []
 
@@ -178,6 +248,9 @@ app.get('/ParseLinks', (req, res, next) => {
                 "album": getMediaMeta(elem).album || undefined
             })   
         } catch (e) {
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + e
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
             finalArray.push({
                 "url": elem,
                 "title": undefined,
@@ -197,6 +270,9 @@ app.get('/ParseLinks', (req, res, next) => {
                 "album": getMediaMeta(combinedArray[0]).album || undefined
             })   
         } catch (e) {
+            var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+            logfile += '\n' + e
+            fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
             finalArray.push({
                 "url": combinedArray[0],
                 "title": undefined,
@@ -212,7 +288,15 @@ app.get('/ParseLinks', (req, res, next) => {
     completeArray.push(finalArray)
     completeArray.push(savedPL.meta.links)
    // console.log(completeArray)
-    res.json(completeArray)
+   var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+   logfile += '\n' + 'sending data to client'
+   fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
+    res.json(completeArray)}
+    else{
+        console.log('no links')
+        //res.sendStatus(209)
+    }
 })
 
 function verifyURIIntegrity(URI){
@@ -221,6 +305,9 @@ function verifyURIIntegrity(URI){
         else return false
     } catch (e) {
         console.error(e)
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         return false
     }
 }
@@ -248,6 +335,10 @@ function getMediaMeta(Path){
     },
     onError: function(error) {
         //console.log(':(', error.type, error.info);
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + error
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+
     }
     });
 
@@ -274,22 +365,28 @@ function getMediaMeta(Path){
 
 function getMediaArray(Path){
     var resultArray = []
-    if(fs.existsSync(Path)){
-        fs.readdirSync(Path).forEach((elem) => {
-            if(!fs.statSync(`${Path}\\${elem}`).isDirectory()){
-                var cont = true
-                for(let i = elem.length; i > 0 && cont; i--){
-                    if(elem[i] === '.'){
-                        elem = elem.split('.')
-                        if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac'){
-                        resultArray.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
-                        cont = false
+    try {
+        if(fs.existsSync(Path)){
+            fs.readdirSync(Path).forEach((elem) => {
+                if(!fs.statSync(`${Path}\\${elem}`).isDirectory()){
+                    var cont = true
+                    for(let i = elem.length; i > 0 && cont; i--){
+                        if(elem[i] === '.'){
+                            elem = elem.split('.')
+                            if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac'){
+                            resultArray.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
+                            cont = false
+                        }
                     }
                 }
-            }
-        })
+            })
+        }   
+    } catch (e) {
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
+ 
     }
-
 
     return(resultArray)
 }
@@ -301,6 +398,9 @@ function verifIfExist(base, input){
         }   
         return false
     } catch (e) {
+        var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+        logfile += '\n' + e
+        fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         return true
     }
 }

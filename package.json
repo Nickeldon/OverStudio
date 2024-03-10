@@ -1,10 +1,11 @@
 {
   "name": "overplayer",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.5.0",
+  "description": "OverPlayer, Modern Music Player",
   "main": "electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverPlayer",
     "start": "node electron.js"
   },
   "author": "Nickeldon",

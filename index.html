@@ -140,7 +140,12 @@
              </i>
      
              <i class="menu-icns">
-                 <img src="./Addons/icons/logout.png" style="height: 55px; filter:invert(70%); left:30px; bottom:120px; position:absolute">
+                 <img src="./Addons/icons/logout.png" style="height: 55px; filter:invert(70%); left:30px; bottom:120px; position:absolute" onclick="
+                 document.querySelector('body').style.opacity = '0%';
+                 setTimeout(() => {
+                     window.close();
+                 }, 1000);
+                 ">
              </i>
          </div>
 
@@ -240,6 +245,10 @@
         display: block;
         
         animation: load 1s linear infinite;
+    }
+
+    input{
+        user-select: none;
     }
 
     .timeslide{
@@ -426,6 +435,7 @@
     }
 
     body{
+        transition: all 1s ease-out;
         background-color: transparent; 
         transform:scale(0.70); 
         width: fit-content; height:fit-content; 
