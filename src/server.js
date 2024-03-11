@@ -13,6 +13,7 @@ var mediaarray = []
 
 app.use(cors())
 app.listen(PORT, () => {
+    fs.writeFileSync(__dirname + '\\errorlog.txt', '\n' + 'server started')
     console.log('Server is listening on port', PORT)
     var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
     logfile += '\n' + 'Server is listening on port' + PORT
@@ -20,6 +21,9 @@ app.listen(PORT, () => {
 
 }).addListener('error', (e) => {
     console.error('there was an error', e)
+    var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
+    logfile += '\n' + 'There was an error' + JSON.stringify(e)
+    fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     process.exit(1)
 })
 
@@ -31,7 +35,7 @@ app.get('/follow', (req, res, next) => {
         res.json('Could not fetch data')
         console.error('Could not fetch data', e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
 })
@@ -47,7 +51,7 @@ app.get('/addPL', (req, res, next) => {
     } catch (e) {
         console.error('Could not fetch data', e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         
     } 
@@ -56,7 +60,7 @@ app.get('/addPL', (req, res, next) => {
     } catch (e) {
         console.error('Error while parsing', e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
 
@@ -114,7 +118,7 @@ app.get('/addPL', (req, res, next) => {
     } catch (e) {
         console.error('Could not fetch data', e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
     }
     //console.log(object)
@@ -147,7 +151,7 @@ app.get('/delPath', (req, res, next) => {
         } catch (e) {
             console.log(e)
             var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-            logfile += '\n' + e
+            logfile += '\n' + JSON.stringify(e)
             fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
         if(linkarray.length > 0){
@@ -158,7 +162,7 @@ app.get('/delPath', (req, res, next) => {
     } catch (e) {
         console.log(e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         res.sendStatus(206)
     }
@@ -177,7 +181,7 @@ app.get('/ParseLinks', (req, res, next) => {
         savedPL = JSON.parse(jsonPL)   
     } catch (e) {
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         process.exit(1)
     }
@@ -188,7 +192,7 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.error('Could not fetch data', e)
             var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-            logfile += '\n' + e
+            logfile += '\n' + JSON.stringify(e)
             fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
     } else{
@@ -207,7 +211,7 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.error('Could not fetch data', e)
             var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-            logfile += '\n' + e
+            logfile += '\n' + JSON.stringify(e)
             fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         }
         //console.log(mediaarr)
@@ -249,7 +253,7 @@ app.get('/ParseLinks', (req, res, next) => {
             })   
         } catch (e) {
             var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-            logfile += '\n' + e
+            logfile += '\n' + JSON.stringify(e)
             fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
             finalArray.push({
                 "url": elem,
@@ -271,7 +275,7 @@ app.get('/ParseLinks', (req, res, next) => {
             })   
         } catch (e) {
             var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-            logfile += '\n' + e
+            logfile += '\n' + JSON.stringify(e)
             fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
             finalArray.push({
                 "url": combinedArray[0],
@@ -301,7 +305,7 @@ function verifyURIIntegrity(URI){
     } catch (e) {
         console.error(e)
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         return false
     }
@@ -331,7 +335,8 @@ function getMediaMeta(Path){
     onError: function(error) {
         //console.log(':(', error.type, error.info);
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + error
+        logfile += '\n' + JSON.stringify(error)
+        
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
 
     }
@@ -378,7 +383,7 @@ function getMediaArray(Path){
         }   
     } catch (e) {
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
  
     }
@@ -394,7 +399,7 @@ function verifIfExist(base, input){
         return false
     } catch (e) {
         var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
-        logfile += '\n' + e
+        logfile += '\n' + JSON.stringify(e)
         fs.writeFileSync(__dirname + '\\errorlog.txt', logfile)
         return true
     }
