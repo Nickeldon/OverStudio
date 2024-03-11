@@ -1,6 +1,6 @@
 {
   "name": "overplayer",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "OverPlayer, Modern Music Player",
   "main": "electron.js",
   "scripts": {

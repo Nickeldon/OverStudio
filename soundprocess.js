@@ -1,6 +1,7 @@
 let audio, volumeSlider, playpausebtn, refresh, amplitude, playlist, next, prev, refralt, volbtn
 //let url = "C:\\Users\\Mohamed\\Desktop\\Projects\\OverPrompt\\test\\OverPrompt-API\\Output\\AAC\\Alter Musiques\\TVアニメ『呪術廻戦』第2期「懐玉・玉折」ノンクレジットOPムービー／OPテーマ：キタニタツヤ「青のすみか」｜毎週木曜夜11時56分～MBS_TBS系列全国28局にて放送中__.aac"
 var isPlaying = true;
+var follow = true
 var release = true
 var state = 'paused'
 var plpos = 0;
@@ -132,8 +133,12 @@ function loaded(){
             next = document.getElementById('next')
             prev = document.getElementById('back')
             playpausebtn = document.getElementById('play-pause')
-        
+
             document.getElementById('timeslide').addEventListener('input', () => {
+                follow = false
+            })
+        
+            document.getElementById('timeslide').addEventListener('change', () => {
                 if(audio.isLoaded()) audio.setVolume(0)
                     if(audio.isLoaded() && release){
                         release = false
@@ -143,6 +148,7 @@ function loaded(){
                     audio.jump(document.getElementById('timeslide').value)
                     var interval = setInterval(() => {
                         if(audio.isLoaded()){
+                            follow = true
                             release = true
                             started = true
                             clearInterval(interval)
@@ -295,7 +301,7 @@ function draw(){
                 document.getElementById('loading').style.opacity = '0%'
                 document.getElementById('timeslide').max = audio.duration()
                 document.getElementById('timeslide').style.backgroundSize = `${(((audio.currentTime() / audio.duration()) * 100) + 1)}% 100%`
-                document.getElementById('timeslide').value = (audio.currentTime())
+                if(follow) document.getElementById('timeslide').value = (audio.currentTime())
                if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1){
                 document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
                 //document.getElementById('gradient').style.animationDuration =`${50/(vol*100)}s`

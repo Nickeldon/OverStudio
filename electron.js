@@ -51,7 +51,7 @@ if (!instancelimit) {
       }
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html')));  
-    windowObj.webContents.openDevTools()
+    //windowObj.webContents.openDevTools()
     windowObj.on('closed', () => {
       windowObj = null
     })

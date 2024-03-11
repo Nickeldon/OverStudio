@@ -20,6 +20,7 @@ app.listen(PORT, () => {
 
 }).addListener('error', (e) => {
     console.error('there was an error', e)
+    process.exit(1)
 })
 
 app.get('/follow', (req, res, next) => {
