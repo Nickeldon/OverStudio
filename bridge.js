@@ -1,10 +1,35 @@
 const PORT = 8000
 var paths = []
 var finalArray = []
+var reversed = false
 console.log(localStorage.getItem('reversed'))
 var reversed = (/true/).test(localStorage.getItem('reversed')) || false
 localStorage.setItem('reversed', reversed)
 var ready = false
+
+function GetYoutubeData(title){
+    title = 'DISHONOR'
+    $.getJSON(`http://localhost:${PORT}/getThumbnail?title=${JSON.stringify(title)}`, (data) => {
+        if(data === 'nothing'){console.log('Nothing')}
+        else{
+            console.log(data)
+        }
+    })
+}
+
+
+function shuffle(array) {
+    //From StackOverflow
+    let currentIndex = array.length,  randomIndex;
+    while (currentIndex > 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
 function addPlaylist(){
     //console.log(document.getElementById('div-inp').files[0])
 try {
@@ -26,6 +51,8 @@ try {
             case 204: {
                 try {
                     var filtered = FilterArray(document.getElementById('current-track').childNodes);    
+                    //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
+                    console.log(selectorfiltered)
                     document.getElementById('current-track').childNodes.forEach((elem) => {
                         if(elem.id === 'child-track'){
                             elem.style.opacity = '0%'
@@ -37,6 +64,18 @@ try {
                         filtered.forEach((elem) => {
                             document.getElementById('current-track').appendChild(elem)
                         })
+                    })
+
+                    document.getElementById('div-selector').childNodes.forEach((elem) => {
+                        if(elem.id === 'child-div'){
+                            elem.style.opacity = '0%'
+                            setTimeout(() => {
+                                document.getElementById('div-selector').removeChild(elem)
+                            }, 500)
+                        }
+
+                        selectorfiltered.forEach((elem) => {
+                            document.getElementById('div-selector').appendChild(elem)})
                     })
                 } catch (e) {
                     console.error('could not filter array', e)
@@ -80,7 +119,7 @@ document.getElementById('div-inp').value = null
 }
 
 async function deletePLCache(){
-    console.log('deleting')
+    //console.log('deleting')
     //console.log(document.getElementById('div-selector').childNodes)
     if(document.getElementById('div-selector').childNodes.length > 1){
     
@@ -96,7 +135,6 @@ async function deletePLCache(){
     })
     
 }
-
 if(document.getElementById('current-track').childNodes.length > 1){
     var listnodes = document.getElementById('current-track').childNodes
 
@@ -110,7 +148,7 @@ if(document.getElementById('current-track').childNodes.length > 1){
     })
 
 }
-    console.log(document.getElementById('div-selector').childNodes)
+    //console.log(document.getElementById('div-selector').childNodes)
 }
 
 function FilterArray(array){
@@ -126,7 +164,9 @@ function FilterArray(array){
 }
 
 function deldiv(nbr, link){
-    //console.log(link)
+    console.log(nbr, document.getElementById(`child-div-${nbr}`).childNodes)
+    //console.log(document.getElementById('div-selector').childNodes)
+    //console.log(document.getElementById(`child-div-${nbr}`))
     fetch(`http://localhost:8000/delPath?link=${link}`, {
         method: 'GET',
         headers: {
@@ -140,6 +180,21 @@ function deldiv(nbr, link){
                 setTimeout(() => {
                     document.getElementById(`child-div-${nbr}`).remove()
                     document.getElementById('Refresh').click()
+
+                    setTimeout(() => {
+                        var trackarray = []
+                        document.getElementById('current-track').childNodes.forEach((elem) => {
+                            if(elem.id === 'child-track'){
+                                trackarray.push(elem)
+                            }
+                        })
+                        if(trackarray.length === 0){
+                            if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+                            else localStorage.setItem('PlMenuOpened', false)
+                            localStorage.setItem('emptyreload', true)
+                            window.location.reload()
+                        }
+                    }, 500)
                 }, 500)
             }break;
 
@@ -156,6 +211,20 @@ function deldiv(nbr, link){
                     document.getElementById('div-set-filter').style.opacity = '0%'
                     document.getElementById('div-selector').style.opacity = '0%'
                     document.getElementById('Refresh').click()
+                    setTimeout(() => {
+                        var trackarray = []
+                        document.getElementById('current-track').childNodes.forEach((elem) => {
+                            if(elem.id === 'child-track'){
+                                trackarray.push(elem)
+                            }
+                        })
+                        if(trackarray.length === 0){
+                            if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+                            else localStorage.setItem('PlMenuOpened', false)
+                            localStorage.setItem('emptyreload', true)
+                            window.location.reload()
+                        }
+                    }, 500)
                 }, 500)
             }break;
         }
@@ -190,10 +259,10 @@ function getFullDataNode(raw){
 }
 
 function ManageData(data){
-    console.log(data[0])
+    //console.log(data[0])
     //console.log(data)
     if(data[1].length > 0){
-        console.log('err0')
+        //console.log('err0')
         var iter = 0
         data[1].forEach((link) => { 
             iter++
@@ -225,6 +294,7 @@ function ManageData(data){
             const delicon = document.createElement('img')
             delicon.src = './Addons/icons/delete.png'
             const tempcount = iter
+            console.log(tempcount)
             delicon.onclick = () => {deldiv(tempcount, tempPath)}
             delicon.style.height = '30px'
 
@@ -243,7 +313,7 @@ function ManageData(data){
             div.appendChild(choicebtn)
     
             document.getElementById('div-selector').appendChild(div)
-
+            //console.log(document.getElementById('div-selector').childNodes)
         })
         var altiter = 0
         data[0].forEach((elem) => {
@@ -261,7 +331,7 @@ function ManageData(data){
             }, 100)
         })
     } else{
-        console.log('err1')
+       // console.log('err1')
         document.getElementById('no-div-err').style.opacity = '80%'
         document.getElementById('div-set-filter').style.opacity = '0%'
         document.getElementById('div-selector').style.opacity = '0%'
@@ -273,7 +343,7 @@ async function fetchPlaylist(){
     try {
         return await data.json()   
     } catch (e) {
-        console.error(e)
+        console.log(e)
         return [[], []]
     }
 }

@@ -21,7 +21,7 @@
 <script src="./Addons/BG/dist/Packages/prefixfree.min.js"></script>
 <body>
 
-    <audio src="./Addons/SF/startup.mp3" autoplay style="visibility: hidden;"></audio>
+    <audio src="./Addons/SF/startup.mp3" style="visibility: hidden;"></audio>
 
     <div id="splash-scr" style="transition:all .6s ease-out; opacity:100%; display:block; width:100%; height:100%; position:absolute; top:0; left:0; z-index:99; background-color:black">
         <object data="./splashscr.html" style="width: 1777px; height:1000px; position:absolute; top:0; left:0; z-index:99; pointer-events:none; user-select:none; border-radius:20px"></object>
@@ -65,42 +65,85 @@
             <div class="fadeout"></div>
         </div>
 
+        <div class="eq-menu" id="eq-menu" style="position: absolute; top:-500px; width:80%; left:11%; background-image: linear-gradient(to bottom, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0.3));border-bottom-right-radius:20px; border-top-right-radius:10px; border-top-left-radius:10px; border-bottom-left-radius:20px; height:700px; transition:all 1s ease-out; opacity:0%; display:none;">
+            
+           <!--- <div id="presets-btn" class="presets-btn" style="position:absolute; left:35%; top:0; background-color:rgba(143, 7, 7, 0.696);">
+                <a class="btn btn-trapezoid-outline">
+                    <h2 style="position:absolute; top:10px; left:20px; font-family:PS, sans-serif; font-size:27px; color:white; filter:invert(50%); text-align:center;">
+                        Presets
+                    </h2>
+                  </a>
+            </div>-->
+
+            <h1 style="text-align: left; font-size:55px; margin-left:100px; margin-top:100px; font-family:PS, sans-serif;
+            color:black;
+            filter: invert(50%);
+            text-shadow: rgb(255, 55, 0) 1px 0 10px;">
+                Equalizer
+            </h1>
+
+            <div id="eq-lines" class="eq-lines" style="width: 100%; position:absolute; bottom:0; height:100%;">
+                <div style="position:absolute; bottom:-250px; right:400px; width:50%; height:150%; transform:rotate(270deg)">
+                <input type="range" id="range-1" class="eq-range" style="position: absolute; left:35%; top:110px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-2" class="eq-range" style="position: absolute; left:35%; top:230px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-3" class="eq-range" style="position: absolute; left:35%; top:350px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-4" class="eq-range" style="position: absolute; left:35%; top:470px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-5" class="eq-range" style="position: absolute; left:35%; top:590px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-6" class="eq-range" style="position: absolute; left:35%; top:710px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-7" class="eq-range" style="position: absolute; left:35%; top:830px" min="-12" max="12" step="1" value="0">
+                <input type="range" id="range-8" class="eq-range" style="position: absolute; left:35%; top:950px" min="-12" max="12" step="1" value="0">
+                </div>
+
+                <div id="eq-values" class="eq-values" style="position:absolute; bottom:-57%; right:53%; width:5%; height:150%; transform:rotate(90deg)">
+                    <h3 id="out-range-1" style="color: white; position:absolute; right:10%; bottom:140px">100Hz</h3>
+                    <h3 id="out-range-2" style="color: white; position:absolute; right:10%; bottom:260px">200Hz</h3>
+                    <h3 id="out-range-3" style="color: white; position:absolute; right:10%; bottom:380px">500Hz</h3>
+                    <h3 id="out-range-4" style="color: white; position:absolute; right:10%; bottom:500px">1.0KHz</h3>
+                    <h3 id="out-range-5" style="color: white; position:absolute; right:10%; bottom:620px">2.0KHz</h3>
+                    <h3 id="out-range-6" style="color: white; position:absolute; right:10%; bottom:740px">4.0KHz</h3>
+                    <h3 id="out-range-7" style="color: white; position:absolute; right:10%; bottom:860px">8.0KHz</h3>
+                    <h3 id="out-range-8" style="color: white; position:absolute; right:10%; bottom:980px">16.0KHz</h3>
+                </div>
+
+                <div style="position:absolute; bottom:0; left:11%; width:3%; height:100%;">
+                    <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:230px; filter: invert(80%); color:black;">12</h3>
+                    <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:365px; filter: invert(80%); color:#000;">0</h3>
+                    <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:500px; filter: invert(80%); color:#000;">-12</h3>
+                </div>
+            </div>
+        </div>
+
         <div id="options" class="options" style="display:block; height: 85%; width:600px; position:absolute; top:0; left:-380px; border-radius:20px; border-bottom-left-radius:-10px; ;transition:all 1s ease-in-out; opacity:30%;">
             
             <div id="opt-menu1" style="display: block; transition:all .7s ease-out">
-                <div class="opt-txt" style="opacity:0%; top:230px" onclick="options(1)">
+                <div class="opt-txt" style="opacity:0%; top:210px; width:470px" onclick="options(1)">
                     <a  style="left: 170px;">
                         Add Directories
                     </a>
                 </div>
                    
-                   <div class="opt-txt" style="opacity:0%; top:400px" id="refr-alt">
+                   <div class="opt-txt" style="opacity:0%; top:380px; width:550px" id="refr-alt">
                         <a  style="left: 170px;">
                             Refresh the selection
                         </a>
                    </div>
 
-                <div class="opt-txt" style="opacity:0%; top:500px" onclick="
-                if(reversed){
-                    localStorage.setItem('reversed', false);} 
-                    else{localStorage.setItem('reversed', true)} 
-                    window.location.reload()">
-                    <a style="left: 170px;">
-                        Reverse the selection
-                    </a>
-                </div>
-
-                <div class="opt-txt" style="opacity:0%; top:600px" id="theme-change" onclick="options(2)">
-                    <a  style="left: 170px;">
-                        Change the theme
-                    </a>
-                </div>
-        
-                    <div class="opt-txt" style="opacity:0%; bottom:25px"> 
-                        <a style="left: 170px;">
-                            Close the app
-                        </a>  
+                   <div class="opt-txt" style="opacity:0%; top:565px; width:450px" id="More-opt-context" onclick="options(2)">
+                        <a  style="left: 170px;">
+                            More Options
+                        </a>
                     </div>
+
+                <div class="opt-txt" style="opacity:0%; bottom:25px; width:400px" onclick="
+                document.getElementById('main').style.opacity = '0%';
+                setTimeout(() => {
+                    window.close();
+                }, 1500);
+                "> 
+                    <a style="left: 170px;">
+                        Close the app
+                    </a>  
+                </div>
             </div>
 
             <div id="opt-menu2" class="opt-menu2" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
@@ -134,71 +177,125 @@
                     </div>
             </div>
 
-            <div class="opt-menu3" id="opt-menu3" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
-                <h1 style="position: absolute; top: 150px; left:55px; font-size:40px; font-family:PS, sans-serif; color:white">
+            <div id="opt-menu3" class="opt-menu3" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+                <div class="opt-txt" style="opacity:0%; top:190px; width:450px" id="theme-change" onclick="options(3)">
+                    <i>
+                        <img src="./Addons/icons/web.png" style="height: 65px; filter:invert(70%); left:55px; top:5px; position:absolute">
+                    </i>
+
+                    <a  style="left: 147px;">
+                        Change the theme
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:340px; width:450px" onclick="
+                if(reversed){
+                    localStorage.setItem('reversed', false);} 
+                    else{localStorage.setItem('reversed', true)} 
+                    window.location.reload()">
+                    <a style="left: 70px;">
+                        Reverse the selection
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:490px; width:350px" id="theme-change" onclick="options(5)">
+                    <i>
+                        <img src="./Addons/icons/equalizer.png" style="height: 65px; filter:invert(70%); left:55px; top:5px; position:absolute">
+                    </i>
+
+                    <a  style="left: 147px;" id="credits">
+                        Equalizer
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; bottom:80px; width:330px" id="credits" onclick="options(4)">    
+                    <a style="left: 147px;">
+                        Credits
+                    </a>
+                </div>
+            </div>
+
+            <div class="opt-menu4" id="opt-menu4" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+                <h1 style="position: absolute; top: 150px; left:55px; font-size:40px; 
+                font-family:PS, sans-serif; 
+                background: linear-gradient(to right, white, rgb(146, 146, 255));
+                -webkit-text-fill-color: transparent;
+                background-clip: text;">
                     Themes
                 </h1>
 
                 <div id="theme-selector" style="height: 80%; width:90%; position:absolute; top:200px; left:55px">
-                    <div id="themes" class="themes" style="width: 100%; height:100%;">
+                    <div id="themes" class="themes" style="width: 100%; height:100%;">  
                         <i id="thm1" class="thm1" style="top:100px" onclick="
                             localStorage.setItem('theme', 'default');
-                            document.getElementById('main').style.opacity = '0%'
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
+                            changeTheme('default')
+                            //document.getElementById('main').style.opacity = '0%'
+                            //setTimeout(() => {
+                                //window.location.reload();
+                            //}, 1000);
                             ">
 
                         </i>
                         <i id="thm2" class="thm2" style="top:230px" onclick="
                             localStorage.setItem('theme', 'dark');
-                            document.getElementById('main').style.opacity = '0%'
+                            changeTheme('dark')
+                           /* document.getElementById('main').style.opacity = '0%'
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 1000);
+                            }, 1000);*/
                             ">
 
                         </i>
                         <i id="thm3" class="thm3" style="top:360px" onclick="
                             localStorage.setItem('theme', 'orangeRed');
-                            document.getElementById('main').style.opacity = '0%'
+                            changeTheme('orangeRed')
+                            /*document.getElementById('main').style.opacity = '0%'
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 1000);
+                            }, 1000);*/
                             ">
 
                         </i>
                         <i id="thm4" class="thm4" style="top:490px" onclick="
                             localStorage.setItem('theme', 'pinkPurple');
-                            document.getElementById('main').style.opacity = '0%'
+                            changeTheme('pinkPurple')
+                            /*document.getElementById('main').style.opacity = '0%'
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 1000);
+                            }, 1000);*/
                             ">
 
                         </i>
                     </div>
                 </div>
             </div>
+
+            <div id="opt-menu5" class="opt-menu5" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+
+            </div>
                 
          </div>
  
          <div id="opt-preview" class="opt-preview" style="display:block; height: 80%; width:100px; background-color:transparent; position:absolute; top:130px; left:55px; opacity:20%">
-             <i class="menu-icns">  
-                 <img src="./Addons/icons/folder.png" style="height: 65px; filter:invert(70%); left:20px; top:120px; position:absolute" onclick="openMENU(); options(1)">
+             <i class="menu-icns" onclick="openMENU(); options(1)">  
+                 <img src="./Addons/icons/folder.png" style="height: 65px; filter:invert(70%); left:20px; top:100px; position:absolute">
              </i>
      
              <i class="menu-icns">
-                 <img id="Refresh" src="./Addons/icons/refresh.png" style="height: 55px; filter:invert(70%); left:30px; top:300px; position:absolute">
+                 <img id="Refresh" src="./Addons/icons/refresh.png" style="height: 55px; filter:invert(70%); left:30px; top:280px; position:absolute">
              </i>
+
+             <i class="menu-icns" onclick="openMENU(); options(2)">
+                <img id="MoreContext" src="./Addons/icons/plus.png" style="height: 55px; filter:invert(70%); left:30px; top:460px; position:absolute">
+            </i>
      
-             <i class="menu-icns">
-                 <img src="./Addons/icons/logout.png" style="height: 55px; filter:invert(70%); left:30px; bottom:120px; position:absolute" onclick="
-                 document.querySelector('body').style.opacity = '0%';
-                 setTimeout(() => {
-                     window.close();
-                 }, 1000);
-                 ">
+             <i class="menu-icns" onclick="
+             document.getElementById('main').style.opacity = '0%';
+             setTimeout(() => {
+                 window.close();
+             }, 1500);
+             ">
+                 <img src="./Addons/icons/logout.png" style="height: 55px; filter:invert(70%); left:35px; bottom:120px; position:absolute">
              </i>
          </div>
 
@@ -231,13 +328,12 @@
     
                 <i>
                     <img src="./Addons/icons/pause.png" id="play-pause" style="opacity: 100%; transition:all .5s ease-out;">
-                    <div id="loading" class="loading" style="width: 35px; height:35px; border-width:7px; border-style:solid; border-color:white; background-color:transparent; border-radius:50%; position:absolute; top:0; left:33.5%; animation:load .8s infinite; border-right: 0;
+                    <div id="loading" class="loading" style="width: 35px; height:35px; border-width:7px; border-style:solid; border-color:white; background-color:transparent; border-radius:50%; position:absolute; top:0; left:33.5%; border-right: 0;
                     border-left: 0;
                     opacity: 0%;
                     display:block;
                     pointer-events: none;
                     user-select: none;
-                    transition:all .5s ease-out;
                     border-bottom: 0;">
                     </div>  
                 </i>
@@ -280,6 +376,12 @@
             </div>
         </div>
 
+        <div style="position: absolute; left:37%; bottom:5.7%" id="shuffle-menu">
+            <i>
+                <img src="./Addons/icons/shuffle.png" style="height: 40px; filter:invert(70%)" class="shuffle-btn" id="shuffle">
+            </i>
+        </div>
+
         <div class="track-info" id="track-info" style="position: absolute; height:250px; width: 700px; top:200px; display:block; opacity:0%; pointer-events:none; user-select:none; transform:scale(0.95)">
             
             <h3 id="state-track" style="font-size: 30px; right:120px; top:0;">
@@ -306,6 +408,79 @@
 </body>
 
 <style>
+
+    .btn{
+        font-family: sans-serif;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+
+    .btn-trapezoid-outline{
+        display: inline-block;
+      
+        color: #8b0000c0;
+        transform-style: preserve-3d;
+        padding: 20px 70px;
+        border: 1px solid #8b0000c0;
+        transform: perspective(200px) rotateX(35deg) translateZ(25px) translateY(5px);
+        backface-visibility: hidden;
+        transition: all .3s ease-out;
+        span{
+          font-size: 15px;
+          letter-spacing: 3px;
+          display: block;
+          transform: perspective(160px) rotateX(-18deg) translateZ(4px) translateY(4px);
+        }
+      }
+
+    .eq-range:hover{
+        cursor: pointer;
+            .eq-range::-webkit-slider-thumb{
+                height: 16px;
+                width: 16px;
+                border-radius: 100%;
+                transform:scale(2.2);
+            }    
+    }
+
+    .eq-lines{
+        h1{
+            background-image: linear-gradient(to bottom, rgba(74, 74, 74, 0.984), rgba(74, 74, 74, 0.3));
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h3{
+            /*font-family: PS, sans-serif;*/
+            font-size: 25px;
+            /*background-color: linear-gradient(to bottom, rgba(74, 74, 74, 0.984), rgba(74, 74, 74, 0.3));*/
+            font-weight: 100;
+            filter: invert(50%);
+            /*overflow:hidden;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;*/
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transform: scaleX(1.1) rotate(-90deg);
+        }
+        input{
+            width: 300px;
+            height: 30px;
+            appearance: none;
+            border-radius: 20px;
+            background-image: linear-gradient(to bottom, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0.3));
+        }
+        input::-webkit-slider-thumb{
+            appearance: none;
+            height: 16px;
+            width: 10px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgb(24, 24, 24);
+            background-image: linear-gradient(to top, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0.5));
+            border-radius: 3px;
+            transform:scale(2);
+        }  
+    }
 
     .thm1{
         background-image: linear-gradient(rgba(55, 235, 169, 0.85), #5b37eb);
@@ -393,8 +568,8 @@
 
     .loading{
         display: block;
-        
-        animation: load 1s linear infinite;
+        --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        animation: load .8s var(--easing) infinite;
     }
 
     input{
@@ -457,6 +632,13 @@
         appearance: none;
         background-color: white;
         transition: all 1s ease-in-out;
+    }
+
+    .shuffle-btn:hover{
+        cursor: pointer;
+        transform: scale(0.9);
+        filter:invert(70%) blur(1px); 
+
     }
 
     .input-vol:hover{
@@ -600,7 +782,6 @@
 
         .opt-txt{
             left: 0;
-            width: 100%;
             height:100px;
             position: absolute;
 
@@ -690,7 +871,7 @@
     .side img:hover{
         cursor: pointer;
         transform: scale(0.95) rotate(20deg);
-        filter:blur(0.5px) grayscale(70%)
+        filter:blur(0.8px) grayscale(70%)
     }
 
     *{

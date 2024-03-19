@@ -18,3 +18,4 @@
 
 <a href="https://www.flaticon.com/free-icons/volume-up" title="volume up icons">Volume up icons created by twentyfour - Flaticon</a>
 
+<a href="https://www.flaticon.com/free-icons/add" title="add icons">Add icons created by Pixel perfect - Flaticon</a>

@@ -3,8 +3,14 @@ var opentab = new Howl({
   volume: 1,
   stereo: true,
 });
+document.getElementById('eq-menu').style.top = '0px'
+var emptyreload = (/true/).test(localStorage.getItem('emptyreload')) || false
+var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 
 var initx = 1777
+
+if(!emptyreload){
+document.querySelector('audio').play()
 document.querySelector('audio').volume = '0.3'
 window.onload = () => {
   setTimeout(() => {
@@ -15,6 +21,22 @@ window.onload = () => {
     }, 600)
   }, 1000)
  
+}
+}else{
+  if(PlMenuOpened){
+    var animation = [document.getElementById('options').style.transition, document.getElementById('opt-menu2').style.transition]
+    document.getElementById('options').style.transition = 'none'
+    document.getElementById('opt-menu2').style.transition = 'none'
+    openMENU(); 
+    options(1)
+    localStorage.setItem('PlMenuOpened', false)
+    setTimeout(() => {
+      document.getElementById('options').style.transition = animation[0]
+    document.getElementById('opt-menu2').style.transition = animation[1]
+    }, 1000)
+  }
+  document.getElementById('splash-scr').style.display = 'none'
+  localStorage.setItem('emptyreload', false)
 }
 
 function displayERR(){
@@ -95,16 +117,21 @@ function changeState(){
 }
 
 function openMENU(){
+  
   opentab.play()
   var opt = document.getElementById('options')
   var optprev = document.getElementById('opt-preview')
   var optprevicns = document.getElementsByClassName('menu-icns')
   document.getElementById('opt-menu2').style.opacity = '0%'
   document.getElementById('opt-menu3').style.opacity = '0%'
+  document.getElementById('opt-menu4').style.opacity = '0%'
+  document.getElementById('opt-menu5').style.opacity = '0%'
   optprev.style.display = 'block'
   setTimeout(() => {
     document.getElementById('opt-menu2').style.display = 'none'
     document.getElementById('opt-menu3').style.display = 'none'
+    document.getElementById('opt-menu4').style.display = 'none'
+    document.getElementById('opt-menu5').style.display = 'none'
   }, 800)
 
   document.getElementsByClassName('opt-txt').forEach((elem) => {
@@ -113,8 +140,15 @@ function openMENU(){
   })
 
   if(opt.style.left === '-380px'){
+    document.getElementById('eq-menu').style.top = '-500px'
+  document.getElementById('eq-menu').style.opacity = '0%'
+  setTimeout(() => {
+    document.getElementById('eq-menu').style.display = 'none'
+  }, 1000);
   document.getElementById('opt-menu2').style.opacity = '0%'
   document.getElementById('opt-menu3').style.opacity = '0%'
+  document.getElementById('opt-menu4').style.opacity = '0%'
+  document.getElementById('opt-menu5').style.opacity = '0%'
   document.getElementById('opt-menu1').style.opacity = '100%'
   document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(60%)'
   document.getElementById('current-track').style.filter = 'blur(5px) brightness(60%)'
@@ -148,6 +182,11 @@ function openMENU(){
 }
 
 function options(choice){
+  document.getElementById('eq-menu').style.top = '-500px'
+  document.getElementById('eq-menu').style.opacity = '0%'
+  setTimeout(() => {
+    document.getElementById('eq-menu').style.display = 'none'
+  }, 1000);
   switch(choice){
     case 1: {
       document.getElementById('options').style.left = '-380px'
@@ -183,6 +222,67 @@ function options(choice){
         }, 10)
       }, 1000)
     }break;
+
+    case 3: {
+      document.getElementById('options').style.left = '-380px'
+      document.getElementById('opt-menu1').style.opacity = '0%'
+      document.getElementById('opt-menu3').style.opacity = '0%'
+      document.getElementById('opt-preview').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('opt-menu4').style.display = 'block'
+        setTimeout(() => {
+          setTimeout(() => {
+            document.getElementById('opt-preview').style.display = 'none'
+          }, 200)
+          
+          document.getElementById('options').style.left = '0%'
+          document.getElementById('opt-menu4').style.opacity = '100%'
+        }, 10)
+      }, 1000)
+    }break;
+
+    case 4: {
+      document.getElementById('options').style.left = '-380px'
+      document.getElementById('opt-menu1').style.opacity = '0%'
+      document.getElementById('opt-menu3').style.opacity = '0%'
+      document.getElementById('opt-preview').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('opt-menu5').style.display = 'block'
+        setTimeout(() => {
+          setTimeout(() => {
+            document.getElementById('opt-preview').style.display = 'none'
+          }, 200)
+          
+          document.getElementById('options').style.left = '0%'
+          document.getElementById('opt-menu5').style.opacity = '100%'
+        }, 10)
+      }, 1000)
+    }break;
+
+    case 5: {
+      if(document.getElementById('eq-menu').style.top === '-500px'){
+      openMENU()
+      document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(40%)'
+      document.getElementById('current-track').style.filter = 'blur(5px) brightness(10%)'
+      document.getElementById('options').style.left = '-380px'
+      document.getElementById('opt-menu1').style.opacity = '0%'
+      document.getElementById('opt-menu3').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('eq-menu').style.display = 'block'
+        setTimeout(() => {
+          document.getElementById('eq-menu').style.display = 'block'
+          document.getElementById('eq-menu').style.top = '0px'
+          document.getElementById('eq-menu').style.opacity = '100%'
+        }, 10)
+      }, 1000)}
+      else{
+        document.getElementById('eq-menu').style.top = '-500px'
+        document.getElementById('eq-menu').style.opacity = '0%'
+        setTimeout(() => {
+          document.getElementById('eq-menu').style.display = 'none'
+        }, 1000)
+      }
+    }break;
   }
 }
 
@@ -210,12 +310,12 @@ function NextSong(playlist, position){
       console.log(e)
     }
   }
-  if(playlist[0][position] !== undefined){
-  const audio = loadSound(playlist[0][position].url, loaded)
-  console.log(playlist[0][position].url, audio)
+  if(playlist[position] !== undefined){
+  const audio = loadSound(playlist[position].url, loaded)
+  console.log(playlist[position].url, audio)
   return audio
   } else{
-    console.log('did not passed', position, playlist[0].length - 1, playlist[0])
+    console.log('did not passed', position, playlist.length - 1, playlist)
     return undefined
   }
 }
@@ -242,8 +342,8 @@ function PrevSong(playlist, position){
     })
   }
   if(position > -1){
-    const audio = loadSound(playlist[0][position].url, loaded)
-    console.log(playlist[0][position].url, audio)
+    const audio = loadSound(playlist[position].url, loaded)
+    console.log(playlist[position].url, audio)
     return audio
     } else{
       console.log('did not passed', position, playlist.length - 1)
@@ -272,9 +372,9 @@ function MoveToCurrent(audio, playlist){
   var position;
   if(!reversed){
 
-  playlist[0].forEach((elem) => {
+  playlist.forEach((elem) => {
     if(elem.url === audio.url){
-      position = playlist[0].indexOf(elem)
+      position = playlist.indexOf(elem)
     }
   })
 
@@ -283,8 +383,8 @@ function MoveToCurrent(audio, playlist){
       childarray.push(elem)
     }
   })
-console.log(position)
-      console.log('passed')
+//console.log(position)
+      //console.log('passed')
       array.forEach((elem) => {
         if(elem.id === 'child-track'){
         var ipos = elem.style.top 
@@ -295,9 +395,9 @@ console.log(position)
       
       return position} 
       else{
-        playlist[0].forEach((elem) => {
+        playlist.forEach((elem) => {
           if(elem.url === audio.url){
-            position = playlist[0].indexOf(elem)
+            position = playlist.indexOf(elem)
           }
         })
       
@@ -306,8 +406,8 @@ console.log(position)
             childarray.push(elem)
           }
         })
-      console.log(position)
-            console.log('passed')
+      //console.log(position)
+            //console.log('passed')
             array.forEach((elem) => {
               if(elem.id === 'child-track'){
               var ipos = elem.style.top 
@@ -318,4 +418,37 @@ console.log(position)
             
             return position
       }
+}
+
+function PlayShuffleSong(playlist, position, state){
+  if(!reversed){
+    console.log(document.getElementById('current-track').childNodes)
+    document.getElementById('current-track').childNodes.forEach((elem) => {
+      if(elem.id === 'child-track'){
+      var ipos = elem.style.top 
+      ipos = ipos.replace('px', '')
+      const fpos = parseInt(ipos) + (150*position + 1)
+      elem.style.top = `${fpos}px`}
+    })}
+    else{
+      try {
+        document.getElementById('current-track').childNodes.forEach((elem) => {
+        if(elem.id === 'child-track'){
+        var ipos = elem.style.top 
+        ipos = ipos.replace('px', '')
+        const fpos = parseInt(ipos) - (150*position + 1)
+        elem.style.top = `${fpos}px`}
+      }) 
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    if(playlist[position] !== undefined){
+    const audio = loadSound(playlist[position].url, loaded)
+    console.log(playlist[position].url, audio)
+    return audio
+    } else{
+      console.log('did not passed', position, playlist.length - 1, playlist)
+      return undefined
+    }
 }

@@ -1,13 +1,34 @@
 let audio, volumeSlider, playpausebtn, refresh, amplitude, playlist, next, prev, refralt, volbtn
-//let url = "C:\\Users\\Mohamed\\Desktop\\Projects\\OverPrompt\\test\\OverPrompt-API\\Output\\AAC\\Alter Musiques\\TVアニメ『呪術廻戦』第2期「懐玉・玉折」ノンクレジットOPムービー／OPテーマ：キタニタツヤ「青のすみか」｜毎週木曜夜11時56分～MBS_TBS系列全国28局にて放送中__.aac"
 var isPlaying = true;
 var follow = true
+var rand = false
 var release = true
+var startloaddate = Date.now()
 var state = 'paused'
 var plpos = 0;
 var prevnul = false
 var refreshbuttons = []
 var started = false
+var eq = new p5.EQ(8)
+var eqbands = localStorage.getItem('eq').split(',') || [0, 0, 0, 0, 0, 0, 0, 0];
+document.getElementsByClassName('eq-range').forEach((range, index) => {
+    document.getElementsByClassName('eq-range')[index].value = eqbands[index]
+})
+eqbands = []
+        document.getElementsByClassName('eq-range').forEach((range) => {
+            eqbands.push(range.value)
+        })
+        console.log(eqbands)
+        for(let i = 0; i < eqbands.length; i++){
+            var value = parseInt(eqbands[i])
+            try {
+                eq.bands[i].gain(value)
+            } catch (e) {
+                console.log(e)
+                console.log(eqbands[i])
+            }
+        }
+localStorage.setItem('eq', eqbands)
 var audioreact = document.getElementById('alternate-audio-react')
 var rs = getComputedStyle(audioreact)
 var vol
@@ -28,7 +49,7 @@ fetchPlaylist().then((data) => {
     if(data === 'nothing') console.log('nothing')
     else{
     ManageData(data)
-    playlist = data}
+    playlist = data[0]}
 })
 var interval = setInterval(() => {
     if(playlist){
@@ -40,39 +61,57 @@ var interval = setInterval(() => {
 function setup(){
     if(started){
     try {
-        if(playlist[0][plpos]){
-        audio = loadSound(playlist[0][plpos].url, loaded) }  
+        if(playlist[plpos]){
+        audio = loadSound(playlist[plpos].url, loaded) }  
     } catch (e) {
-        console.error(e)
+        console.log(e)
     }
-    console.log(playlist)
+    //console.log(playlist)
     plpos = 0
     try {
         amplitude = new p5.Amplitude();
     } catch (e) {
+        if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+        else localStorage.setItem('PlMenuOpened', false)
+        localStorage.setItem('emptyreload', true)
         window.location.reload()
     }
     volumeSlider = document.getElementById('volslide')}
 }
 
 document.getElementById('div-inp').addEventListener('change', () => {
-    addPlaylist()
-
-    fetchPlaylist().then((data) => {
-        if(data === 'nothing') console.log('nothing')
+    if(playlist){
+        if(playlist.length === 0){
+        prevnul = true}
         else{
+            prevnul = false
+        }
+    } else{
+        prevnul = true
+    }
+    console.log('changed')
+    addPlaylist()
+    playlist = null
+    fetchPlaylist().then((data) => {
+        if(data[0].length ===  0 && data[1].length === 0) console.log('nothing')
+        else{
+        //console.log(data)
         ManageData(data)
-        playlist = data}
+        playlist = data[0]
+        console.log(playlist)
+    }
     })
     var interval = setInterval(() => {
-        if(playlist && playlist[0].length > 0){
+        if(playlist){
+            //console.log(playlist)
+            if(playlist.length > 0){
             console.log('entered')
-            prevnul = true
+            console.log(playlist)
             document.getElementById('refr-alt').click()
             clearInterval(interval)}
             else{
-                console.log(playlist)
-            }
+                clearInterval(interval)
+            }}
     }, 10)
 })
 
@@ -82,38 +121,64 @@ refreshbuttons.push(document.getElementById('Refresh'))
 refreshbuttons.forEach((refresh) => {
     refresh.addEventListener('click', () => {
         if(prevnul) {
+            console.log('yes, it was')
             plpos = 0; 
             prevnul = false
-            console.log(playlist)
+            //console.log(playlist)
             try {
-                audio = loadSound(playlist[0][plpos].url, loaded)
+                audio = loadSound(playlist[plpos].url, loaded)
             } catch (e) {
-                console.error(e)
+                console.log(e)
                 prevnul = true
         }}
         started = false
         ready = false
         document.getElementById('play-pause').style.opacity = '0%'
         document.getElementById('loading').style.opacity = '100%'
-        deletePLCache().then(() => fetchPlaylist().then((data) => {
-            console.log(data)
-            if(data === 'nothing') {
-                console.log('nothing')
-                }
-            else{
-        console.log('refreshed')
-            ManageData(data); playlist = data}}))
+        playlist = null
+        deletePLCache().then(() =>{fetchPlaylist().then((data) => {
+             if(data[0].length === 0 && data[1].length === 0){
+                 console.log('nothing')
+             }
+             else{
+                console.log(data[0])
+                //console.log('refreshed')
+                ManageData(data); playlist = data[0]}})})
             if(audio){
         var interval = setInterval(() => {
             if(playlist){
-                console.log(playlist)
+                var trackinplaylist = false
+                if(playlist.length > 0 && audio){
+                console.log('entered')
+                playlist.forEach((song) => {
+                    if(song.url === audio.url){
+                        console.log('in playlist')
+                        trackinplaylist = true
+                    }
+                })
+                if(!trackinplaylist){
+                    console.log('not in playlist')
+                    plpos = 0
+                    if(audio.isLoaded()) audio.pause(); audio.stop(); audio.disconnect(); audio = null; console.log('stopped')
+                    audio = loadSound(playlist[plpos].url, loaded)
+                    var interval2 = setInterval(() => {
+                        if(audio.isLoaded()){
+                            document.getElementById('refr-alt').click()
+                            clearInterval(interval2)
+                            audio.connect(eq)
+                            audio.play()
+                        }
+                    }, 10)
+                }}
+                //console.log(playlist)
                 started = true
                 if(audio.isLoaded()){
+                    
                     document.getElementById('timeslide').max = audio.duration()
                     var verifyifload = setInterval(() => {
                         if(ready){
                             plpos = MoveToCurrent(audio, playlist)
-                            console.log('playlist fetched')
+                            //console.log('playlist fetched')
                             clearInterval(verifyifload)
                             ready = false
                         }
@@ -125,14 +190,71 @@ refreshbuttons.forEach((refresh) => {
     })
 })
 
+document.getElementsByClassName('eq-range').forEach((range) => {
+    range.addEventListener('input', () => {
+        eqbands = []
+        document.getElementsByClassName('eq-range').forEach((range) => {
+            eqbands.push(range.value)
+        })
+        console.log(eqbands)
+        for(let i = 0; i < eqbands.length; i++){
+            var value = parseInt(eqbands[i])
+            try {
+                eq.bands[i].gain(value)
+            } catch (e) {
+                console.log(e)
+                console.log(eqbands[i])
+            }
+        }
+        localStorage.setItem('eq', eqbands)
+    })
+})
+
+volbtn = document.getElementById('bg-vol')
+volbtn.addEventListener('click', () => {
+    if(volbtn.style.height !== '350px'){
+    document.getElementById('vol-btn').style.transform = 'scale(0.7)'
+    document.getElementById('vol-btn').style.filter = 'invert(10%)'
+    volbtn.style.height = '350px'
+    volbtn.style.backgroundColor = 'gray'}
+    else{
+    document.getElementById('vol-btn').style.transform = 'scale(1)'
+    document.getElementById('vol-btn').style.filter = 'invert(70%)'
+    volbtn.style.height = '70px'
+    volbtn.style.backgroundColor = 'transparent'
+    }
+})
+
+var timeoutplaypause = Date.now()
+
+playpausebtn = document.getElementById('play-pause')
+playpausebtn.addEventListener('click', () => {
+    if(audio){
+        if(Date.now() - timeoutplaypause > 50){
+        timeoutplaypause = Date.now()
+        PlayPause(audio)
+        //console.log(audio)
+    }
+    }
+})
+
 function loaded(){
     try {
         if(started){
+            audio.connect(eq)
+            eq.process(audio)
             document.getElementById('timeslide').max = audio.duration()
-            volbtn = document.getElementById('bg-vol')
+            
             next = document.getElementById('next')
             prev = document.getElementById('back')
-            playpausebtn = document.getElementById('play-pause')
+
+            document.getElementById('shuffle').addEventListener('click', () => {
+                if(rand){
+                rand = false}
+                else{
+                    rand = true
+                }
+            })
 
             document.getElementById('timeslide').addEventListener('input', () => {
                 follow = false
@@ -158,23 +280,10 @@ function loaded(){
                     }
             })
         
-            volbtn.addEventListener('click', () => {
-                if(volbtn.style.height !== '350px'){
-                document.getElementById('vol-btn').style.transform = 'scale(0.7)'
-                document.getElementById('vol-btn').style.filter = 'invert(10%)'
-                volbtn.style.height = '350px'
-                volbtn.style.backgroundColor = 'gray'}
-                else{
-                document.getElementById('vol-btn').style.transform = 'scale(1)'
-                document.getElementById('vol-btn').style.filter = 'invert(70%)'
-                volbtn.style.height = '70px'
-                volbtn.style.backgroundColor = 'transparent'
-                }
-            })
-        
             next.addEventListener('click',  () => {
+                if(!rand){
                 console.log('clicked')
-                if(playlist[0][plpos+1] && started){
+                if(playlist[plpos+1] && started){
                 plpos++
                 document.getElementById('play-pause').style.opacity = '0%'
                 document.getElementById('loading').style.opacity = '100%'
@@ -196,7 +305,31 @@ function loaded(){
                   }, 10)
                 setTimeout(() => {
                     document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
-                }, 1000)}
+                }, 1000)}}
+                else{
+                    plpos = Math.floor(Math.random() * playlist.length)
+                    document.getElementById('play-pause').style.opacity = '0%'
+                    document.getElementById('loading').style.opacity = '100%'
+                    if(audio._paused) state = 'paused'
+                    audio.pause()
+                    audio = PlayShuffleSong(playlist, plpos, state) || audio
+                    console.log(audio)
+                    started = false
+                    const interval = setInterval(() => {
+                        if(audio.isLoaded() && !started){
+                        document.getElementById('timeslide').max = audio.duration()
+                        started = true
+                        PlayPause(audio)
+                        if(state === 'playing'){
+                          console.log('yes')
+                          PlayPause(audio)}
+                          clearInterval(interval)
+                        }
+                      }, 10)
+                    setTimeout(() => {
+                        document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
+                    }, 1000)
+                }
             })
             prev.addEventListener('click',  () => {
                 if(plpos > 0 && started){
@@ -205,7 +338,7 @@ function loaded(){
                 document.getElementById('loading').style.opacity = '100%'
                 if(audio._paused) state = 'paused';
                 audio.pause()
-                console.log(playlist[0], plpos)
+                console.log(playlist, plpos)
                 audio = PrevSong(playlist, plpos, state) || audio
                 console.log(audio)
                 started = false
@@ -222,50 +355,61 @@ function loaded(){
                 setTimeout(() => {
                     document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
                 }, 1000)}
-            })
-            playpausebtn.addEventListener('click', () => PlayPause(audio))
-        
-            window.addEventListener('keydown', (event) => {
-                var key
-                if(event.key.length === 1){
-                    key = event.key.toLowerCase()}
-                    else{
-                        key = event.key
-                    }
-        
-                switch(key){
-                    case 'f':{
-                        document.getElementById('change-state').click()
-                    }break;
-
-                    case ' ':{
-                        playpausebtn.click()
-                    }break;
-        
-                    case 'ArrowLeft':{
-                        prev.click()
-                    }break;
-        
-                    case 'ArrowRight':{
-                        next.click()
-                    }break;
-        
-                    case 'ArrowUp':{
-                        volumeSlider.value = Math.max((volumeSlider.value + volumeSlider.step)/10) + 0.9
-                    }break;
-        
-                    case 'ArrowDown':{
-                        volumeSlider.value = volumeSlider.value - volumeSlider.step
-                    }break;
-                }
-            })
+            })        
         }    
     } catch (e) {
         console.log('not loaded')
-        console.error(e)
+        console.log(e)
     }
     
 }
+
+window.addEventListener('keydown', (event) => {
+    var key
+    if(event.key.length === 1){
+        key = event.key.toLowerCase()}
+        else{
+            key = event.key
+        }
+
+    switch(key){
+        case 'f':{
+            document.getElementById('change-state').click()
+        }break;
+
+        case ' ':{
+            playpausebtn.click()
+        }break;
+
+        case 'ArrowLeft':{
+            prev.click()
+        }break;
+
+        case 'ArrowRight':{
+            next.click()
+        }break;
+
+        case 'ArrowUp':{
+            volumeSlider.value = Math.max((volumeSlider.value + volumeSlider.step)/10) + 0.9
+        }break;
+
+        case 'ArrowDown':{
+            volumeSlider.value = volumeSlider.value - volumeSlider.step
+        }break;
+        case 'Escape':{
+            if(document.getElementById('options').style.left !== '-380px'){
+                openMENU()
+            }
+            document.getElementById('eq-menu').style.top = '-500px'
+            document.getElementById('eq-menu').style.opacity = '0%'
+            setTimeout(() => {
+            document.getElementById('eq-menu').style.display = 'none'
+            document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
+            document.getElementById('current-track').style.filter = 'blur(0px) brightness(120%)'
+            }, 1000)
+        }break;
+    }
+})
 
 document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
 
@@ -287,9 +431,14 @@ function draw(){
             try {
                 var vol = amplitude.getLevel()
             } catch (e) {
+                localStorage.setItem('emptyreload', true)
+                if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+                else localStorage.setItem('PlMenuOpened', false)
                 window.location.reload()
             }
             if(audio.isLoaded()){
+                startloaddate = Date.now()
+                eq.process(audio)
                 var time = Math.max(Math.floor(audio.currentTime() % 60), 0)
                 const seconds = time < 10? '0' + time: time.toString()
                 document.getElementById('current-time').innerHTML = Math.max(Math.floor(audio.currentTime() / 60), 0) + ':' + seconds
@@ -317,14 +466,14 @@ function draw(){
                 } else{
                     document.getElementById('vol-btn').src = './Addons/icons/vol.png'
                 }
-                document.getElementById('track-artist').innerHTML = playlist[0][plpos].artist || 'Unknown'
-                document.getElementById('track-name').innerHTML = playlist[0][plpos].title || 'Unknown'
+                document.getElementById('track-artist').innerHTML = playlist[plpos].artist || 'Unknown'
+                document.getElementById('track-name').innerHTML = playlist[plpos].title || 'Unknown'
             }
             audio.onended(() => {
                 document.getElementById('timeslide').max = 100
                 document.getElementById('timeslide').value = 0
                 if(!audio._paused){
-                if(plpos >= playlist[0].length - 1){
+                if(plpos >= playlist.length - 1){
                 document.getElementById('alternate-audio-react').style.transition = 'all 3s ease-out'
                 document.getElementById('alternate-audio-react').style.transform = `scale(1)`
         
@@ -340,15 +489,31 @@ function draw(){
                 }
             }
             })} else{
+                var difference = Date.now() - startloaddate
+                if(difference > 10000){
+                    startloaddate = Date.now()
+                    console.log('refreshed')
+                    document.getElementById('refr-alt').click()
+                } else{
+                   // console.log(difference)
+                }
                 document.getElementById('play-pause').style.opacity = '0%'
                 document.getElementById('loading').style.opacity = '100%'
                 //console.log('not loaded')
             }   } else{
+                var difference = Date.now() - startloaddate
+                if(difference > 2000){
+                    startloaddate = Date.now()
+                    //console.log('refreshed')
+                    document.getElementById('refr-alt').click()
+                } else{
+                    //console.log(difference)
+                }
                 prevnul = true
                 //console.log('not started')
             }
     } catch (e) {
-            //console.error(e)
+            //console.log(e)
     }
 }
 

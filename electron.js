@@ -7,10 +7,11 @@ const instancelimit = app.requestSingleInstanceLock()
 const fs = require('fs')
 try {
   require(__dirname + "\\src\\server")  
-  fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '\n' + 'server started')
+  const date = new Date().toUTCString()
+  fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '[' + date + '] => ' + 'server started \n\n')
 } catch (e) {
   console.log(e)
-  fs.writeFileSync(__dirname + '\\src\\error.log', '\n' + e)
+  //fs.writeFileSync(__dirname + '\\src\\error.log', '\n' + e)
 }
 
 
@@ -51,7 +52,7 @@ if (!instancelimit) {
       }
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html')));  
-    //windowObj.webContents.openDevTools()
+    windowObj.webContents.openDevTools()
     windowObj.on('closed', () => {
       windowObj = null
     })
