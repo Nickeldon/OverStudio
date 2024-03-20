@@ -30,7 +30,8 @@ function shuffle(array) {
     return array;
   }
 
-function addPlaylist(){
+async function addPlaylist(){
+    var response = 'ok'
     //console.log(document.getElementById('div-inp').files[0])
 try {
     var path = document.getElementById('div-inp').files[0].path.split('\\')
@@ -40,82 +41,88 @@ try {
         link += segm + '\\'
     })
     //console.log(link)
-    fetch(`http://localhost:${PORT}/addPL?METADATA=${JSON.stringify(link)}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then((res) => {
-        switch(res.status){
-            case 204: {
-                try {
-                    var filtered = FilterArray(document.getElementById('current-track').childNodes);    
-                    //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
-                    console.log(selectorfiltered)
-                    document.getElementById('current-track').childNodes.forEach((elem) => {
-                        if(elem.id === 'child-track'){
-                            elem.style.opacity = '0%'
-                            setTimeout(() => {
-                                document.getElementById('current-track').removeChild(elem)
-                            }, 500)
-                        }
-                    
-                        filtered.forEach((elem) => {
-                            document.getElementById('current-track').appendChild(elem)
+    try {
+        const res = await fetch(`http://localhost:${PORT}/addPL?METADATA=${JSON.stringify(link)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            switch(res.status){
+                case 204: {
+                    response = 'ok'
+                    try {
+                        var filtered = FilterArray(document.getElementById('current-track').childNodes);    
+                        //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
+                        console.log(selectorfiltered)
+                        document.getElementById('current-track').childNodes.forEach((elem) => {
+                            if(elem.id === 'child-track'){
+                                elem.style.opacity = '0%'
+                                setTimeout(() => {
+                                    document.getElementById('current-track').removeChild(elem)
+                                }, 500)
+                            }
+                        
+                            filtered.forEach((elem) => {
+                                document.getElementById('current-track').appendChild(elem)
+                            })
                         })
-                    })
-
-                    document.getElementById('div-selector').childNodes.forEach((elem) => {
-                        if(elem.id === 'child-div'){
-                            elem.style.opacity = '0%'
-                            setTimeout(() => {
-                                document.getElementById('div-selector').removeChild(elem)
-                            }, 500)
-                        }
-
-                        selectorfiltered.forEach((elem) => {
-                            document.getElementById('div-selector').appendChild(elem)})
-                    })
-                } catch (e) {
-                    console.error('could not filter array', e)
-                }
-                /*fetchPlaylist().then((data) => {
-                    console.log(data)
-                    if(data === 'nothing'){
-                        console.log('Nothing')
+    
+                        document.getElementById('div-selector').childNodes.forEach((elem) => {
+                            if(elem.id === 'child-div'){
+                                elem.style.opacity = '0%'
+                                setTimeout(() => {
+                                    document.getElementById('div-selector').removeChild(elem)
+                                }, 500)
+                            }
+    
+                            selectorfiltered.forEach((elem) => {
+                                document.getElementById('div-selector').appendChild(elem)})
+                        })
+                    } catch (e) {
+                        console.error('could not filter array', e)
                     }
-                    else{
-                    try{
-                        ManageData(data)
-                        return data}
-                    catch(e){console.error(e)}}
-                })
-                .catch((e) => console.error(e))*/
-                console.log('err2')
-                document.getElementById('div-selector').style.opacity = '80%'
-                document.getElementById('no-div-err').style.opacity = '0%'
-                document.getElementById('div-set-filter').style.opacity = '30%'
-                //paths.push(path)
-            }break;
+                    /*fetchPlaylist().then((data) => {
+                        console.log(data)
+                        if(data === 'nothing'){
+                            console.log('Nothing')
+                        }
+                        else{
+                        try{
+                            ManageData(data)
+                            return data}
+                        catch(e){console.error(e)}}
+                    })
+                    .catch((e) => console.error(e))*/
+                    console.log('err2')
+                    document.getElementById('div-selector').style.opacity = '80%'
+                    document.getElementById('no-div-err').style.opacity = '0%'
+                    document.getElementById('div-set-filter').style.opacity = '30%'
+                    //paths.push(path)
+                }break;
+        
+                case 207: {
+                    response = 'AlreadyExists'
+                    displayERR()
+                    console.log('Already exists')
+                }break;
     
-            case 207: {
-                displayERR()
-                console.log('Already exists')
-            }break;
-
-            case 206: {
-                console.log('Nothing')
-            }break;
-    
-        }
-    })
-    .catch((e) => console.error(e))
+                case 206: {
+                    response = 'failed'
+                    console.log('Nothing')
+                }break;
+        
+            }   
+    } catch (e) {
+        console.log(e)
+    }
     
 } catch (e) {
     console.log(e)
 }
 document.getElementById('div-inp').value = null
+        console.log(response)
+        return response
 }
 
 async function deletePLCache(){
@@ -178,6 +185,7 @@ function deldiv(nbr, link){
             case 201:{
                 document.getElementById(`child-div-${nbr}`).style.opacity = '0%'
                 setTimeout(() => {
+                    console.log(document.getElementById(`child-div-${nbr}`))
                     document.getElementById(`child-div-${nbr}`).remove()
                     document.getElementById('Refresh').click()
 

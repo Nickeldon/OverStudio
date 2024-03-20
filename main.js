@@ -1,3 +1,34 @@
+var idle = 0;
+var idletimeout = 20
+var prevautochanged = false
+$(document).ready(() => {
+    setInterval(IdleIncrease, 1000);
+
+    $(this).mousemove(() => {
+        idle = 0;
+        if(rotdeg === 0 && prevautochanged){
+          prevautochanged = false
+          changeState()
+        }
+    })
+    $(this).keypress(() => {
+        idle = 0;
+        if(rotdeg === 0 && prevautochanged){
+          prevautochanged = false
+          changeState()
+        }
+    })
+})
+
+function IdleIncrease() {
+    idle++
+    if (idle > idletimeout) {
+      if(rotdeg === 11){
+        prevautochanged = true
+        changeState()}
+    }
+}
+
 var opentab = new Howl({
   src: ['./Addons/SF/openmenu1.mp3'],
   volume: 1,
@@ -140,6 +171,7 @@ function openMENU(){
   })
 
   if(opt.style.left === '-380px'){
+    document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
     document.getElementById('eq-menu').style.top = '-500px'
   document.getElementById('eq-menu').style.opacity = '0%'
   setTimeout(() => {
@@ -182,6 +214,7 @@ function openMENU(){
 }
 
 function options(choice){
+  document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
   document.getElementById('eq-menu').style.top = '-500px'
   document.getElementById('eq-menu').style.opacity = '0%'
   setTimeout(() => {
@@ -264,6 +297,7 @@ function options(choice){
       openMENU()
       document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(40%)'
       document.getElementById('current-track').style.filter = 'blur(5px) brightness(10%)'
+      document.getElementById('app-title').style.filter = 'blur(5px) brightness(10%)'
       document.getElementById('options').style.left = '-380px'
       document.getElementById('opt-menu1').style.opacity = '0%'
       document.getElementById('opt-menu3').style.opacity = '0%'

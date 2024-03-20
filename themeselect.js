@@ -19,7 +19,9 @@ const themes = {
         text: 'linear-gradient(to right, rgb(255, 255, 255), #fa73ef, #cd7efb, #2b1f9c)'},
     }
 function changeTheme(theme){
-    console.log(document.querySelectorAll('input'))
+    if(theme !== 'Vintage'){
+    document.getElementById('vintage-filter').classList.remove('vintage-filter')
+    //console.log(document.querySelectorAll('input'))
     document.getElementById('gradient').style.backgroundImage = themes[theme].backgroundImage
     document.querySelector('.nav-bar h1').style.background = themes[theme].text
     document.querySelector('.nav-bar h1').style.webkitBackgroundClip = 'text'
@@ -32,7 +34,10 @@ function changeTheme(theme){
         presenttheme.style.cursor = 'pointer';
         presenttheme.style.transform= 'scale(0.95) rotate(20deg)';
         presenttheme.style.filter= 'blur(0.5px) grayscale(70%)'
-    })*/
+    })*/}
+    else{
+        document.getElementById('vintage-filter').classList.add('vintage-filter')
+    }
 
 
 }

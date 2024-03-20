@@ -90,29 +90,33 @@ document.getElementById('div-inp').addEventListener('change', () => {
         prevnul = true
     }
     console.log('changed')
-    addPlaylist()
-    playlist = null
-    fetchPlaylist().then((data) => {
-        if(data[0].length ===  0 && data[1].length === 0) console.log('nothing')
-        else{
-        //console.log(data)
-        ManageData(data)
-        playlist = data[0]
-        console.log(playlist)
-    }
+    addPlaylist().then((response) => {
+            if(response === 'AlreadyExists'){
+                console.log('no change as it already exists')
+            }else{
+                playlist = null
+            fetchPlaylist().then((data) => {
+                if(data[1].length === 0){console.log('nothing'); playlist = []}
+                else{
+                ManageData(data)
+                playlist = data[0]
+                console.log(playlist)
+            }
+            })
+            var interval = setInterval(() => {
+                if(playlist){
+                    //console.log(playlist)
+                    if(playlist.length > 0){
+                    console.log('entered')
+                    console.log(playlist)
+                    document.getElementById('refr-alt').click()
+                    clearInterval(interval)}
+                    else{
+                        clearInterval(interval)
+                    }}
+            }, 10)
+            }
     })
-    var interval = setInterval(() => {
-        if(playlist){
-            //console.log(playlist)
-            if(playlist.length > 0){
-            console.log('entered')
-            console.log(playlist)
-            document.getElementById('refr-alt').click()
-            clearInterval(interval)}
-            else{
-                clearInterval(interval)
-            }}
-    }, 10)
 })
 
 refreshbuttons.push(document.getElementById('refr-alt'))
@@ -404,6 +408,7 @@ window.addEventListener('keydown', (event) => {
             document.getElementById('eq-menu').style.opacity = '0%'
             setTimeout(() => {
             document.getElementById('eq-menu').style.display = 'none'
+            document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
             document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
             document.getElementById('current-track').style.filter = 'blur(0px) brightness(120%)'
             }, 1000)

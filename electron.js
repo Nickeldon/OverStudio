@@ -51,8 +51,13 @@ if (!instancelimit) {
         enableRemoteModule: false,
       }
     });
-    windowObj.loadURL(url.format(path.join(__dirname, 'index.html')));  
-    windowObj.webContents.openDevTools()
+    windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
+    try {
+      //windowObj.webContents.openDevTools()
+    } catch (e) {
+      const date = new Date().toUTCString()
+      fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
+    } 
     windowObj.on('closed', () => {
       windowObj = null
     })
