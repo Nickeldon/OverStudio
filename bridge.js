@@ -1,4 +1,14 @@
-const PORT = 8000
+let PORT = 8000
+const ws = new WebSocket(`ws://localhost:${PORT}`)
+var data
+
+ws.addEventListener('message', (response) => {
+    data = JSON.parse(response.data)
+    PORT = data.PORT
+    console.log('Received new port: ', PORT)
+})
+
+
 var paths = []
 var finalArray = []
 var reversed = false
@@ -174,7 +184,7 @@ function deldiv(nbr, link){
     console.log(nbr, document.getElementById(`child-div-${nbr}`).childNodes)
     //console.log(document.getElementById('div-selector').childNodes)
     //console.log(document.getElementById(`child-div-${nbr}`))
-    fetch(`http://localhost:8000/delPath?link=${link}`, {
+    fetch(`http://localhost:${PORT}/delPath?link=${link}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

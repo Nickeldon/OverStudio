@@ -1,6 +1,0 @@
-[Wed, 20 Mar 2024 05:18:00 GMT] => server started 
-
-[Wed, 20 Mar 2024 05:18:00 GMT] => Server is listening on port8000
-
-NaNWed, 20 Mar 2024 05:18:01 GMT] => Received call 
-[Wed, 20 Mar 2024 05:18:01 GMT] => Parsed links 

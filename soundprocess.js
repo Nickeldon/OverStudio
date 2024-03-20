@@ -1,9 +1,10 @@
-let audio, volumeSlider, playpausebtn, refresh, amplitude, playlist, next, prev, refralt, volbtn
+let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn
 var isPlaying = true;
 var follow = true
 var rand = false
 var release = true
 var startloaddate = Date.now()
+var PlayBackMode = 'linear'
 var state = 'paused'
 var plpos = 0;
 var prevnul = false
@@ -14,18 +15,19 @@ var eqbands = localStorage.getItem('eq').split(',') || [0, 0, 0, 0, 0, 0, 0, 0];
 document.getElementsByClassName('eq-range').forEach((range, index) => {
     document.getElementsByClassName('eq-range')[index].value = eqbands[index]
 })
+
 eqbands = []
         document.getElementsByClassName('eq-range').forEach((range) => {
             eqbands.push(range.value)
         })
-        console.log(eqbands)
+        //console.log(eqbands)
         for(let i = 0; i < eqbands.length; i++){
             var value = parseInt(eqbands[i])
             try {
                 eq.bands[i].gain(value)
             } catch (e) {
                 console.log(e)
-                console.log(eqbands[i])
+                //console.log(eqbands[i])
             }
         }
 localStorage.setItem('eq', eqbands)
@@ -34,7 +36,6 @@ var rs = getComputedStyle(audioreact)
 var vol
 document.getElementById('play-pause').style.opacity = '0%'
 document.getElementById('loading').style.opacity = '100%'
-console.log(localStorage)
 
 if(!localStorage.getItem('vol')){
     vol = 10
@@ -58,6 +59,8 @@ var interval = setInterval(() => {
     }
 }, 10)
 
+//Verification if all the required modules are loaded
+
 function setup(){
     if(started){
     try {
@@ -68,14 +71,21 @@ function setup(){
     }
     //console.log(playlist)
     plpos = 0
+
     try {
+        //Start the p5.Amplitude module
         amplitude = new p5.Amplitude();
     } catch (e) {
+    
+        //If not, then the error is logged and the app restarts
         if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
         else localStorage.setItem('PlMenuOpened', false)
         localStorage.setItem('emptyreload', true)
         window.location.reload()
     }
+    //If all the required modules are loaded, then Keyboard support is set to true
+    if(amplitude) noError = true
+
     volumeSlider = document.getElementById('volslide')}
 }
 
@@ -100,14 +110,14 @@ document.getElementById('div-inp').addEventListener('change', () => {
                 else{
                 ManageData(data)
                 playlist = data[0]
-                console.log(playlist)
+                //console.log(playlist)
             }
             })
             var interval = setInterval(() => {
                 if(playlist){
                     //console.log(playlist)
                     if(playlist.length > 0){
-                    console.log('entered')
+                    //console.log('entered')
                     console.log(playlist)
                     document.getElementById('refr-alt').click()
                     clearInterval(interval)}
@@ -145,7 +155,7 @@ refreshbuttons.forEach((refresh) => {
                  console.log('nothing')
              }
              else{
-                console.log(data[0])
+                //console.log(data[0])
                 //console.log('refreshed')
                 ManageData(data); playlist = data[0]}})})
             if(audio){
@@ -177,11 +187,9 @@ refreshbuttons.forEach((refresh) => {
                 //console.log(playlist)
                 started = true
                 if(audio.isLoaded()){
-                    
-                    document.getElementById('timeslide').max = audio.duration()
                     var verifyifload = setInterval(() => {
                         if(ready){
-                            plpos = MoveToCurrent(audio, playlist)
+                            plpos = MoveToCurrent(audio.url, playlist)
                             //console.log('playlist fetched')
                             clearInterval(verifyifload)
                             ready = false
@@ -200,14 +208,14 @@ document.getElementsByClassName('eq-range').forEach((range) => {
         document.getElementsByClassName('eq-range').forEach((range) => {
             eqbands.push(range.value)
         })
-        console.log(eqbands)
+        //console.log(eqbands)
         for(let i = 0; i < eqbands.length; i++){
             var value = parseInt(eqbands[i])
             try {
                 eq.bands[i].gain(value)
             } catch (e) {
                 console.log(e)
-                console.log(eqbands[i])
+                //console.log(eqbands[i])
             }
         }
         localStorage.setItem('eq', eqbands)
@@ -247,12 +255,22 @@ function loaded(){
         if(started){
             audio.connect(eq)
             eq.process(audio)
-            document.getElementById('timeslide').max = audio.duration()
             
             next = document.getElementById('next')
             prev = document.getElementById('back')
 
             document.getElementById('shuffle').addEventListener('click', () => {
+                if(PlayBackMode === 'linear'){
+                    PlayBackMode = 'shuffle'
+                    document.getElementById('shuffle').src = './Addons/icons/shuffle.png'
+                } else if(PlayBackMode === 'shuffle'){
+                    PlayBackMode = 'loop'
+                    document.getElementById('shuffle').src = './Addons/icons/loop.png'
+                } else{
+                    PlayBackMode = 'linear'
+                    document.getElementById('shuffle').src = './Addons/icons/linear.png'
+                }
+                
                 if(rand){
                 rand = false}
                 else{
@@ -270,7 +288,7 @@ function loaded(){
                         release = false
                     document.getElementById('play-pause').style.opacity = '0%'
                     document.getElementById('loading').style.opacity = '100%'
-                    console.log(document.getElementById('timeslide').value / 10, audio.currentTime())
+                    //console.log(document.getElementById('timeslide').value / 10, audio.currentTime())
                     audio.jump(document.getElementById('timeslide').value)
                     var interval = setInterval(() => {
                         if(audio.isLoaded()){
@@ -285,54 +303,79 @@ function loaded(){
             })
         
             next.addEventListener('click',  () => {
-                if(!rand){
-                console.log('clicked')
-                if(playlist[plpos+1] && started){
-                plpos++
-                document.getElementById('play-pause').style.opacity = '0%'
-                document.getElementById('loading').style.opacity = '100%'
-                if(audio._paused) state = 'paused'
-                audio.pause()
-                audio = NextSong(playlist, plpos, state) || audio
-                console.log(audio)
-                started = false
-                const interval = setInterval(() => {
-                    if(audio.isLoaded() && !started){
-                    document.getElementById('timeslide').max = audio.duration()
-                    started = true
-                    PlayPause(audio)
-                    if(state === 'playing'){
-                      console.log('yes')
-                      PlayPause(audio)}
-                      clearInterval(interval)
+
+                switch(PlayBackMode){
+                    case 'linear':{
+                            console.log('clicked')
+                            if(playlist[plpos+1] && started){
+                            plpos++
+                            document.getElementById('play-pause').style.opacity = '0%'
+                            document.getElementById('loading').style.opacity = '100%'
+                            if(audio._paused) state = 'paused'
+                            audio.pause()
+                            audio = NextSong(playlist, plpos, state) || audio
+                            //console.log(audio)
+                            started = false
+                            const interval = setInterval(() => {
+                                if(audio.isLoaded() && !started){
+                                started = true
+                                PlayPause(audio)
+                                if(state === 'playing'){
+                                  PlayPause(audio)}
+                                  clearInterval(interval)
+                                }
+                              }, 10)
+                            setTimeout(() => {
+                                document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
+                            }, 1000)}
+                    }break;
+
+                    case 'shuffle':{
+                        let ipos = plpos || 0
+                        plpos = Math.floor(Math.random() * playlist.length)
+                                document.getElementById('play-pause').style.opacity = '0%'
+                                document.getElementById('loading').style.opacity = '100%'
+                                audio.disconnect()
+                                audio = PlayShuffleSong(playlist, plpos, ipos)
+                                started = false
+                                ready = false
+
+                                let interval = setInterval(() => {
+                                    if(audio.isLoaded()){
+                                    started = true
+                                    audio.connect(eq)
+                                    audio.play()
+                                    document.getElementById('refr-alt').click()
+                                    clearInterval(interval)
+                                    }
+                                  }, 10)
+                                setTimeout(() => {
+                                    document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
+                                }, 1000)
                     }
-                  }, 10)
-                setTimeout(() => {
-                    document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
-                }, 1000)}}
-                else{
-                    plpos = Math.floor(Math.random() * playlist.length)
-                    document.getElementById('play-pause').style.opacity = '0%'
-                    document.getElementById('loading').style.opacity = '100%'
-                    if(audio._paused) state = 'paused'
-                    audio.pause()
-                    audio = PlayShuffleSong(playlist, plpos, state) || audio
-                    console.log(audio)
-                    started = false
-                    const interval = setInterval(() => {
-                        if(audio.isLoaded() && !started){
-                        document.getElementById('timeslide').max = audio.duration()
-                        started = true
-                        PlayPause(audio)
-                        if(state === 'playing'){
-                          console.log('yes')
-                          PlayPause(audio)}
-                          clearInterval(interval)
-                        }
-                      }, 10)
-                    setTimeout(() => {
-                        document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
-                    }, 1000)
+                    break;
+
+                    case 'loop':{
+                        let pos = plpos
+                        started = false
+                        ready = false
+                        document.getElementById('play-pause').style.opacity = '0%'
+                        document.getElementById('loading').style.opacity = '100%'
+                        audio.disconnect()
+                        audio = null
+                        audio = loadSound(playlist[pos].url, loaded)
+                        
+                        let interval = setInterval(() => {
+                            if(audio.isLoaded()){
+                                started = true
+                                ready = true
+                                audio.connect(eq)
+                                audio.play()
+                                clearInterval(interval)
+                            }
+                        })
+                        //if(audio.isLoaded()) audio.play()
+                    }break;
                 }
             })
             prev.addEventListener('click',  () => {
@@ -342,13 +385,10 @@ function loaded(){
                 document.getElementById('loading').style.opacity = '100%'
                 if(audio._paused) state = 'paused';
                 audio.pause()
-                console.log(playlist, plpos)
                 audio = PrevSong(playlist, plpos, state) || audio
-                console.log(audio)
                 started = false
                 const interval = setInterval(() => {
                     if(audio.isLoaded() && !started){
-                    document.getElementById('timeslide').max = audio.duration()
                     started = true
                     PlayPause(audio)
                     if(state === 'playing'){
@@ -376,44 +416,45 @@ window.addEventListener('keydown', (event) => {
             key = event.key
         }
 
-    switch(key){
-        case 'f':{
-            document.getElementById('change-state').click()
-        }break;
+    if(noError){
+        switch(key){
+            case 'f':{
+                document.getElementById('change-state').click()
+            }break;
 
-        case ' ':{
-            playpausebtn.click()
-        }break;
+            case ' ':{
+                playpausebtn.click()
+            }break;
 
-        case 'ArrowLeft':{
-            prev.click()
-        }break;
+            case 'ArrowLeft':{
+                prev.click()
+            }break;
 
-        case 'ArrowRight':{
-            next.click()
-        }break;
+            case 'ArrowRight':{
+                next.click()
+            }break;
 
-        case 'ArrowUp':{
-            volumeSlider.value = Math.max((volumeSlider.value + volumeSlider.step)/10) + 0.9
-        }break;
+            case 'ArrowUp':{
+                volumeSlider.value = Math.max((volumeSlider.value + volumeSlider.step)/10) + 0.9
+            }break;
 
-        case 'ArrowDown':{
-            volumeSlider.value = volumeSlider.value - volumeSlider.step
-        }break;
-        case 'Escape':{
-            if(document.getElementById('options').style.left !== '-380px'){
-                openMENU()
-            }
-            document.getElementById('eq-menu').style.top = '-500px'
-            document.getElementById('eq-menu').style.opacity = '0%'
-            setTimeout(() => {
-            document.getElementById('eq-menu').style.display = 'none'
-            document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
-            document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
-            document.getElementById('current-track').style.filter = 'blur(0px) brightness(120%)'
-            }, 1000)
-        }break;
-    }
+            case 'ArrowDown':{
+                volumeSlider.value = volumeSlider.value - volumeSlider.step
+            }break;
+            case 'Escape':{
+                if(document.getElementById('options').style.left !== '-380px'){
+                    openMENU()
+                }
+                document.getElementById('eq-menu').style.top = '-500px'
+                document.getElementById('eq-menu').style.opacity = '0%'
+                setTimeout(() => {
+                document.getElementById('eq-menu').style.display = 'none'
+                document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
+                document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
+                document.getElementById('current-track').style.filter = 'blur(0px) brightness(120%)'
+                }, 1000)
+            }break;
+        }}
 })
 
 document.getElementById('alternate-audio-react').style.transition = 'all .2s ease-out'
@@ -433,14 +474,18 @@ function draw(){
     try {
         if(audio){
         if(started){
+
             try {
                 var vol = amplitude.getLevel()
             } catch (e) {
-                localStorage.setItem('emptyreload', true)
                 if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
                 else localStorage.setItem('PlMenuOpened', false)
+
+                localStorage.setItem('emptyreload', true)
                 window.location.reload()
             }
+            //console.log(amplitude, vol)
+
             if(audio.isLoaded()){
                 startloaddate = Date.now()
                 eq.process(audio)

@@ -1,5 +1,6 @@
 var idle = 0;
 var idletimeout = 20
+var noError = false
 var prevautochanged = false
 $(document).ready(() => {
     setInterval(IdleIncrease, 1000);
@@ -41,9 +42,9 @@ var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 var initx = 1777
 
 if(!emptyreload){
-document.querySelector('audio').play()
-document.querySelector('audio').volume = '0.3'
-window.onload = () => {
+  document.querySelector('audio').play()
+  document.querySelector('audio').volume = '0.3'
+  window.onload = () => {
   setTimeout(() => {
     document.getElementById('splash-scr').style.opacity = '0%'
 
@@ -346,7 +347,7 @@ function NextSong(playlist, position){
   }
   if(playlist[position] !== undefined){
   const audio = loadSound(playlist[position].url, loaded)
-  console.log(playlist[position].url, audio)
+  //console.log(playlist[position].url, audio)
   return audio
   } else{
     console.log('did not passed', position, playlist.length - 1, playlist)
@@ -377,7 +378,7 @@ function PrevSong(playlist, position){
   }
   if(position > -1){
     const audio = loadSound(playlist[position].url, loaded)
-    console.log(playlist[position].url, audio)
+    //console.log(playlist[position].url, audio)
     return audio
     } else{
       console.log('did not passed', position, playlist.length - 1)
@@ -400,14 +401,14 @@ function PlayPause(audio){
   }
 }
 
-function MoveToCurrent(audio, playlist){
+function MoveToCurrent(url, playlist){
   const array = document.getElementById('current-track').childNodes
   var childarray = []
   var position;
   if(!reversed){
 
   playlist.forEach((elem) => {
-    if(elem.url === audio.url){
+    if(elem.url === url){
       position = playlist.indexOf(elem)
     }
   })
@@ -430,7 +431,7 @@ function MoveToCurrent(audio, playlist){
       return position} 
       else{
         playlist.forEach((elem) => {
-          if(elem.url === audio.url){
+          if(elem.url === url){
             position = playlist.indexOf(elem)
           }
         })
@@ -454,14 +455,14 @@ function MoveToCurrent(audio, playlist){
       }
 }
 
-function PlayShuffleSong(playlist, position, state){
-  if(!reversed){
+function PlayShuffleSong(playlist, position, initialPos){
+  /*if(!reversed){
     console.log(document.getElementById('current-track').childNodes)
     document.getElementById('current-track').childNodes.forEach((elem) => {
       if(elem.id === 'child-track'){
       var ipos = elem.style.top 
       ipos = ipos.replace('px', '')
-      const fpos = parseInt(ipos) + (150*position + 1)
+      const fpos = parseInt(ipos) + (150*(position))
       elem.style.top = `${fpos}px`}
     })}
     else{
@@ -470,16 +471,24 @@ function PlayShuffleSong(playlist, position, state){
         if(elem.id === 'child-track'){
         var ipos = elem.style.top 
         ipos = ipos.replace('px', '')
-        const fpos = parseInt(ipos) - (150*position + 1)
+        var fpos
+        console.log(initialPos, position)
+        if(initialPos < position){
+        fpos = parseInt(ipos) - (150*(position))}
+        else{
+          console.log('yes')
+          fpos = parseInt(ipos) + (150*(position))
+        }
         elem.style.top = `${fpos}px`}
       }) 
       } catch (e) {
         console.log(e)
       }
-    }
+    }*/
+    //MoveToCurrent(playlist[position].url, playlist)
     if(playlist[position] !== undefined){
     const audio = loadSound(playlist[position].url, loaded)
-    console.log(playlist[position].url, audio)
+    //console.log(playlist[position].url, audio)
     return audio
     } else{
       console.log('did not passed', position, playlist.length - 1, playlist)

@@ -1,31 +1,52 @@
 const express = require('express')
 const http = require('http')
 const fs = require('fs')
+const WebSocket = require('ws')
 const cors = require('cors')
 const app = express()
-const PORT = 8000
+let PORT = 8000
 const path = require('path')
 var ppos  = 0
 var URIsend
 var PLpos = 0
+var server
 var PlaylistURL
 const YoutubeParser = require('youtube-sr')
 var mediaarray = []
 
 app.use(cors())
-app.listen(PORT, () => {
+server = app.listen(PORT, () => {
     console.log('Server is listening on port', PORT)
     const CurrentTime = new Date().toUTCString()
-    //console.log(CurrentTime)
     fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + 'Server is listening on port' + PORT + '\n\n')
-
 }).addListener('error', (e) => {
     console.error('there was an error', e)
     var logfile = fs.readFileSync(__dirname + '\\errorlog.txt')
     logfile += '\n' + 'There was an error' + JSON.stringify(e)
     const CurrentTime = new Date().toUTCString()
     fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
-    process.exit(1)
+
+    if(e.code === 'EADDRINUSE'){
+        console.log('port in use')
+        PORT++
+        server.closeAllConnections()
+        server.listen(PORT)
+        wss.clients.forEach((client) => {
+            client.send(JSON.stringify({PORT}))
+        })
+        const wss = new WebSocket.Server({ server })
+
+        wss.on('connection', (ws) => {
+            ws.send(JSON.stringify({PORT}))
+
+            ws.on('message', (mes) => {
+                console.log('received response from frontend', mes)
+                const CurrentTime = new Date().toUTCString()
+                fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + 'Received response from frontend: ' + mes + '\n\n')
+            })
+        })
+        process.exit(1)
+    }
 })
 
 app.get('/getThumbnail', (req, res, next) => {
@@ -94,7 +115,7 @@ app.get('/addPL', (req, res, next) => {
         fs.appendFileSync(__dirname + '\\errorlog.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
     }
 
-    console.log(PlaylistURL, object.meta.links)
+    //console.log(PlaylistURL, object.meta.links)
 
     if(PlaylistURL){
         //console.log(PlaylistURL)
