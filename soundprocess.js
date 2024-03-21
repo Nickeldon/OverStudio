@@ -11,7 +11,13 @@ var prevnul = false
 var refreshbuttons = []
 var started = false
 var eq = new p5.EQ(8)
-var eqbands = localStorage.getItem('eq').split(',') || [0, 0, 0, 0, 0, 0, 0, 0];
+var eqbands;
+try {
+    eqbands = localStorage.getItem('eq').split(',') || [0, 0, 0, 0, 0, 0, 0, 0];
+} catch (e) {
+    eqbands = [0, 0, 0, 0, 0, 0, 0, 0];    
+}
+
 document.getElementsByClassName('eq-range').forEach((range, index) => {
     document.getElementsByClassName('eq-range')[index].value = eqbands[index]
 })
