@@ -66,28 +66,31 @@ try {
                         //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
                         console.log(selectorfiltered)
                         document.getElementById('current-track').childNodes.forEach((elem) => {
+                            elem.style.transition = 'opacity 0s ease-out'
                             if(elem.id === 'child-track'){
-                                elem.style.opacity = '0%'
-                                setTimeout(() => {
                                     document.getElementById('current-track').removeChild(elem)
-                                }, 500)
                             }
-                        
+                        })
+
+                        setTimeout(() => {
                             filtered.forEach((elem) => {
                                 document.getElementById('current-track').appendChild(elem)
                             })
-                        })
+                        }, 100)
     
                         document.getElementById('div-selector').childNodes.forEach((elem) => {
+                            elem.style.transition = 'opacity .1s ease-out'
                             if(elem.id === 'child-div'){
                                 elem.style.opacity = '0%'
                                 setTimeout(() => {
                                     document.getElementById('div-selector').removeChild(elem)
-                                }, 500)
+                                }, 100)
                             }
-    
-                            selectorfiltered.forEach((elem) => {
-                                document.getElementById('div-selector').appendChild(elem)})
+                            
+                            /*setTimeout(() => {
+                                selectorfiltered.forEach((elem) => {
+                                    document.getElementById('div-selector').appendChild(elem)})
+                            }, 100)*/
                         })
                     } catch (e) {
                         console.error('could not filter array', e)
@@ -144,10 +147,18 @@ async function deletePLCache(){
     
     PLnodes.forEach((elem) => {
         if(elem.nodeName !== '#text'){
-            elem.style.opacity = '0%'
-            setTimeout(() => {
-                document.getElementById('div-selector').removeChild(elem)
-            }, 500)
+            try {
+                elem.style.opacity = '0%'
+                setTimeout(() => {
+                    try {
+                        document.getElementById('div-selector').removeChild(elem)
+                    } catch (e) {
+                        console.log(e)                          
+                    }
+                }, 500)
+            } catch (e) {
+                console.log(e)
+            }
         }
     })
     
@@ -156,12 +167,20 @@ if(document.getElementById('current-track').childNodes.length > 1){
     var listnodes = document.getElementById('current-track').childNodes
 
     listnodes.forEach((elem) => {
-        if(elem.id === 'child-track'){
-            elem.style.opacity = '0%'
-            setTimeout(() => {
-                document.getElementById('current-track').removeChild(elem)
-            }, 500)
-        }
+            if(elem.id === 'child-track'){
+                try {
+                elem.style.opacity = '0%'
+                setTimeout(() => {
+                    try {
+                        document.getElementById('current-track').removeChild(elem)   
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }, 500)
+            } catch (e) {
+                console.log(e)
+            }   
+            }
     })
 
 }
@@ -272,6 +291,8 @@ function getFullDataNode(raw){
     info.appendChild(title); info.appendChild(artist); info.appendChild(album);
     main.appendChild(info)
     main.appendChild(imgparent)
+    main.style.transition = 'all 2s ease-out opacity .2s ease-out'
+    //main.style.transition = 'opacity .1s ease-out'
 
     return main
 }

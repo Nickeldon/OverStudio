@@ -364,28 +364,29 @@ function loaded(){
                     case 'shuffle':{
                         let ipos = plpos || 0
                         plpos = Math.floor(Math.random() * playlist.length)
-                                document.getElementById('play-pause').style.opacity = '0%'
-                                document.getElementById('loading').style.opacity = '100%'
-                                if(audio._paused) state = 'paused'
-                                else state = 'playing'
-                                audio.stop()
-                                audio = PlayShuffleSong(playlist, plpos, ipos)
-                                started = false
-                                ready = false
+                        if(started){
+                            document.getElementById('play-pause').style.opacity = '0%'
+                            document.getElementById('loading').style.opacity = '100%'
+                            if(audio._paused) state = 'paused'
+                            else state = 'playing'
+                            audio.stop()
+                            audio = PlayShuffleSong(playlist, plpos, ipos)
+                            started = false
+                            ready = false
 
-                                let interval = setInterval(() => {
-                                    if(audio.isLoaded()){
-                                    started = true
-                                    manageAudioData()
-                                    audio.play()
-                                    if(state === 'paused') audio.pause()
-                                    document.getElementById('refr-alt').click()
-                                    clearInterval(interval)
-                                    }
-                                  }, 10)
-                                setTimeout(() => {
-                                    document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
-                                }, 1000)
+                            let interval = setInterval(() => {
+                                if(audio.isLoaded() && !started){
+                                started = true
+                                manageAudioData()
+                                audio.play()
+                                if(state === 'paused') audio.pause()
+                                document.getElementById('refr-alt').click()
+                                clearInterval(interval)
+                                }
+                                }, 10)
+                            setTimeout(() => {
+                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                            }, 1000)}
                     }
                     break;
 
@@ -400,7 +401,7 @@ function loaded(){
                         audio = loadSound(playlist[pos].url, loaded)
                         
                         let interval = setInterval(() => {
-                            if(audio.isLoaded()){
+                            if(audio.isLoaded() && !started){
                                 started = true
                                 ready = true
                                 manageAudioData()
