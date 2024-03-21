@@ -57,7 +57,7 @@ if (!instancelimit) {
     } catch (e) {
       const date = new Date().toUTCString()
       fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
-    } 
+    }
     windowObj.on('closed', () => {
       windowObj = null
     })

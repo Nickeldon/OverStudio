@@ -18,6 +18,7 @@
 <script  src="./Addons/BG/dist/script.js"></script>
 <link rel="stylesheet" href="./Addons/BG/dist/Packages/normalize.min.css">
 <link rel="stylesheet" href="./Addons/BG/dist/style.css">
+<link rel="stylesheet" href="./Addons/BG/dust/styles.css">
 <script src="./Addons/BG/dist/Packages/prefixfree.min.js"></script>
 <body style="border-radius: 20px;">
 
@@ -40,8 +41,26 @@
             <object id="Audio-react" data="" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out">
             </object>
 
-            <div id="alternate-audio-react" style="transition:all 1s ease-out; display:block; position:absolute; width:100%; height:100%;">
-                <div class="gradient" id="gradient" style="margin:auto; position:absolute; top:27%; left:36%"></div>
+            <div id="alternative-background">
+                <div id="dust" style="position: absolute; bottom:0; width:100%; height:100%">
+                    <div id="nc-main" class="nc-main bg-cover bg-cc" style="position: absolute; bottom:0; width:100%; height:100%;">
+    
+                        <div class="full-wh">
+                        
+                            <!-- STAR ANIMATION -->
+                            <div class="bg-animation">
+                                <div id='stars'></div>
+                                <div id='stars2'></div>
+                                <div id='stars3'></div>
+                                <div id='stars4'></div>
+                            </div><!-- / STAR ANIMATION -->
+                    
+                        </div>
+                    </div>
+                </div>
+                <div id="alternate-audio-react" style="transition:all 1s ease-out; display:block; position:absolute; width:100%; height:100%;">
+                    <div class="gradient" id="gradient" style="margin:auto; position:absolute; top:27%; left:36%"></div>
+                </div>
             </div>
             
             <div id="filter" style="opacity: 50%; background-color:black; position:absolute; top:0; width:100%; height:100%; transition:all 1s ease-out"></div>
@@ -362,7 +381,7 @@
 
             <div id="time-bar" style="position: absolute; width:800px; height:50px; bottom:15px; left:28%">
                 <div id="timer" class="timer">
-                    <h3 style="font-family: PS, sans-serif; font-size: 20px; color:white; position:absolute; bottom:19%; left:20px" id="current-time">
+                    <h3 style="font-family: PS, sans-serif; font-size: 20px; color:white; position:absolute; bottom:19%; left:20px; pointer-events:all;" id="current-time" onmouseover="this.style.cursor = 'pointer'">
                         0:00
                     </h3>
                     <h3 style="font-family: PS, sans-serif; font-size: 20px; color:white; position:absolute; bottom:19%; right:20px" id="total-time">
@@ -421,6 +440,11 @@
 </body>
 
 <style>
+
+    .current-time:hover{
+        cursor: pointer;
+
+    }
 
     .vintage-filter {
         border-radius: 20px;
