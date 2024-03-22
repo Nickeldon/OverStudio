@@ -562,7 +562,7 @@ function draw(){
                     let rmin = Math.floor(RemainingtimeSec / 60);
                     let rs = Math.floor(RemainingtimeSec % 60);
                     var Remainingtime
-                    Remainingtime = (rmin < 10 ? '-0' : '-') + rmin + ':' + (rs < 10 ? '0' : '') + rs;
+                    Remainingtime = ('-') + rmin + ':' + (rs < 10 ? '0' : '') + rs;
 
                     if(Remainingtime === '-0:00'){  
                         Remainingtime = '0:00'
