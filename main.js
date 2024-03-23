@@ -1,3 +1,17 @@
+effectsArray = JSON.parse(localStorage.getItem('effectsState')) || {dust: 'true', amplitude: 'true'}
+console.log(effectsArray)
+var enDust = (/true/).test(effectsArray['dust']) || false
+var enAmpl = (/true/).test(effectsArray['amplitude']) || false
+
+if(!enDust) {
+  document.getElementById('dust-txt0').innerText = 'Enable dust particles'
+  document.getElementById('dust').style.display = 'none'}
+if(!enAmpl) {
+  document.getElementById('ampl-txt0').innerText = 'Enable Amplitude Reactor'
+  document.getElementById('alternate-audio-react').style.display = 'none'
+  document.getElementById('gradient').style.display = 'none'}
+localStorage.setItem('effectsState', JSON.stringify(effectsArray))
+
 var idle = 0;
 var idletimeout = 20
 var noError = false
@@ -158,12 +172,14 @@ function openMENU(){
   document.getElementById('opt-menu3').style.opacity = '0%'
   document.getElementById('opt-menu4').style.opacity = '0%'
   document.getElementById('opt-menu5').style.opacity = '0%'
+  document.getElementById('opt-menu6').style.opacity = '0%'
   optprev.style.display = 'block'
   setTimeout(() => {
     document.getElementById('opt-menu2').style.display = 'none'
     document.getElementById('opt-menu3').style.display = 'none'
     document.getElementById('opt-menu4').style.display = 'none'
-    document.getElementById('opt-menu5').style.display = 'none'
+    document.getElementById('opt-menu5').style.display = '0%'
+    document.getElementById('opt-menu6').style.display = 'none'
   }, 800)
 
   document.getElementsByClassName('opt-txt').forEach((elem) => {
@@ -182,6 +198,7 @@ function openMENU(){
   document.getElementById('opt-menu3').style.opacity = '0%'
   document.getElementById('opt-menu4').style.opacity = '0%'
   document.getElementById('opt-menu5').style.opacity = '0%'
+  document.getElementById('opt-menu6').style.opacity = '0%'
   document.getElementById('opt-menu1').style.opacity = '100%'
   document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(60%)'
   document.getElementById('current-track').style.filter = 'blur(5px) brightness(60%)'
@@ -317,6 +334,24 @@ function options(choice){
           document.getElementById('eq-menu').style.display = 'none'
         }, 1000)
       }
+    }break;
+
+    case 6: {
+      document.getElementById('options').style.left = '-380px'
+      document.getElementById('opt-menu1').style.opacity = '0%'
+      document.getElementById('opt-menu3').style.opacity = '0%'
+      document.getElementById('opt-preview').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('opt-menu6').style.display = 'block'
+        setTimeout(() => {
+          setTimeout(() => {
+            document.getElementById('opt-preview').style.display = 'none'
+          }, 200)
+          
+          document.getElementById('options').style.left = '0%'
+          document.getElementById('opt-menu6').style.opacity = '100%'
+        }, 10)
+      }, 1000)
     }break;
   }
 }
@@ -455,14 +490,14 @@ function MoveToCurrent(url, playlist){
       }
 }
 
-function PlayShuffleSong(playlist, position, initialPos){
-  /*if(!reversed){
+function PlayShuffleSong(playlist, position, initialPos, difference){
+  if(!reversed){
     console.log(document.getElementById('current-track').childNodes)
     document.getElementById('current-track').childNodes.forEach((elem) => {
       if(elem.id === 'child-track'){
       var ipos = elem.style.top 
       ipos = ipos.replace('px', '')
-      const fpos = parseInt(ipos) + (150*(position))
+      const fpos = parseInt(ipos) + (150*(difference))
       elem.style.top = `${fpos}px`}
     })}
     else{
@@ -472,20 +507,13 @@ function PlayShuffleSong(playlist, position, initialPos){
         var ipos = elem.style.top 
         ipos = ipos.replace('px', '')
         var fpos
-        console.log(initialPos, position)
-        if(initialPos < position){
-        fpos = parseInt(ipos) - (150*(position))}
-        else{
-          console.log('yes')
-          fpos = parseInt(ipos) + (150*(position))
-        }
+        fpos = parseInt(ipos) - (150*(difference))
         elem.style.top = `${fpos}px`}
       }) 
       } catch (e) {
         console.log(e)
       }
-    }*/
-    //MoveToCurrent(playlist[position].url, playlist)
+    }
     if(playlist[position] !== undefined){
     const audio = loadSound(playlist[position].url, loaded)
     //console.log(playlist[position].url, audio)

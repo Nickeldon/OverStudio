@@ -210,7 +210,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:340px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:310px; width:450px" onclick="
                 if(reversed){
                     localStorage.setItem('reversed', false);} 
                     else{localStorage.setItem('reversed', true)} 
@@ -220,17 +220,27 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:490px; width:350px" id="theme-change" onclick="options(5)">
+                <div class="opt-txt" style="opacity:0%; top:430px; width:350px" id="theme-change" onclick="options(5)">
                     <i>
                         <img src="./Addons/icons/equalizer.png" style="height: 65px; filter:invert(70%); left:55px; top:5px; position:absolute">
                     </i>
 
-                    <a  style="left: 147px;" id="credits">
+                    <a  style="left: 147px;" id="eq">
                         Equalizer
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; bottom:80px; width:330px" id="credits" onclick="options(4)">    
+                <div class="opt-txt" style="opacity:0%; top:550px; width:350px" id="theme-change" onclick="options(6)">
+                    <i>
+                        <img src="./Addons/icons/effects.png" style="height: 65px; filter:invert(70%); left:55px; top:5px; position:absolute">
+                    </i>
+
+                    <a  style="left: 147px;" id="effects">
+                        Effects
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; bottom:50px; width:330px" id="credits" onclick="options(4)">    
                     <a style="left: 147px;">
                         Credits
                     </a>
@@ -304,6 +314,62 @@
 
             <div id="opt-menu5" class="opt-menu5" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
 
+            </div> 
+            
+            <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+                <div class="opt-txt" style="opacity:0%; top:190px; width:450px" onclick="
+                var txt = document.getElementById('dust-txt0');
+                txt.innerText = txt.innerText === 'Disable dust particles' ? 'Enable dust particles' : 'Disable dust particles';
+                var state = txt.innerText === 'Disable dust particles' ? true : false;
+
+                var txt2 = document.getElementById('ampl-txt0');
+                var state2 = txt2.innerText === 'Disable Amplitude Reactor' ? true : false;
+
+                console.log(state, state2)
+
+                if(state){
+                    document.getElementById('dust').style.display = 'block';
+                } else {
+                    document.getElementById('dust').style.opacity = '0%';
+                    setTimeout(() => {
+                        document.getElementById('dust').style.display = 'none';
+                        document.getElementById('dust').style.opacity = '70%';
+                    }, 1000);
+                }
+                localStorage.setItem('effectsState', JSON.stringify({dust: state, amplitude: state2}))
+                ">
+                    <a  style="left: 70px;" id="dust-txt0">
+                        Disable dust particles
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:340px; width:490px" onclick="
+                var txt = document.getElementById('ampl-txt0');
+                txt.innerText = txt.innerText === 'Disable Amplitude Reactor' ? 'Enable Amplitude Reactor' : 'Disable Amplitude Reactor';
+                var state = txt.innerText === 'Disable Amplitude Reactor' ? true : false;
+                
+                var txt2 = document.getElementById('dust-txt0');
+                var state2 = txt2.innerText == 'Disable dust particles' ? true : false;
+
+                console.log(state, state2)
+
+                if(state){
+                    document.getElementById('gradient').style.display = 'block';
+                    document.getElementById('alternate-audio-react').style.display = 'block';
+                } else {
+                    document.getElementById('alternate-audio-react').style.opacity = '0%';
+                    setTimeout(() => {
+                        document.getElementById('alternate-audio-react').style.display = 'none';
+                        document.getElementById('alternate-audio-react').style.opacity = '70%';
+                        document.getElementById('gradient').style.display = 'none';
+                    }, 1000);
+                }
+                localStorage.setItem('effectsState', JSON.stringify({dust: state2, amplitude: state}))
+                ">
+                    <a  style="left: 70px;" id="ampl-txt0">
+                        Disable Amplitude Reactor
+                    </a>
+                </div>
             </div>
                 
          </div>

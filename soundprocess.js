@@ -332,7 +332,6 @@ function loaded(){
             })
         
             next.addEventListener('click',  () => {
-
                 switch(PlayBackMode){
                     case 'linear':{
                             console.log('clicked')
@@ -361,15 +360,18 @@ function loaded(){
                     }break;
 
                     case 'shuffle':{
-                        let ipos = plpos || 0
-                        plpos = Math.floor(Math.random() * playlist.length)
                         if(started){
+                            let ipos = plpos
+                            while (plpos === ipos){
+                            plpos = Math.floor(Math.random() * playlist.length)}
+                            
+                            let diffpos = plpos - ipos
                             document.getElementById('play-pause').style.opacity = '0%'
                             document.getElementById('loading').style.opacity = '100%'
                             if(audio._paused) state = 'paused'
                             else state = 'playing'
                             audio.stop()
-                            audio = PlayShuffleSong(playlist, plpos, ipos)
+                            audio = PlayShuffleSong(playlist, plpos, ipos, diffpos)
                             started = false
                             ready = false
 
@@ -379,7 +381,7 @@ function loaded(){
                                 manageAudioData()
                                 audio.play()
                                 if(state === 'paused') audio.pause()
-                                document.getElementById('refr-alt').click()
+                                //document.getElementById('refr-alt').click()
                                 clearInterval(interval)
                                 }
                                 }, 10)
