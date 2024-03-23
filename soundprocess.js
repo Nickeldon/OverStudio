@@ -313,7 +313,6 @@ function loaded(){
             })
         
             document.getElementById('timeslide').addEventListener('change', () => {
-                if(audio.isLoaded()) audio.setVolume(0)
                     if(audio.isLoaded() && release){
                         release = false
                     document.getElementById('play-pause').style.opacity = '0%'
