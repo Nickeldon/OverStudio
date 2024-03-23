@@ -139,8 +139,6 @@ document.getElementById('div-inp').value = null
 }
 
 async function deletePLCache(){
-    //console.log('deleting')
-    //console.log(document.getElementById('div-selector').childNodes)
     if(document.getElementById('div-selector').childNodes.length > 1){
     
     var PLnodes = document.getElementById('div-selector').childNodes;

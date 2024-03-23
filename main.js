@@ -357,6 +357,7 @@ function options(choice){
 }
 
 function NextSong(playlist, position){
+  console.log(position)
   if(!reversed){
   document.getElementById('current-track').childNodes.forEach((elem) => {
     var toppos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top

@@ -1,6 +1,7 @@
 let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol, unlockkey = false;
 var prevnul, rand, started = false
-var isPlaying, follow, release = true;
+let isPlaying, release = true;
+var follow = true
 var timemode = 'normal'
 var startloaddate = Date.now()
 var PlayBackMode = 'linear'
@@ -47,11 +48,11 @@ if(!localStorage.getItem('vol')){
 } else{
     vol = localStorage.getItem('vol') 
     if(Math.max(vol) === 0){
-        document.getElementById('vol-btn').src = './Addons/icons/no-vol.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/mute.svg'
     } else if(Math.max(vol) === 20){
-        document.getElementById('vol-btn').src = './Addons/icons/high-volume.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/max.svg'
     } else{
-        document.getElementById('vol-btn').src = './Addons/icons/vol.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/volume.svg'
     }
 
 }
@@ -103,11 +104,11 @@ volumeSlider = document.getElementById('volslide')
 volumeSlider.addEventListener('input', () => {
     localStorage.setItem('vol', volumeSlider.value) 
     if(Math.max(volumeSlider.value) === 0){
-        document.getElementById('vol-btn').src = './Addons/icons/no-vol.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/mute.svg'
     } else if(Math.max(volumeSlider.value) === 20){
-        document.getElementById('vol-btn').src = './Addons/icons/high-volume.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/max.svg'
     } else{
-        document.getElementById('vol-btn').src = './Addons/icons/vol.png'
+        document.getElementById('vol-btn').src = './Addons/icons/SVG/volume.svg'
     }
     if(audio){
         if(audio.isLoaded()){
@@ -292,13 +293,19 @@ function loaded(){
             document.getElementById('shuffle').addEventListener('click', () => {
                 if(PlayBackMode === 'linear'){
                     PlayBackMode = 'shuffle'
-                    document.getElementById('shuffle').src = './Addons/icons/shuffle.png'
+                    document.getElementById('shuffle').style.transition = 'transform 0s'
+                    document.getElementById('shuffle').style.transform = 'rotate(0deg)'
+                    document.getElementById('shuffle').src = './Addons/icons/SVG/shuffle.svg'
                 } else if(PlayBackMode === 'shuffle'){
                     PlayBackMode = 'loop'
-                    document.getElementById('shuffle').src = './Addons/icons/loop.png'
+                    document.getElementById('shuffle').style.transition = 'transform 0s'
+                    document.getElementById('shuffle').style.transform = 'rotate(0deg)'
+                    document.getElementById('shuffle').src = './Addons/icons/SVG/loop.svg'
                 } else{
                     PlayBackMode = 'linear'
-                    document.getElementById('shuffle').src = './Addons/icons/linear.png'
+                    document.getElementById('shuffle').style.transition = 'transform 0s'
+                    document.getElementById('shuffle').style.transform = 'rotate(-90deg)'
+                    document.getElementById('shuffle').src = './Addons/icons/SVG/linear.svg'
                 }
                 
                 if(rand){
@@ -309,6 +316,7 @@ function loaded(){
             })
 
             document.getElementById('timeslide').addEventListener('input', () => {
+                console.log('there was a change')
                 follow = false
             })
         
@@ -332,6 +340,7 @@ function loaded(){
             })
         
             next.addEventListener('click',  () => {
+                if(started){
                 switch(PlayBackMode){
                     case 'linear':{
                             console.log('clicked')
@@ -392,6 +401,7 @@ function loaded(){
                     break;
 
                     case 'loop':{
+                        if(started){
                         let pos = plpos
                         started = false
                         ready = false
@@ -412,8 +422,9 @@ function loaded(){
                             }
                         })
                         //if(audio.isLoaded()) audio.play()
+                    }
                     }break;
-                }
+                }}
             })
             prev.addEventListener('click',  () => {
                 if(plpos > 0 && started){

@@ -1,12 +1,12 @@
 {
-  "name": "overplayer",
-  "version": "3.6.5",
-  "description": "OverPlayer, Modern Music Player",
+  "name": "overstudio",
+  "version": "3.7.0",
+  "description": "Listen to music in a new way",
   "main": "electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverPlayer",
-    "package-linux": "electron-packager . --overwrite --platform=linux --icon=Addons/logowin.png --arch=x64 --prune=true --out=OverPlayer",
+    "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverStudio",
+    "package-linux": "electron-packager . --overwrite --platform=linux --icon=Addons/logowin.png --arch=x64 --prune=true --out=OverStudio",
     "start": "node electron.js"
   },
   "author": "Nickeldon",
