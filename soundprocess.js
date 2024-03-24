@@ -113,7 +113,7 @@ volumeSlider.addEventListener('input', () => {
     if(audio){
         if(audio.isLoaded()){
             if(release){
-                audio.setVolume(volumeSlider.value / 20)}
+                audio.setVolume(volumeSlider.value / 20, 0.1, 0)}
         }
     }
 })
@@ -528,6 +528,8 @@ var trackinterval = setInterval(() => {
     }}
 }, 100)
 
+var tempvol = 0
+
 function manageAudioData(){
     if(audio){
         if(audio.isLoaded()){
@@ -535,12 +537,14 @@ function manageAudioData(){
             let totalseconds = temptime < 10? '0' + temptime: temptime.toString()
             let totaltime = Math.max(Math.floor(audio.duration() / 60), 0) + ':' + totalseconds
             document.getElementById('total-time').innerHTML = totaltime
-
-            audio.setVolume(volumeSlider.value / 20)
-
+            //audio.output.channelCount = 8
+            if(tempvol !== volumeSlider.value / 20){
+            audio.setVolume(volumeSlider.value / 20, 0.1, 0)
+            tempvol = volumeSlider.value / 20}
+            //console.log(audio)
             document.getElementById('track-artist').innerHTML = playlist[plpos].artist || 'Unknown'
             document.getElementById('track-name').innerHTML = playlist[plpos].title || 'Unknown'
-            eq.process(audio)
+            //eq.process(audio)
         }
     }
 }
