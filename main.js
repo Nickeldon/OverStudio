@@ -1,5 +1,8 @@
+var completesplash = false
+var corrupt = false
 effectsArray = JSON.parse(localStorage.getItem('effectsState')) || {dust: 'true', amplitude: 'true'}
 console.log(effectsArray)
+var goback = false
 var enDust = (/true/).test(effectsArray['dust']) || false
 var enAmpl = (/true/).test(effectsArray['amplitude']) || false
 
@@ -64,6 +67,7 @@ if(!emptyreload){
 
     setTimeout(() => {
       document.getElementById('splash-scr').style.display = 'none'
+      completesplash = true
     }, 600)
   }, 1000)
  
@@ -85,19 +89,27 @@ if(!emptyreload){
   localStorage.setItem('emptyreload', false)
 }
 
-function displayERR(){
-  var err = document.getElementById('err-message')
+function displayERR(type){
+  if(type === 'directory-exists' || !type){
+  var icparent = document.getElementById('err-icon-parent')
+  var ic = document.getElementById('err-icon')
+  var err = document.getElementById('err-message')}
+  else if(type === 'corupted-file'){
+    var icparent = document.getElementById('corrupt-icon-parent')
+    var ic = document.getElementById('corrupt-icon')
+    var err = document.getElementById('corrupt-message')
+  }
   err.style.display = 'block'
   setTimeout(() => {
     err.style.right = '0%'
     setTimeout(() => {
       err.style.opacity = '100%'
       setTimeout(() => {
-        document.getElementById('err-icon-parent').classList.add('jump')
-        document.getElementById('err-icon').classList.add('shake')
+        icparent.classList.add('jump')
+        ic.classList.add('shake')
         setTimeout(() => {
-          document.getElementById('err-icon-parent').classList.remove('jump')
-          document.getElementById('err-icon').classList.remove('shake')
+          icparent.classList.remove('jump')
+          ic.classList.remove('shake')
         },1560)
       }, 500)
       setTimeout(() => {
@@ -382,7 +394,13 @@ function NextSong(playlist, position){
     }
   }
   if(playlist[position] !== undefined){
-  const audio = loadSound(playlist[position].url, loaded)
+    var audio
+    try {
+      audio = loadSound(playlist[position].url, loaded, () => {corrupt = true})      
+    } catch (e) {
+      console.log('there was an error')
+      console.log(e)
+    }
   //console.log(playlist[position].url, audio)
   return audio
   } else{
@@ -413,7 +431,7 @@ function PrevSong(playlist, position){
     })
   }
   if(position > -1){
-    const audio = loadSound(playlist[position].url, loaded)
+    const audio = loadSound(playlist[position].url, loaded, () => {corrupt = true; goback = true})
     //console.log(playlist[position].url, audio)
     return audio
     } else{

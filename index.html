@@ -80,6 +80,19 @@
                 </h3>
             </div>
         </div>
+
+        <div class="corrupt-message" id="corrupt-message" style="position:absolute; top:0; right:-400px; width:400px; height:120px; background-color:#545454; opacity:80%; border-radius:20px; border-top-left-radius:0px; border-bottom-right-radius:0px; opacity:0%; color:white; transition:all.5s ease-out">
+
+            <i style="position: absolute; top:20%; left:10%; filter:invert(80%)" id="corrupt-icon-parent">
+                <img src="./Addons/icons/warning.png" style="height: 60px;" id="corrupt-icon">
+            </i>
+
+            <div style="position: absolute; top:20%; right:10%;">
+                <h3 style="width: 200px; font-size:23px; color:white">
+                    The track may be corrupted
+                </h3>
+            </div>
+        </div>
             
         <div class="current-track" id="current-track" style="position: absolute; width:70%; height:70%; background-color:transparent; top:12%; left:20%; border-radius: 10px; filter:blur(.5px) brightness(120%) sepia(10%); opacity:200%;">
             
@@ -469,7 +482,7 @@
                     <img src="./Addons/icons/SVG/volume.svg" style="height: 50px; filter:invert(70%)" id="vol-btn">
                 </i>
                 <div id="input-vol" class="input-vol" style="height: 57px; width:260px; position:absolute; bottom:180px; transform:rotate(270deg); right:-105px;">
-                    <input type="range" id="volslide" class="volslide" name="volume" min="0" max="20" style="width:250px; position:absolute; top:17px" value="50" step="1"/>
+                    <input type="range" id="volslide" class="volslide" name="volume" min="0" max="20" style="width:240px; position:absolute; top:17px; left:5px; z-index:99;" value="50" step="1"/>
                 </div>
             </div>
         </div>
