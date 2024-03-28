@@ -1,18 +1,23 @@
-let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol, unlockkey = false;
+let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol
+var unlockkey = false;
 var prevnul, rand, started = false
 let isPlaying, release = true;
 var follow = true
+var holdPL = false
 var timemode = 'normal'
 var startloaddate = Date.now()
 var PlayBackMode = 'linear'
 var state = 'paused'
 var plpos = 0;
+var BGready = false
 var refreshbuttons = []
 var eq = new p5.EQ(8)
 var BGspeed = '.2s'
+let imageMetadata = []
 var audioreact = document.getElementById('alternate-audio-react')
 var rs = getComputedStyle(audioreact)
 var timeoutplaypause = Date.now()
+document.getElementById('timeslide').style.transition = 'background-size 0.2s ease-out'
 
 try {
     eqbands = localStorage.getItem('eq').split(',') || [0, 0, 0, 0, 0, 0, 0, 0];
@@ -148,6 +153,14 @@ document.getElementById('div-inp').addEventListener('change', () => {
                     if(playlist.length > 0){
                     //console.log('entered')
                     console.log(playlist)
+                    imageMetadata = []
+                    /*playlist.forEach((song) => {
+                        if(song.title !== 'Unknown' && song.title){
+                            GetYoutubeData(song.title).then((data) => {
+                            imageMetadata.push(data)
+                        })
+                    }
+                    })*/
                     document.getElementById('refr-alt').click()
                     clearInterval(interval)}
                     else{
@@ -163,6 +176,10 @@ refreshbuttons.push(document.getElementById('Refresh'))
 
 refreshbuttons.forEach((refresh) => {
     refresh.addEventListener('click', () => {
+        refresh.style.pointerEvents = 'none'
+        setTimeout(() => {
+            refresh.style.pointerEvents = 'all'
+        }, 700);
         if(prevnul) {
             console.log('yes, it was')
             plpos = 0; 
@@ -255,15 +272,15 @@ document.getElementById('current-time').addEventListener('click', () => timemode
 
 volbtn = document.getElementById('bg-vol')
 volbtn.addEventListener('click', () => {
-    if(volbtn.style.height !== '350px'){
-    document.getElementById('vol-btn').style.transform = 'scale(0.7)'
+    if(volbtn.style.width !== '350px'){
+    document.getElementById('vol-btn').style.transform = 'scale(0.7) rotate(180deg)'
     document.getElementById('vol-btn').style.filter = 'invert(10%)'
-    volbtn.style.height = '350px'
+    volbtn.style.width = '350px'
     volbtn.style.backgroundColor = 'gray'}
     else{
-    document.getElementById('vol-btn').style.transform = 'scale(1)'
+    document.getElementById('vol-btn').style.transform = 'scale(1) rotate(180deg)'
     document.getElementById('vol-btn').style.filter = 'invert(70%)'
-    volbtn.style.height = '70px'
+    volbtn.style.width = '70px'
     volbtn.style.backgroundColor = 'transparent'
     }
 })
@@ -282,10 +299,10 @@ playpausebtn.addEventListener('click', () => {
 function loaded(){
     try {
         if(started){
-            audio.connect(eq)
             manageAudioData()
             audio.setVolume(volumeSlider.value / 20)
             audio.play()
+            audio.connect(eq)
             if(state === 'paused') audio.pause()
             
             next = document.getElementById('next')
@@ -341,7 +358,11 @@ function loaded(){
             })
         
             next.addEventListener('click',  () => {
+                console.log(holdPL, started)
+                if(!holdPL){
+                    console.log('yes')
                 if(started){
+                    console.log('yes')
                 switch(PlayBackMode){
                     case 'linear':{
                             console.log('clicked')
@@ -363,6 +384,12 @@ function loaded(){
                                 manageAudioData()
                                 audio.play()
                                 if(state === 'paused') audio.pause()
+
+                                /*if(imageMetadata[plpos]){
+                                    if(imageMetadata[plpos].thumbnail){
+                                        document.getElementById('alternate-audio-react').style.backgroundImage = `url(${imageMetadata[plpos].thumbnail})`
+                                    }
+                                }*/
                                   clearInterval(interval)
                                 }
                               }, 10)
@@ -372,10 +399,13 @@ function loaded(){
                     }break;
 
                     case 'shuffle':{
+                        console.log('yes')
                         if(started){
+                            console.log('shuffle')
                             console.log(audio)
                             let ipos;
                             if(corrupt){
+                                console.log('corrupt')
                                 corrupt = false
                                 ipos = plpos
                                 plpos = 0
@@ -435,7 +465,17 @@ function loaded(){
                         //if(audio.isLoaded()) audio.play()
                     }
                     }break;
-                }}
+                }}}
+                else{
+                    console.log('true')
+                    corrupt = true
+                    started = true
+                    holdPL = false
+                    let previousmode = PlayBackMode
+                        PlayBackMode = 'shuffle'
+                        next.click()
+                        PlayBackMode = previousmode
+                }
             })
             prev.addEventListener('click',  () => {
                 if(plpos > 0 && started){
@@ -477,42 +517,86 @@ window.addEventListener('keydown', (event) => {
             key = event.key
         }
 
-    if(noError && completesplash){
+        console.log(key)
+
+    if(completesplash){
         switch(key){
+
+            case '.':{
+                if(audio){
+                    if(audio.isLoaded()){
+                        document.getElementById('timeslide').value = (parseInt(document.getElementById('timeslide').value) + 10)                        
+                        document.getElementById('timeslide').dispatchEvent(new Event('change', { bubbles: true }))
+                    }
+                }
+                
+            }break;
+
+            case ',':{
+                if(audio){
+                    if(audio.isLoaded()){
+                        document.getElementById('timeslide').value = (document.getElementById('timeslide').value - 10)
+                        document.getElementById('timeslide').dispatchEvent(new Event('change', { bubbles: true }))
+                    }}
+            }break;
+
             case 'f':{
                 document.getElementById('change-state').click()
             }break;
 
             case ' ':{
+                if(!holdPL){
+                    console.log('there')
                 if(audio){
                     if(audio.isLoaded()){
                 playpausebtn.click()}}
+            }else{
+                console.log('maybe there')
+                next.click()
+                
+            }
             }break;
 
-            case 'ArrowLeft':{
+            case 'ArrowDown':{
                 if(audio){
                     if(audio.isLoaded()){
-                        prev.click()}}
-            }break;
-
-            case 'ArrowRight':{
-                if(audio){
-                    if(audio.isLoaded()){
-                        next.click()}}
+                        if(reversed){
+                        next.click()}
+                        else{
+                            prev.click()
+                        }}}
             }break;
 
             case 'ArrowUp':{
+                if(!holdPL){
+                if(audio){
+                    if(audio.isLoaded()){
+                        if(reversed){
+                            prev.click()}
+                        else{
+                            next.click()
+                        }}}    
+                    }
+                else{
+                    next.click()
+                }
+            }break;
+
+            case 'ArrowRight':{
                 volumeSlider.value = Math.max((volumeSlider.value + volumeSlider.step)/10) + 0.9
                 volumeSlider.dispatchEvent(new Event('input', { bubbles: true}));
             }break;
 
-            case 'ArrowDown':{
+            case 'ArrowLeft':{
                 volumeSlider.value = volumeSlider.value - volumeSlider.step
                 volumeSlider.dispatchEvent(new Event('input', { bubbles: true }));
             }break;
             case 'Escape':{
                 if(document.getElementById('options').style.left !== '-380px'){
                     openMENU()
+                }
+                if(volbtn.style.width === '350px'){
+                    volbtn.click()
                 }
                 document.getElementById('eq-menu').style.top = '-500px'
                 document.getElementById('eq-menu').style.opacity = '0%'
@@ -539,7 +623,6 @@ var trackinterval = setInterval(() => {
     }}
 }, 100)
 
-var tempvol = 0
 
 function manageAudioData(){
     if(audio){
@@ -549,9 +632,8 @@ function manageAudioData(){
             let totaltime = Math.max(Math.floor(audio.duration() / 60), 0) + ':' + totalseconds
             document.getElementById('total-time').innerHTML = totaltime
             //audio.output.channelCount = 8
-            if(tempvol !== volumeSlider.value / 20){
             audio.setVolume(volumeSlider.value / 20)
-            tempvol = volumeSlider.value / 20}
+            audio.connect(eq)
             //console.log(audio)
             document.getElementById('track-artist').innerHTML = playlist[plpos].artist || 'Unknown'
             document.getElementById('track-name').innerHTML = playlist[plpos].title || 'Unknown'
@@ -563,7 +645,7 @@ function manageAudioData(){
 function draw(){
     try {
         if(audio){
-                if(started){
+                if(started && !holdPL){
                     try {
                         vol = amplitude.getLevel()
                     } catch (e) {
@@ -635,7 +717,6 @@ function draw(){
                 if(corrupt){
                     if(audio.buffer === null || audio.duration() === 0){
                         if(corrupt){
-                        corrupt = false
                         //console.log(audio)
                         started = true
                         displayERR('corupted-file')
@@ -643,10 +724,18 @@ function draw(){
                         if(plpos < playlist.length - 1){
                         next.click()}
                         else{
-                            let previousmode = PlayBackMode
-                            PlayBackMode = 'shuffle'
-                            next.click()
-                            PlayBackMode = previousmode
+                            console.log('passed')
+                            if(playlist.length > 0){
+                            plpos = 0
+                            holdPL = true
+                            audio.stop()
+                            console.log('passed there also')
+                            document.getElementById('play-pause').style.opacity = '100%'
+                            document.getElementById('loading').style.opacity = '0%'
+                            state = 'paused'
+                            document.getElementById('disk').style.animationPlayState = 'paused'
+                            document.getElementById('state-track').innerHTML = 'Paused'
+                            document.getElementById('play-pause').src = './Addons/icons/pause.png'}
                         }}
                         else{
                             goback = false
@@ -654,24 +743,16 @@ function draw(){
                                 prev.click()
                             }
                         }
+                        corrupt = false
                     console.log('There might be an error in the audio file')}}
                     //startloaddate = Date.now()
                 }
+                console.log('there?????????????')
+                if(!holdPL){
                 document.getElementById('play-pause').style.opacity = '0%'
-                document.getElementById('loading').style.opacity = '100%'
+                document.getElementById('loading').style.opacity = '100%'}
                 //console.log('not loaded')
-            }   } else{
-                /*let difference = Date.now() - startloaddate
-                if(difference > 2000){
-                    startloaddate = Date.now()
-                    //console.log('refreshed')
-                    document.getElementById('refr-alt').click()
-                } else{
-                    //console.log(difference)
-                }
-                prevnul = true*/
-                //console.log('not started')
-            }
+            }}
     } catch (e) {
             //console.log(e)
     }
@@ -689,4 +770,14 @@ setInterval(() => {
                 //console.log('not started')
     }
 }, 1000)
+
+/*setInterval(() => {
+    if(imageMetadata.length > 0){
+        BGready = true
+        console.log('ready')
+        console.log(imageMetadata)
+    }else{
+        BGready = false
+    }
+}, 1000)*/
 

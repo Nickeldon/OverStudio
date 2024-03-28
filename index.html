@@ -383,12 +383,33 @@
                         Disable Amplitude Reactor
                     </a>
                 </div>
+
+                <div class="opt-txt" style="opacity:0%; top:490px; width:450px" onclick="
+                var txt = document.getElementById('anim-txt0');
+                txt.innerText = txt.innerText === 'Animations speed: 1x' ? 'Animations speed: 2x' : 'Animations speed: 1x';
+                var state = txt.innerText === 'Animations speed: 1x' ? true : false;
+
+                if(!state){
+                    chosenSpeed = 'fast'
+                    animationSpeeds(speeds['fast'])
+                } else {
+                    chosenSpeed = 'baseSpeed'
+                    animationSpeeds(speeds['baseSpeed'])
+                }
+                localStorage.setItem('animations', (chosenSpeed))
+                ">
+                    <a  style="left: 70px;" id="anim-txt0">
+                        Animations speed: 1x
+                    </a>
+                </div>
+
+                
             </div>
                 
          </div>
  
          <div id="opt-preview" class="opt-preview" style="display:block; height: 80%; width:100px; background-color:transparent; position:absolute; top:130px; left:55px; opacity:20%">
-             <i class="menu-icns" onclick="openMENU(); options(1)">  
+             <i class="menu-icns" onclick="openMENU(); options(1)" id="menu-folder">  
                  <img src="./Addons/icons/SVG/folder.svg" style="height: 65px; filter:invert(70%); left:20px; top:100px; position:absolute">
              </i>
      
@@ -396,7 +417,7 @@
                  <img id="Refresh" src="./Addons/icons/SVG/refresh.svg" style="height: 55px; filter:invert(70%); left:30px; top:280px; position:absolute">
              </i>
 
-             <i class="menu-icns" onclick="openMENU(); options(2)">
+             <i class="menu-icns" onclick="openMENU(); options(2)" id="menu-add">
                 <img id="MoreContext" src="./Addons/icons/SVG/add.svg" style="height: 70px; filter:invert(70%); left:25px; top:452px; position:absolute">
             </i>
      
@@ -476,13 +497,13 @@
 
         </div>
 
-        <div style="position: absolute; right:37%; bottom:4.5%" id="volume-slider">
-            <div id="bg-vol" style="height:70px; width:50px; border-radius:40px; border-style:solid; background-color:transparent; opacity:70%; border-color:transparent; transition:all 1s ease-in-out">
-                <i style="height: 40px; position:absolute; bottom:25px; right: 5%" class="vol-btn">
-                    <img src="./Addons/icons/SVG/volume.svg" style="height: 50px; filter:invert(70%)" id="vol-btn">
+        <div style="position: absolute; right:40%; bottom:5.8%; width:fit-content; height:70px; transform-origin:right; transform:rotate(180deg); " id="volume-slider">
+            <div id="bg-vol" style="height:50px; width:70px; border-radius:40px; border-style:solid; background-color:transparent; opacity:70%; border-color:transparent; transition:all 1s ease-in-out;">
+                <i style="height: 40px; position:absolute; bottom:28px; right: 5%;" class="vol-btn">
+                    <img src="./Addons/icons/SVG/volume.svg" style="height: 50px; filter:invert(70%); transform:rotate(180deg)" id="vol-btn">
                 </i>
-                <div id="input-vol" class="input-vol" style="height: 57px; width:260px; position:absolute; bottom:180px; transform:rotate(270deg); right:-105px;">
-                    <input type="range" id="volslide" class="volslide" name="volume" min="0" max="20" style="width:240px; position:absolute; top:17px; left:5px; z-index:99;" value="50" step="1"/>
+                <div id="input-vol" class="input-vol" style="height: 57px; width:260px; position:absolute; right:70px; transform:rotate(180deg)">
+                    <input type="range" id="volslide" class="volslide" name="volume" min="0" max="20" style="width:240px; position:absolute; top:22px; left:5px; z-index:99;" value="50" step="1"/>
                 </div>
             </div>
         </div>

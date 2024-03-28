@@ -17,14 +17,24 @@ var reversed = (/true/).test(localStorage.getItem('reversed')) || false
 localStorage.setItem('reversed', reversed)
 var ready = false
 
-function GetYoutubeData(title){
-    title = 'DISHONOR'
-    $.getJSON(`http://localhost:${PORT}/getThumbnail?title=${JSON.stringify(title)}`, (data) => {
-        if(data === 'nothing'){console.log('Nothing')}
-        else{
-            console.log(data)
-        }
-    })
+async function GetYoutubeData(title){
+    if(title){
+    try {
+        //let data = await fetch(`http://localhost:${PORT}/getThumbnail?title=${JSON.stringify(title)}`)
+        
+        $.getJSON(`http://localhost:${PORT}/getThumbnail?title=${JSON.stringify(title)}`, (data) => {
+            if(data){
+                return data}
+            else{
+                return null
+            }
+    
+        })
+    } catch (e) {
+        console.log(e)
+        return null  
+    }
+    }
 }
 
 

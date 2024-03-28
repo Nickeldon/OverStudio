@@ -1,5 +1,15 @@
 var completesplash = false
 var corrupt = false
+const speeds = {
+  baseSpeed: [1, 1, 1, 1, 1, 1000],
+  fast: [0.5, 0.5, 0.5, 0.5, 0.5, 600]
+}
+var chosenSpeed = localStorage.getItem('animations') || 'baseSpeed'
+localStorage.setItem('animations', (chosenSpeed))
+animationSpeeds(speeds[chosenSpeed])
+
+if(chosenSpeed === 'fast'){document.getElementById('anim-txt0').innerHTML = 'Animations speed: 2x'}
+else {document.getElementById('anim-txt0').innerHTML = 'Animations speed: 1x'}
 effectsArray = JSON.parse(localStorage.getItem('effectsState')) || {dust: 'true', amplitude: 'true'}
 console.log(effectsArray)
 var goback = false
@@ -14,6 +24,7 @@ if(!enAmpl) {
   document.getElementById('alternate-audio-react').style.display = 'none'
   document.getElementById('gradient').style.display = 'none'}
 localStorage.setItem('effectsState', JSON.stringify(effectsArray))
+
 
 var idle = 0;
 var idletimeout = 20
@@ -87,6 +98,30 @@ if(!emptyreload){
   }
   document.getElementById('splash-scr').style.display = 'none'
   localStorage.setItem('emptyreload', false)
+}
+
+function animationSpeeds(transitions){
+  console.log(document.getElementById('eq-menu').style.transition,
+  document.getElementById('opt-menu2').style.transition, 
+  document.getElementById('opt-menu3').style.transition, 
+  document.getElementById('opt-menu4').style.transition,
+  document.getElementById('opt-menu5').style.transition,
+  document.getElementById('opt-menu6').style.transition,
+  document.getElementById('options').style.transition,
+  document.getElementById('Audio-react').style.transition,
+  document.getElementById('UI-scr1').style.transition)
+  if(transitions){
+    console.log('yes passed')
+  document.getElementById('eq-menu').style.transition = `all ${transitions[0]}s ease-out`
+  document.getElementById('opt-menu2').style.transition, 
+  document.getElementById('opt-menu3').style.transition, 
+  document.getElementById('opt-menu4').style.transition,
+  document.getElementById('opt-menu5').style.transition,
+  document.getElementById('opt-menu6').style.transition = `all ${transitions[1]}s opacity ${(transitions[1]) - 0.2}s ease-in-out`
+  document.getElementById('options').style.transition = `all ${transitions[2]}s ease-in-out`
+  document.getElementById('Audio-react').style.transition = `transform ${transitions[3]}s ease-out`
+  document.getElementById('UI-scr1').style.transition = `opacity ${transitions[4]}s ease-out`
+}
 }
 
 function displayERR(type){
@@ -186,13 +221,14 @@ function openMENU(){
   document.getElementById('opt-menu5').style.opacity = '0%'
   document.getElementById('opt-menu6').style.opacity = '0%'
   optprev.style.display = 'block'
+  let deletespeed = parseInt(speeds[chosenSpeed][5]) - 200
   setTimeout(() => {
     document.getElementById('opt-menu2').style.display = 'none'
     document.getElementById('opt-menu3').style.display = 'none'
     document.getElementById('opt-menu4').style.display = 'none'
-    document.getElementById('opt-menu5').style.display = '0%'
+    document.getElementById('opt-menu5').style.display = 'none'
     document.getElementById('opt-menu6').style.display = 'none'
-  }, 800)
+  }, deletespeed)
 
   document.getElementsByClassName('opt-txt').forEach((elem) => {
     if(elem.style.opacity === '0') elem.style.opacity = '100%'
@@ -244,6 +280,14 @@ function openMENU(){
 }
 
 function options(choice){
+  console.log(parseInt(speeds[chosenSpeed][5]) + 100)
+  document.getElementsByClassName('menu-icns').forEach((elem) => {
+    elem.style.pointerEvents = 'none'
+    setTimeout(() => {
+      elem.style.pointerEvents = 'all'
+      console.log('passed')
+    }, (parseInt(speeds[chosenSpeed][5]) + 100))
+  })
   document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
   document.getElementById('eq-menu').style.top = '-500px'
   document.getElementById('eq-menu').style.opacity = '0%'
@@ -252,6 +296,7 @@ function options(choice){
   }, 1000);
   switch(choice){
     case 1: {
+      //document.getElementById('menu-folder').style.pointerEvents = 'none'
       document.getElementById('options').style.left = '-380px'
       document.getElementById('opt-menu1').style.opacity = '0%'
       document.getElementById('opt-preview').style.opacity = '0%'
@@ -260,16 +305,18 @@ function options(choice){
         setTimeout(() => {
           setTimeout(() => {
             document.getElementById('opt-preview').style.display = 'none'
+            //document.getElementById('menu-folder').style.pointerEvents = 'all'
           }, 200)
           
           document.getElementById('options').style.left = '0%'
           document.getElementById('opt-menu2').style.opacity = '100%'
         }, 10)
-      }, 1000)
+      }, parseInt(speeds[chosenSpeed][5]))
 
     }break;
 
     case 2: {
+      //document.getElementById('menu-add').style.pointerEvents = 'none'
       document.getElementById('options').style.left = '-380px'
       document.getElementById('opt-menu1').style.opacity = '0%'
       document.getElementById('opt-preview').style.opacity = '0%'
@@ -278,12 +325,13 @@ function options(choice){
         setTimeout(() => {
           setTimeout(() => {
             document.getElementById('opt-preview').style.display = 'none'
+            //document.getElementById('opt-menu3').style.pointerEvents = 'all'
           }, 200)
           
           document.getElementById('options').style.left = '0%'
           document.getElementById('opt-menu3').style.opacity = '100%'
         }, 10)
-      }, 1000)
+      }, parseInt(speeds[chosenSpeed][5]))
     }break;
 
     case 3: {
@@ -301,7 +349,7 @@ function options(choice){
           document.getElementById('options').style.left = '0%'
           document.getElementById('opt-menu4').style.opacity = '100%'
         }, 10)
-      }, 1000)
+      }, parseInt(speeds[chosenSpeed][5]))
     }break;
 
     case 4: {
@@ -319,7 +367,7 @@ function options(choice){
           document.getElementById('options').style.left = '0%'
           document.getElementById('opt-menu5').style.opacity = '100%'
         }, 10)
-      }, 1000)
+      }, parseInt(speeds[chosenSpeed][5]))
     }break;
 
     case 5: {
@@ -363,7 +411,7 @@ function options(choice){
           document.getElementById('options').style.left = '0%'
           document.getElementById('opt-menu6').style.opacity = '100%'
         }, 10)
-      }, 1000)
+      }, parseInt(speeds[chosenSpeed][5]))
     }break;
   }
 }
@@ -440,8 +488,9 @@ function PrevSong(playlist, position){
     }
 }
 
-function PlayPause(audio){
+function PlayPause(audio, state){
   const btn = document.getElementById('play-pause')
+  if(audio){
   if(!audio.isPlaying()){
     document.getElementById('state-track').innerHTML = 'Now Playing'
     document.getElementById('disk').style.animationPlayState = 'running'
@@ -452,6 +501,19 @@ function PlayPause(audio){
     document.getElementById('state-track').innerHTML = 'Paused'
     btn.src = './Addons/icons/pause.png'
     audio.pause()
+  }}
+  else{
+    if(state === 'paused'){
+      document.getElementById('state-track').innerHTML = 'Now Playing'
+      document.getElementById('disk').style.animationPlayState = 'running'
+      btn.src = './Addons/icons/play.png'
+      //audio.play()
+    } else{
+      document.getElementById('disk').style.animationPlayState = 'paused'
+      document.getElementById('state-track').innerHTML = 'Paused'
+      btn.src = './Addons/icons/pause.png'
+      //audio.pause()
+    }
   }
 }
 
