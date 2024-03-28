@@ -240,6 +240,8 @@ app.get('/ParseLinks', (req, res, next) => {
             //console.log(savedPL.meta)
             if(savedPL.meta.links.length === 0){
                 console.log('no links')
+                const CurrentTime = new Date().toUTCString()
+                fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + 'No playlist detected' + '\n\n')
             }
             else{
             savedPL.meta.links.forEach((elem) => {
@@ -256,7 +258,7 @@ app.get('/ParseLinks', (req, res, next) => {
     }
 
     //console.log(mediaarr)
-    //console.log(savedPL)
+    console.log(savedPL.meta.links.length)
     if(savedPL.meta.links.length > 0){
     var combinedArray = []
     mediaarr.forEach((elem) => {
@@ -275,6 +277,7 @@ app.get('/ParseLinks', (req, res, next) => {
     //console.log(mediaarr.length)
     //console.log(mediaarr)
     if(combinedArray.length > 1){
+        //console.log('YES')
     combinedArray.forEach((elem) => {
         //console.log(elem + '\n\n')
         try {
@@ -283,9 +286,11 @@ app.get('/ParseLinks', (req, res, next) => {
                 "title": getMediaMeta(elem).title || undefined,
                 "cover": getMediaMeta(elem).cover || undefined,
                 "artist": getMediaMeta(elem).artist || undefined,
-                "album": getMediaMeta(elem).album || undefined
+                "album": getMediaMeta(elem).album || undefined,
+                "File_format": getMediaMeta(elem).fformat || 'No specified File format'
             })   
         } catch (e) {
+            console.log(e)
             const CurrentTime = new Date().toUTCString()
             fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
             finalArray.push({
@@ -293,7 +298,7 @@ app.get('/ParseLinks', (req, res, next) => {
                 "title": undefined,
                 "cover":  undefined,
                 "artist": undefined,
-                "album": undefined
+                "album": undefined,
             })   
         }
     })} else if(combinedArray.length === 1){
@@ -304,9 +309,11 @@ app.get('/ParseLinks', (req, res, next) => {
                 "title": getMediaMeta(combinedArray[0]).title || undefined,
                 "cover": getMediaMeta(combinedArray[0]).cover || undefined,
                 "artist": getMediaMeta(combinedArray[0]).artist || undefined,
-                "album": getMediaMeta(combinedArray[0]).album || undefined
+                "album": getMediaMeta(combinedArray[0]).album || undefined,
+                "File_format": getMediaMeta(elem).fformat || 'No specified File format'
             })   
         } catch (e) {
+            console.log(e)
             const CurrentTime = new Date().toUTCString()
             fs.appendFileSync(__dirname + '\\errorlog.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
             finalArray.push({
@@ -342,13 +349,30 @@ function verifyURIIntegrity(URI){
 }
 
 function getMediaMeta(Path){
-    var title, artist, album, image, base64
+    var title, artist, album, image, base64, fformat
     var jsmediatags = require("jsmediatags");
+    //console.log(Path)
+
+    // console.log(tag);
+    let tempPath = Path
+    for(let i = tempPath.length; i > 0; i--){
+     //console.log(tempPath[i])
+         if(tempPath[i] === '.'){
+             //console.log('true')
+             tempPath = tempPath.split('.')
+             tempPath[1] = tempPath[1].toLowerCase()
+             console.log(tempPath[1])
+             if(tempPath[1] === 'mp3' || tempPath[1] === 'flac' || tempPath[1] === 'wav' || tempPath[1] === 'aac'){
+                 fformat = '.' + tempPath[1]
+             }else{
+                 fformat = '.' + tempPath[1]
+             }
+             break;
+         }
+     }
 
     jsmediatags.read(Path, {
     onSuccess: function(tag) {
-       // console.log(tag);
-        
         title = tag.tags.title
         image = tag.tags.picture;
         artist = tag.tags.artist;
@@ -372,7 +396,7 @@ function getMediaMeta(Path){
     });
 
     if(!title){
-            //console.log('true')
+            //console.log('true no title')
             var cont = true
             for(let i = Path.length; i > 0 && cont; i--){
                 if(Path[i] === '\\'){
@@ -388,8 +412,8 @@ function getMediaMeta(Path){
                 }
             }
         } 
-
-    return{base64, title, artist, album}
+        //console.log(fformat)
+    return{base64, title, artist, album, fformat}
 }
 
 function getMediaArray(Path){
@@ -402,8 +426,10 @@ function getMediaArray(Path){
                     for(let i = elem.length; i > 0 && cont; i--){
                         if(elem[i] === '.'){
                             elem = elem.split('.')
+                            elem[1] = elem[1].toLowerCase()
                             if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac'){
                             resultArray.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
+                            //console.log('resultArray')
                             cont = false
                         }
                     }

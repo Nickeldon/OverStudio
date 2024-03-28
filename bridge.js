@@ -278,7 +278,8 @@ function deldiv(nbr, link){
 }
 
 function getFullDataNode(raw){
-
+    console.log(raw)
+    const FileFormat = raw.File_format
     const main = document.createElement('div')
     main.className = 'child-track'
     main.id = 'child-track'
@@ -294,9 +295,9 @@ function getFullDataNode(raw){
     title.style.top = '15px'; title.style.left = '20px'; title.style.color = 'white'; title.style.fontSize = '25px'; title.style.filter = 'invert(30%)'; title.style.transition = 'all 1s ease-out'; title.innerHTML = raw.title || 'Unknown';
     const artist = document.createElement('h3'); artist.style.fontFamily = 'PS, sans-serif'; artist.style.position = 'absolute'; artist.style.top = '50px'; artist.style.left = '20px'; artist.style.color = 'white'; artist.style.fontSize = '15px'; artist.style.filter = 'invert(60%)'; artist.style.transition = 'all 1s ease-out'; artist.innerHTML = raw.artist || 'Unknown';
     const album = document.createElement('h3');
-    album.style.fontFamily = 'PS, sans-serif'; album.style.position = 'absolute'; album.style.top = '80px'; album.style.left = '20px'; album.style.color = 'white'; album.style.fontSize = '15px'; album.style.filter = 'invert(60%)'; album.style.transition = 'all 1s ease-out'; album.innerHTML = raw.album || 'Unknown';
-
-    info.appendChild(title); info.appendChild(artist); info.appendChild(album);
+    album.style.fontFamily = 'PS, sans-serif'; album.style.position = 'absolute'; album.style.top = '80px'; album.style.left = '20px'; album.style.color = 'white'; album.style.fontSize = '15px'; album.style.filter = 'invert(60%)'; album.style.transition = 'all 1s ease-out'; album.innerHTML = raw.album || 'Unknown'; album.style.overflow = 'hidden'; album.style.textOverflow = 'ellipsis'; album.style.whiteSpace = 'nowrap'; album.style.width = '200px';
+    const format = document.createElement('h3'); format.style.fontFamily = 'PS, sans-serif'; format.style.position = 'absolute'; format.style.top = '80px'; format.style.right = '20px'; format.style.color = 'white'; format.style.fontSize = '20px'; format.style.fontWeight = '100'; format.style.filter = 'invert(60%)'; format.style.transition = 'all 1s ease-out'; format.innerHTML = FileFormat || '.unk';
+    info.appendChild(title); info.appendChild(artist); info.appendChild(album); info.appendChild(format);
     main.appendChild(info)
     main.appendChild(imgparent)
     main.style.transition = 'all 2s ease-out opacity .2s ease-out'
@@ -306,6 +307,7 @@ function getFullDataNode(raw){
 }
 
 function ManageData(data){
+    console.log(data)
     //console.log(data[0])
     //console.log(data)
     if(data[1].length > 0){
