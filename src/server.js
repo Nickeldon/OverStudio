@@ -258,7 +258,7 @@ app.get('/ParseLinks', (req, res, next) => {
     }
 
     //console.log(mediaarr)
-    console.log(savedPL.meta.links.length)
+    //console.log(savedPL.meta.links.length)
     if(savedPL.meta.links.length > 0){
     var combinedArray = []
     mediaarr.forEach((elem) => {
@@ -361,7 +361,7 @@ function getMediaMeta(Path){
              //console.log('true')
              tempPath = tempPath.split('.')
              tempPath[1] = tempPath[1].toLowerCase()
-             console.log(tempPath[1])
+             //console.log(tempPath[1])
              if(tempPath[1] === 'mp3' || tempPath[1] === 'flac' || tempPath[1] === 'wav' || tempPath[1] === 'aac'){
                  fformat = '.' + tempPath[1]
              }else{

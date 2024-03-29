@@ -10,8 +10,18 @@ animationSpeeds(speeds[chosenSpeed])
 
 if(chosenSpeed === 'fast'){document.getElementById('anim-txt0').innerHTML = 'Animations speed: 2x'}
 else {document.getElementById('anim-txt0').innerHTML = 'Animations speed: 1x'}
+
+var bootsoundbool = (/true/).test(localStorage.getItem('Sound_boot')) || false
+localStorage.setItem('Sound_boot', bootsoundbool)
+console.log(bootsoundbool)
+if(bootsoundbool){
+  document.getElementById('boot-snd-txt0').innerText = 'Disable Sound at boot'
+}
+else{
+  document.getElementById('boot-snd-txt0').innerText = 'Enable Sound at boot'
+}
+
 effectsArray = JSON.parse(localStorage.getItem('effectsState')) || {dust: 'true', amplitude: 'true'}
-console.log(effectsArray)
 var goback = false
 var enDust = (/true/).test(effectsArray['dust']) || false
 var enAmpl = (/true/).test(effectsArray['amplitude']) || false
@@ -70,8 +80,9 @@ var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 var initx = 1777
 
 if(!emptyreload){
+  if(bootsoundbool){
   document.querySelector('audio').play()
-  document.querySelector('audio').volume = '0.3'
+  document.querySelector('audio').volume = '0.3'}
   window.onload = () => {
   setTimeout(() => {
     document.getElementById('splash-scr').style.opacity = '0%'

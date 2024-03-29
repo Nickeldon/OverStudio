@@ -13,7 +13,7 @@
     <script src="./Addons/Packages/SoundListener/p5.min.js"></script>
     <script src="./Addons/Packages/SoundListener/p5.sound.min.js"></script>
     <script src="./Addons/Packages/JQuery 3.1.1/jquery-3.1.1.min.js"></script>
-    <script src="bridge.js"></script>
+    <script src="scripts/bridge.js"></script>
 </head>
 <script  src="./Addons/BG/dist/script.js"></script>
 <link rel="stylesheet" href="./Addons/BG/dist/Packages/normalize.min.css">
@@ -400,6 +400,18 @@
                 ">
                     <a  style="left: 70px;" id="anim-txt0">
                         Animations speed: 1x
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:640px; width:450px" onclick="
+                var txt = document.getElementById('boot-snd-txt0');
+                txt.innerText = txt.innerText === 'Enable Sound at boot' ? 'Disable Sound at boot' : 'Enable Sound at boot';
+                var state = txt.innerText === 'Enable Sound at boot' ? false : true;
+                console.log(state)
+                localStorage.setItem('Sound_boot', state)
+                ">
+                    <a  style="left: 70px;" id="boot-snd-txt0">
+                        Disable Sound at boot
                     </a>
                 </div>
 
@@ -1055,7 +1067,7 @@
     }
 </style>
 
-<script src="themeselect.js"></script>
-<script src="main.js"></script>
-<script src="soundprocess.js"></script>
+<script src="scripts/themeselect.js"></script>
+<script src="scripts/main.js"></script>
+<script src="scripts/soundprocess.js"></script>
 </html>
