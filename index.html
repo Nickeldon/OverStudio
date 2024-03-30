@@ -25,7 +25,7 @@
     <audio src="./Addons/SF/startup.mp3" style="visibility: hidden;"></audio>
 
     <div id="splash-scr" style="transition:all .6s ease-out; opacity:100%; display:block; width:100%; height:100%; position:absolute; top:0; left:0; z-index:99; background-color:black">
-        <object data="./splashscr.html" style="width: 1777px; height:1000px; position:absolute; top:0; left:0; z-index:99; pointer-events:none; user-select:none; border-radius:20px"></object>
+        <object data="./splashscr.html" style="width: 1777px; height:1000px; position:absolute; top:0; left:0; z-index:99; pointer-events:none; user-select:none; border-radius:20px" id="splash-scr-obj"></object>
     </div>
 
     <div id="vintage-filter" style="pointer-events: none; user-select: none; height:1000px">
@@ -34,7 +34,7 @@
 
     <div class="main" id="main" style="width: 1777px; height:1000px; position:relative; background-color:black; border-radius:20px; top:0; left:0">
 
-        <div class="draggable" style="background-color: transparent; z-index:99; position:absolute; top:0; right:0; width:80%; height:130px">
+        <div class="draggable" id="draggable" style="background-color: transparent; z-index:99; position:absolute; top:0; right:0; width:80%; height:130px">
 
         </div>
         <div style=" position: relative; width: 100%; height: 100%; user-select:none;" class="BG-anim" id="BG-anim">
@@ -104,16 +104,19 @@
         <div class="eq-menu" id="eq-menu" style="position: absolute; top:-500px; width:80%; left:11%; background-image: linear-gradient(to bottom, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0.3));border-bottom-right-radius:20px; border-top-right-radius:10px; border-top-left-radius:10px; border-bottom-left-radius:20px; height:700px; transition:all 1s ease-out; opacity:0%; display:none;">
             
             <!--<div id="presets-btn" class="presets-btn" style="position:absolute; height:500px; width: 240px; left:35%; top:-450px; background-color:rgba(143, 7, 7, 0.696);"></div>-->
-                <a class="btn btn-trapezoid-outline" style="position:absolute; top:-25px; left:39%;">
+                <!--<a class="btn btn-trapezoid-outline" style="position:absolute; top:-25px; left:39%;">
                     <span style="font-family:PS, sans-serif; font-size:27px; color:white; filter:invert(50%); text-align:center;">
                         Presets
                     </span>
-                  </a>
+                  </a>-->
 
             <h1 style="text-align: left; font-size:55px; margin-left:100px; margin-top:100px; font-family:PS, sans-serif;
             color:black;
+            width:70%;
             filter: invert(50%);
-            text-shadow: rgb(255, 55, 0) 1px 0 10px;">
+            text-shadow: rgb(255, 55, 0) 1px 0 10px;
+            pointer-events:none;
+            user-select:none">
                 Equalizer
             </h1>
 
@@ -144,6 +147,35 @@
                     <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:230px; filter: invert(80%); color:black;">12</h3>
                     <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:365px; filter: invert(80%); color:#000;">0</h3>
                     <h4 style="color: white; position:absolute; font-size:25px; font-family:PS, sans-serif; font-weight:100; top:500px; filter: invert(80%); color:#000;">-12</h3>
+                </div>
+            </div>
+            <div class="preset-select" style="background-color: transparent; position:absolute; bottom:0; right:0; width:210px; height:90%">
+                <a id="eq-presets" class="eq-presets" onclick="
+                if(document.getElementById('eq-pres-ch').style.height !== '80%'){
+                    document.getElementById('eq-pres-ch').style.height = '80%';
+                    document.getElementById('draggable').style.display = 'none';
+                } else {
+                    document.getElementById('eq-pres-ch').style.height = '0%';
+                    document.getElementById('draggable').style.display = 'block';
+                }
+                ">
+                   Presets
+                </a>
+
+
+                <div class="eq-presets-choices" id="eq-pres-ch">
+                    <a id="eq-flat">Flat</a>
+                    <a id="eq-bass">Bass Boost</a>
+                    <a id="eq-treble">Treble</a>
+                    <a id="eq-vocal">Vocal</a>
+                    <a id="eq-rock">Rock</a>
+                    <a id="eq-pop">Pop</a>
+                    <a id="eq-jazz">Jazz</a>
+                    <a id="eq-classical">Classical</a>
+                    <a id="eq-metal">Metal</a>
+                    <a id="eq-custom-1">Custom 1</a>
+                    <a id="eq-custom-2">Custom 2</a>
+                    <a id="eq-custom-3">Custom 3</a>
                 </div>
             </div>
         </div>
@@ -606,6 +638,97 @@
           transform: perspective(100) rotateX(30deg) translateZ(7px) translateY(4px);
         }
       }
+
+    .eq-presets{
+        position: absolute; 
+        bottom:0; 
+        right:0; 
+        height:50px;
+        width:200px;
+        border-top-left-radius:20px;
+        border-top-right-radius:0px;
+        border-bottom-left-radius:0px;
+        border-bottom-right-radius:20px;
+        background-color: rgba(139, 139, 139, 0.686);
+        font-family: PS, sans-serif;
+        font-size: 25px;
+        color: rgb(56, 56, 56);
+        text-align: center;
+        padding-top: 30px;
+    }
+
+    .eq-presets:hover{
+        cursor: pointer;
+        background-color: rgba(169, 169, 169, 0.785);
+    }
+
+    .eq-presets-choices::-webkit-scrollbar-track {
+        border: 1px solid #000;
+        padding: 2px 0;
+        background-color: #404040;
+    }
+
+    .eq-presets-choices::-webkit-scrollbar {
+        position: absolute;
+        right: 0;
+        visibility: hidden;
+        display: none;
+        border-radius: 20px;
+        width: 20px;
+    }
+
+    .eq-presets-choices::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #737272;
+        border: 1px solid #000;
+    }
+
+    .eq-presets-choices{
+        border-top-right-radius: 20px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 20px;
+        transform: rotate(180deg);
+        position: absolute;
+        right:0;
+        bottom:80px; 
+        width:200px;
+        transition: height 1s ease-in-out;
+        height:0%;
+        overflow-y:scroll;
+        overflow-x: hidden;
+        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.305));
+        a{
+            font-family: PS, sans-serif;
+            font-size: 20px;
+            text-align: center;
+            transform: rotate(180deg);
+            display: block;
+            padding-bottom: 5px;
+            padding-top: 15px;
+            border-bottom-width: 1px;
+            border-right-width: 0px;
+            border-left-width: 0px;
+            color: black;
+            filter: invert(70%);
+            border-top-width: 1px;
+            border-style: solid;
+            border-color: #000;
+            width: 100%;
+            height:50px;
+            transition: all 1s ease-in-out;
+        }
+
+        a:hover{
+            cursor: pointer;
+            background-color: rgba(139, 139, 139, 0.686);
+            color: white;
+            filter: invert(0%);
+        
+        }
+
+    }
 
     .eq-range:hover{
         cursor: pointer;

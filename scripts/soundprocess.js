@@ -9,6 +9,24 @@ var startloaddate = Date.now()
 var PlayBackMode = 'linear'
 var state = 'paused'
 var plpos = 0;
+var customBands = JSON.parse(localStorage.getItem('customBands')) || {
+    custom1: [0, 0, 0, 0, 0, 0, 0, 0],
+    custom2: [0, 0, 0, 0, 0, 0, 0, 0],
+    custom3: [0, 0, 0, 0, 0, 0, 0, 0],
+    bass: [6, 4, 2, 0, -2, -4, -6, -8],
+    treble: [-2, -4, -6, -8, 6, 4, 2, 0],
+    vocal: [4, 2, 0, -2, 4, 6, 8, 10],
+    rock: [6, 4, 2, 0, -2, 0, 4, 8],
+    pop: [4, 2, 0, -4, 4, 6, 8, 10],
+    jazz: [2, 0, -2, 0, 4, 2, 0, 4],
+    classical: [0, 0, 0, 0, 2, 0, 0, 2],
+    metal: [8, 6, 4, 0, -2, -4, 4, 8],
+    flat: [0, 0, 0, 0, 0, 0, 0, 0]
+}
+console.log(localStorage)
+var selectedCustom = localStorage.getItem('eq-save') || 'flat'
+localStorage.setItem('customBands', JSON.stringify(customBands))
+localStorage.setItem('eq-save', selectedCustom)
 var BGready = false
 var refreshbuttons = []
 var eq = new p5.EQ(8)
@@ -25,9 +43,16 @@ try {
     eqbands = [0, 0, 0, 0, 0, 0, 0, 0];    
 }
 
+if(selectedCustom){
 document.getElementsByClassName('eq-range').forEach((range, index) => {
-    document.getElementsByClassName('eq-range')[index].value = eqbands[index]
+    console.log(selectedCustom)
+        document.getElementsByClassName('eq-range')[index].value = customBands[selectedCustom][index]
 })
+document.getElementById(`eq-${selectedCustom}`).style.backgroundColor = 'rgba(139, 139, 139, 0.686)'
+document.getElementById(`eq-${selectedCustom}`).style.color = 'white'
+document.getElementById(`eq-${selectedCustom}`).style.filter = 'invert(0%)'
+}
+
 
 eqbands = []
 document.getElementsByClassName('eq-range').forEach((range) => {
@@ -248,9 +273,112 @@ refreshbuttons.forEach((refresh) => {
     })
 })
 
+document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
+    presetelem.addEventListener('click', () => {
+        console.log('clicked')
+        document.getElementById('eq-pres-ch').style.height = '0%'
+        document.getElementById('draggable').style.display = 'block'
+        eqbands = []
+        switch(presetelem.id){
+            case 'eq-flat':{
+                eqbands = customBands['flat']
+                localStorage.setItem('eq-save', 'flat')
+            }break;
+            case 'eq-bass':{
+                eqbands = customBands['bass']
+                localStorage.setItem('eq-save', 'bass')
+            }break;
+            case 'eq-treble':{
+                eqbands = customBands['treble']
+                localStorage.setItem('eq-save', 'treble')
+            }break;
+            case 'eq-vocal':{
+                eqbands = customBands['vocal']
+                localStorage.setItem('eq-save', 'vocal')
+            }break;
+            case 'eq-rock':{
+                eqbands = customBands['rock']
+                localStorage.setItem('eq-save', 'rock')
+            }break;
+            case 'eq-pop':{
+                eqbands = customBands['pop']
+                localStorage.setItem('eq-save', 'pop')
+            }break;
+            case 'eq-jazz':{
+                eqbands = customBands['jazz']
+                localStorage.setItem('eq-save', 'jazz')
+            }break;
+            case 'eq-classical':{
+                eqbands = customBands['classical']
+                localStorage.setItem('eq-save', 'classical')
+            }break;
+            case 'eq-metal':{
+                eqbands = customBands['metal']
+                localStorage.setItem('eq-save', 'metal')
+            }break;
+            case 'eq-custom-1':{
+                eqbands = customBands['custom1']
+                localStorage.setItem('eq-save', 'custom1')
+                selectedCustom = 'custom1'
+            }break;
+            case 'eq-custom-2':{
+                eqbands = customBands['custom2']
+                localStorage.setItem('eq-save', 'custom2')
+                selectedCustom = 'custom2'
+            }break;
+            case 'eq-custom-3':{
+                eqbands = customBands['custom3']
+                localStorage.setItem('eq-save', 'custom3')
+                selectedCustom = 'custom3'
+            }break;
+        }
+
+        document.querySelectorAll('.eq-presets-choices a').forEach((elem) => {
+            elem.style.backgroundColor = 'unset'
+            elem.style.color = 'black'
+            elem.style.filter = 'invert(70%)'
+
+            elem.onhover = () => {
+                elem.style.cursor = 'pointer';
+                elem.style.backgroundColor = 'rgba(139, 139, 139, 0.686)';
+                elem.style.color = 'white';
+                elem.style.filter = 'invert(0%)';
+            }
+        })
+
+        document.getElementById(presetelem.id).style.backgroundColor = 'rgba(139, 139, 139, 0.686)'
+        document.getElementById(presetelem.id).style.color = 'white'
+        document.getElementById(presetelem.id).style.filter = 'invert(0%)'
+
+        document.getElementsByClassName('eq-range').forEach((range, index) => {
+            document.getElementsByClassName('eq-range')[index].value = eqbands[index]
+        })
+        for(let i = 0; i < eqbands.length; i++){
+            let value = parseInt(eqbands[i])
+            try {
+                eq.bands[i].gain(value)
+            } catch (e) {
+                console.log(e)
+                //console.log(eqbands[i])
+            }
+        }
+        localStorage.setItem('eq', eqbands)
+    })
+})
+
 document.getElementsByClassName('eq-range').forEach((range) => {
     range.addEventListener('input', () => {
+        if(document.getElementById('eq-pres-ch').style.height !== '0%')  {
+            document.getElementById('eq-pres-ch').style.height = '0%';
+            document.getElementById('draggable').style.display = 'block';}
         eqbands = []
+        if(selectedCustom == 'custom1' || selectedCustom == 'custom2' || selectedCustom == 'custom3'){
+            customBands[selectedCustom] = []
+            document.getElementsByClassName('eq-range').forEach((range) => {
+                customBands[selectedCustom].push(range.value)
+            })
+            localStorage.setItem('customBands', JSON.stringify(customBands))
+        }
         document.getElementsByClassName('eq-range').forEach((range) => {
             eqbands.push(range.value)
         })

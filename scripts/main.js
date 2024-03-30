@@ -80,19 +80,18 @@ var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 var initx = 1777
 
 if(!emptyreload){
-  if(bootsoundbool){
-  document.querySelector('audio').play()
-  document.querySelector('audio').volume = '0.3'}
   window.onload = () => {
-  setTimeout(() => {
-    document.getElementById('splash-scr').style.opacity = '0%'
-
+      if(bootsoundbool){
+        document.querySelector('audio').play()
+        document.querySelector('audio').volume = '0.3'}
     setTimeout(() => {
-      document.getElementById('splash-scr').style.display = 'none'
-      completesplash = true
-    }, 600)
-  }, 1000)
- 
+      document.getElementById('splash-scr').style.opacity = '0%'
+  
+      setTimeout(() => {
+        document.getElementById('splash-scr').style.display = 'none'
+        completesplash = true
+      }, 600)
+    }, 1000)
 }
 }else{
   if(PlMenuOpened){

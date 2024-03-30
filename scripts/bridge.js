@@ -1,3 +1,5 @@
+var eqMenuOpened = false
+
 let PORT = 8000
 const ws = new WebSocket(`ws://localhost:${PORT}`)
 var data
@@ -278,7 +280,7 @@ function deldiv(nbr, link){
 }
 
 function getFullDataNode(raw){
-    console.log(raw)
+    //console.log(raw)
     const FileFormat = raw.File_format
     const main = document.createElement('div')
     main.className = 'child-track'
