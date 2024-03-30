@@ -47,7 +47,7 @@ How to run OverStudio
 
 - At least 200MB of storage
 
-- Windows 8.1 or sooner (Linux releases will be available in future releases)
+- Windows 8.1 or sooner
 
 
 ### Enjoy!
