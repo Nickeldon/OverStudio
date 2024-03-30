@@ -38,7 +38,7 @@ How to run OverStudio
 
 - Deprecated Hardware might have some difficulties to run OverStudio as the app requires to do many CPU tasks in runtime. However, a lightweight version will soon be released
 
-- OverStudio can only read `FLAC`, `MP3`, `WAV`, and `AAC` file formats. Other file formats will be added in future releases
+- OverStudio can only read `FLAC`, `MP3`, `WAV`, `OPUS` and `AAC` file formats. Other file formats will be added in future releases
 
 ### Recommended Requirements
 - Intel 7th gen or sooner or AMD Ryzen series processors
