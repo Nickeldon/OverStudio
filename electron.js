@@ -8,7 +8,7 @@ const fs = require('fs')
 try {
   require(__dirname + "\\src\\server")  
   const date = new Date().toUTCString()
-  fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '[' + date + '] => ' + 'server started \n\n')
+  fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + 'Back-End started \n\n')
 } catch (e) {
   console.log(e)
   //fs.writeFileSync(__dirname + '\\src\\error.log', '\n' + e)
@@ -53,10 +53,10 @@ if (!instancelimit) {
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
     try {
-    //windowObj.webContents.openDevTools()
+    windowObj.webContents.openDevTools()
     } catch (e) {
       const date = new Date().toUTCString()
-      fs.writeFileSync(__dirname + '\\src\\errorlog.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
+      fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
     }
     windowObj.on('closed', () => {
       windowObj = null

@@ -103,13 +103,6 @@
 
         <div class="eq-menu" id="eq-menu" style="position: absolute; top:-500px; width:80%; left:11%; background-image: linear-gradient(to bottom, rgba(63, 62, 62, 1), rgba(63, 62, 62, 0.3));border-bottom-right-radius:20px; border-top-right-radius:10px; border-top-left-radius:10px; border-bottom-left-radius:20px; height:700px; transition:all 1s ease-out; opacity:0%; display:none;">
             
-            <!--<div id="presets-btn" class="presets-btn" style="position:absolute; height:500px; width: 240px; left:35%; top:-450px; background-color:rgba(143, 7, 7, 0.696);"></div>-->
-                <!--<a class="btn btn-trapezoid-outline" style="position:absolute; top:-25px; left:39%;">
-                    <span style="font-family:PS, sans-serif; font-size:27px; color:white; filter:invert(50%); text-align:center;">
-                        Presets
-                    </span>
-                  </a>-->
-
             <h1 style="text-align: left; font-size:55px; margin-left:100px; margin-top:100px; font-family:PS, sans-serif;
             color:black;
             width:70%;
@@ -166,6 +159,7 @@
                 <div class="eq-presets-choices" id="eq-pres-ch">
                     <a id="eq-flat">Flat</a>
                     <a id="eq-bass">Bass Boost</a>
+                    <a id="eq-muffledbass">Muffled Bass</a>
                     <a id="eq-treble">Treble</a>
                     <a id="eq-vocal">Vocal</a>
                     <a id="eq-rock">Rock</a>
@@ -173,9 +167,9 @@
                     <a id="eq-jazz">Jazz</a>
                     <a id="eq-classical">Classical</a>
                     <a id="eq-metal">Metal</a>
-                    <a id="eq-custom-1">Custom 1</a>
-                    <a id="eq-custom-2">Custom 2</a>
-                    <a id="eq-custom-3">Custom 3</a>
+                    <a id="eq-custom1">Custom 1</a>
+                    <a id="eq-custom2">Custom 2</a>
+                    <a id="eq-custom3">Custom 3</a>
                 </div>
             </div>
         </div>
@@ -306,50 +300,30 @@
                         <i id="thm1" class="thm1" style="top:100px" onclick="
                             localStorage.setItem('theme', 'default');
                             changeTheme('default')
-                            //document.getElementById('main').style.opacity = '0%'
-                            //setTimeout(() => {
-                                //window.location.reload();
-                            //}, 1000);
                             ">
 
                         </i>
                         <i id="thm2" class="thm2" style="top:230px" onclick="
                             localStorage.setItem('theme', 'dark');
                             changeTheme('dark')
-                           /* document.getElementById('main').style.opacity = '0%'
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);*/
                             ">
 
                         </i>
                         <i id="thm3" class="thm3" style="top:360px" onclick="
                             localStorage.setItem('theme', 'orangeRed');
                             changeTheme('orangeRed')
-                            /*document.getElementById('main').style.opacity = '0%'
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);*/
                             ">
 
                         </i>
                         <i id="thm4" class="thm4" style="top:490px" onclick="
                             localStorage.setItem('theme', 'pinkPurple');
                             changeTheme('pinkPurple')
-                            /*document.getElementById('main').style.opacity = '0%'
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);*/
                             ">
 
                         </i>
                         <i id="thm5" class="vintage-filter" style="top:100px; left:175px" onclick="
                             localStorage.setItem('theme', 'Vintage');
                             changeTheme('Vintage')
-                            //document.getElementById('main').style.opacity = '0%'
-                            //setTimeout(() => {
-                                //window.location.reload();
-                            //}, 1000);
                             ">
 
                         </i>
@@ -388,7 +362,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:340px; width:490px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:300px; width:490px" onclick="
                 var txt = document.getElementById('ampl-txt0');
                 txt.innerText = txt.innerText === 'Disable Amplitude Reactor' ? 'Enable Amplitude Reactor' : 'Disable Amplitude Reactor';
                 var state = txt.innerText === 'Disable Amplitude Reactor' ? true : false;
@@ -416,7 +390,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:490px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:410px; width:450px" onclick="
                 var txt = document.getElementById('anim-txt0');
                 txt.innerText = txt.innerText === 'Animations speed: 1x' ? 'Animations speed: 2x' : 'Animations speed: 1x';
                 var state = txt.innerText === 'Animations speed: 1x' ? true : false;
@@ -435,7 +409,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:640px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:520px; width:450px" onclick="
                 var txt = document.getElementById('boot-snd-txt0');
                 txt.innerText = txt.innerText === 'Enable Sound at boot' ? 'Disable Sound at boot' : 'Enable Sound at boot';
                 var state = txt.innerText === 'Enable Sound at boot' ? false : true;
@@ -444,6 +418,31 @@
                 ">
                     <a  style="left: 70px;" id="boot-snd-txt0">
                         Disable Sound at boot
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:630px; width:450px" onclick="
+                var txt = document.getElementById('idle-txt0');
+                var value
+                idle = 0
+                if(txt.innerText == '25s'){
+                    txt.innerText = '1 min';
+                    value = 60;
+                } else if(txt.innerText == '1 min'){
+                    txt.innerText = '5 min';
+                    value = 300;
+                } else if(txt.innerText == '5 min'){
+                    txt.innerText = 'never';
+                    value = 0;
+                } else if(txt.innerText == 'never'){
+                    txt.innerText = '25s';
+                    value = 25;
+                }
+                idletimeout = value
+                localStorage.setItem('Idle-Timeout', value)
+                ">
+                    <a  style="left: 70px;">
+                        Idle Timeout: <span id="idle-txt0">5 min</span>
                     </a>
                 </div>
 
@@ -485,12 +484,6 @@
                     <img onclick="openMENU()" id="side" src="./Addons/icons/menu.png" style="height: 50px; transition:all 1.5s ease-out; position:absolute; top:25px; left:25px">
                 </i>
             </div>
-    
-           <!-- <div class="now-p" id="current-notif" style="width:350px; height:120px; border-radius:15px; border-color:#86ecfc; position:absolute; bottom:170px; right:0; border-style:solid;">
-                <h4 style="color:white; position:absolute; top:20px; left:25px; font-family:Blocky, sans-serif; font-weight:100; font-size:15px; letter-spacing:1px ">
-                    Now Playing
-                </h4>
-            </div>-->
         </div>
 
         
@@ -609,35 +602,6 @@
         background-position: center;
         filter: blur(0.05em) saturate(0.7) contrast(1.5) brightness(1.2) opacity(60%);
     }
-    
-
-    .btn{
-        font-family: sans-serif;
-        text-transform: uppercase;
-        text-decoration: none;
-        transform: rotate(180deg);
-      }
-
-    .btn-trapezoid-outline{
-        display: inline-block;
-        width: 150px;
-        height:50px;
-        color: #8b0000c0;
-        background-color: #8b000080;
-        transform-style: preserve-3d;
-        padding: 20px 70px;
-        border: 1px solid #8b0000c0;
-        transform: perspective(200px) rotateX(-35deg) translateZ(25px) translateY(5px);
-        backface-visibility: hidden;
-        transition: all .3s ease-out;
-        span{
-          font-size: 15px;
-          margin-bottom: 50px;
-          letter-spacing: 1px;
-          display: block;
-          transform: perspective(100) rotateX(30deg) translateZ(7px) translateY(4px);
-        }
-      }
 
     .eq-presets{
         position: absolute; 

@@ -11,7 +11,7 @@ animationSpeeds(speeds[chosenSpeed])
 if(chosenSpeed === 'fast'){document.getElementById('anim-txt0').innerHTML = 'Animations speed: 2x'}
 else {document.getElementById('anim-txt0').innerHTML = 'Animations speed: 1x'}
 
-var bootsoundbool = (/true/).test(localStorage.getItem('Sound_boot')) || false
+var bootsoundbool = (/true/).test(localStorage.getItem('Sound_boot')) || true
 localStorage.setItem('Sound_boot', bootsoundbool)
 console.log(bootsoundbool)
 if(bootsoundbool){
@@ -37,11 +37,20 @@ localStorage.setItem('effectsState', JSON.stringify(effectsArray))
 
 
 var idle = 0;
-var idletimeout = 20
+var idletimeout = parseInt(localStorage.getItem('idletimeout')) || 25
+localStorage.setItem('idletimeout', idletimeout)
+console.log(idletimeout)
+if(idletimeout == 25){
+document.getElementById('idle-txt0').innerText = '25s'}
+else{
+  document.getElementById('idle-txt0').innerText = `${idletimeout/60} min`
+}
+
 var noError = false
 var prevautochanged = false
 $(document).ready(() => {
-    setInterval(IdleIncrease, 1000);
+
+    setInterval(() => {if(idletimeout > 0){IdleIncrease()} else idle = 0}, 1000);
 
     $(this).mousemove(() => {
         idle = 0;
@@ -61,6 +70,7 @@ $(document).ready(() => {
 
 function IdleIncrease() {
     idle++
+    //console.log(idle, idletimeout)
     if (idle > idletimeout) {
       if(rotdeg === 11){
         prevautochanged = true
@@ -94,6 +104,7 @@ if(!emptyreload){
     }, 1000)
 }
 }else{
+  completesplash = true
   if(PlMenuOpened){
     var animation = [document.getElementById('options').style.transition, document.getElementById('opt-menu2').style.transition]
     document.getElementById('options').style.transition = 'none'

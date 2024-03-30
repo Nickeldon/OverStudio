@@ -1,5 +1,3 @@
-var eqMenuOpened = false
-
 let PORT = 8000
 const ws = new WebSocket(`ws://localhost:${PORT}`)
 var data

@@ -14,6 +14,7 @@ var customBands = JSON.parse(localStorage.getItem('customBands')) || {
     custom2: [0, 0, 0, 0, 0, 0, 0, 0],
     custom3: [0, 0, 0, 0, 0, 0, 0, 0],
     bass: [6, 4, 2, 0, -2, -4, -6, -8],
+    muffledbass: [12, 1, -12, -12, -12, -12, -12, -12],
     treble: [-2, -4, -6, -8, 6, 4, 2, 0],
     vocal: [4, 2, 0, -2, 4, 6, 8, 10],
     rock: [6, 4, 2, 0, -2, 0, 4, 8],
@@ -48,9 +49,13 @@ document.getElementsByClassName('eq-range').forEach((range, index) => {
     console.log(selectedCustom)
         document.getElementsByClassName('eq-range')[index].value = customBands[selectedCustom][index]
 })
-document.getElementById(`eq-${selectedCustom}`).style.backgroundColor = 'rgba(139, 139, 139, 0.686)'
-document.getElementById(`eq-${selectedCustom}`).style.color = 'white'
-document.getElementById(`eq-${selectedCustom}`).style.filter = 'invert(0%)'
+try {
+    document.getElementById(`eq-${selectedCustom}`).style.backgroundColor = 'rgba(139, 139, 139, 0.686)'
+    document.getElementById(`eq-${selectedCustom}`).style.color = 'white'
+    document.getElementById(`eq-${selectedCustom}`).style.filter = 'invert(0%)'   
+} catch (e) {
+    console.log(e)
+}
 }
 
 
@@ -206,7 +211,7 @@ refreshbuttons.forEach((refresh) => {
             refresh.style.pointerEvents = 'all'
         }, 700);
         if(prevnul) {
-            console.log('yes, it was')
+        // console.log('yes, it was')
             plpos = 0; 
             prevnul = false
             //console.log(playlist)
@@ -223,7 +228,7 @@ refreshbuttons.forEach((refresh) => {
         playlist = null
         deletePLCache().then(() =>{fetchPlaylist().then((data) => {
              if(data[0].length === 0 && data[1].length === 0){
-                 console.log('nothing')
+                 //console.log('nothing')
              }
              else{
                 //console.log(data[0])
@@ -287,6 +292,10 @@ document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
             case 'eq-bass':{
                 eqbands = customBands['bass']
                 localStorage.setItem('eq-save', 'bass')
+            }break;
+            case 'eq-muffledbass':{
+                eqbands = customBands['muffledbass']
+                localStorage.setItem('eq-save', 'muffledbass')
             }break;
             case 'eq-treble':{
                 eqbands = customBands['treble']
@@ -669,6 +678,7 @@ window.addEventListener('keydown', (event) => {
             }break;
 
             case 'f':{
+                resetIdleTimer()
                 document.getElementById('change-state').click()
             }break;
 
@@ -686,6 +696,7 @@ window.addEventListener('keydown', (event) => {
             }break;
 
             case 'ArrowDown':{
+                resetIdleTimer()
                 if(audio){
                     if(audio.isLoaded()){
                         if(reversed){
@@ -696,6 +707,7 @@ window.addEventListener('keydown', (event) => {
             }break;
 
             case 'ArrowUp':{
+                resetIdleTimer()
                 if(!holdPL){
                 if(audio){
                     if(audio.isLoaded()){
@@ -720,6 +732,7 @@ window.addEventListener('keydown', (event) => {
                 volumeSlider.dispatchEvent(new Event('input', { bubbles: true }));
             }break;
             case 'Escape':{
+                resetIdleTimer()
                 if(document.getElementById('options').style.left !== '-380px'){
                     openMENU()
                 }
@@ -737,6 +750,14 @@ window.addEventListener('keydown', (event) => {
             }break;
         }}
 })
+
+function resetIdleTimer(){
+    idle = 0
+    if(rotdeg === 0 && prevautochanged){
+        prevautochanged = false
+        changeState()
+    }
+}
 
 document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
 
@@ -887,7 +908,7 @@ function draw(){
 }
 
 setInterval(() => {
-    if(playlist.length === 0 || !playlist){
+    if(!playlist){
         let difference = Date.now() - startloaddate
                 if(difference > 2000){
                     startloaddate = Date.now()
@@ -896,6 +917,17 @@ setInterval(() => {
                 }
                 prevnul = true
                 //console.log('not started')
+    }else{
+        if(playlist.length === 0){
+        let difference = Date.now() - startloaddate
+                if(difference > 2000){
+                    startloaddate = Date.now()
+                    //console.log('refreshed')
+                    document.getElementById('refr-alt').click()
+                }
+                prevnul = true
+                //console.log('not started')
+            }
     }
 }, 1000)
 
