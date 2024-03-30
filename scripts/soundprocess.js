@@ -284,6 +284,7 @@ document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
         document.getElementById('eq-pres-ch').style.height = '0%'
         document.getElementById('draggable').style.display = 'block'
         eqbands = []
+        //console.log(presetelem.id)
         switch(presetelem.id){
             case 'eq-flat':{
                 eqbands = customBands['flat']
@@ -325,17 +326,17 @@ document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
                 eqbands = customBands['metal']
                 localStorage.setItem('eq-save', 'metal')
             }break;
-            case 'eq-custom-1':{
+            case 'eq-custom1':{
                 eqbands = customBands['custom1']
                 localStorage.setItem('eq-save', 'custom1')
                 selectedCustom = 'custom1'
             }break;
-            case 'eq-custom-2':{
+            case 'eq-custom2':{
                 eqbands = customBands['custom2']
                 localStorage.setItem('eq-save', 'custom2')
                 selectedCustom = 'custom2'
             }break;
-            case 'eq-custom-3':{
+            case 'eq-custom3':{
                 eqbands = customBands['custom3']
                 localStorage.setItem('eq-save', 'custom3')
                 selectedCustom = 'custom3'
