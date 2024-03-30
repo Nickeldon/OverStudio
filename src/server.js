@@ -371,7 +371,7 @@ function getMediaMeta(Path){
              tempPath = tempPath.split('.')
              tempPath[1] = tempPath[1].toLowerCase()
              //console.log(tempPath[1])
-             if(tempPath[1] === 'mp3' || tempPath[1] === 'flac' || tempPath[1] === 'wav' || tempPath[1] === 'aac'){
+             if(tempPath[1] === 'mp3' || tempPath[1] === 'flac' || tempPath[1] === 'wav' || tempPath[1] === 'aac' || tempPath[1] === 'opus' ){
                  fformat = '.' + tempPath[1]
              }else{
                  fformat = '.' + tempPath[1]
@@ -437,7 +437,7 @@ function getMediaArray(Path){
                         if(elem[i] === '.'){
                             elem = elem.split('.')
                             elem[1] = elem[1].toLowerCase()
-                            if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac'){
+                            if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac' || elem[1] === 'opus'){
                             resultArray.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
                             //console.log('resultArray')
                             cont = false
