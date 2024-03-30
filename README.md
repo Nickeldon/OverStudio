@@ -1,6 +1,5 @@
 
 ![Logo](https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png)
-
 # OverStudio
 
 Listen to music in a more fashioned way 
