@@ -337,25 +337,29 @@
             
             <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
                 <div class="opt-txt" style="opacity:0%; top:190px; width:450px" onclick="
-                var txt = document.getElementById('dust-txt0');
-                txt.innerText = txt.innerText === 'Disable dust particles' ? 'Enable dust particles' : 'Disable dust particles';
-                var state = txt.innerText === 'Disable dust particles' ? true : false;
+                if(EffectChangeTimeout){
+                    EffectChangeTimeout = false;
+                    var txt = document.getElementById('dust-txt0');
+                    txt.innerText = txt.innerText === 'Disable dust particles' ? 'Enable dust particles' : 'Disable dust particles';
+                    var state = txt.innerText === 'Disable dust particles' ? true : false;
 
-                var txt2 = document.getElementById('ampl-txt0');
-                var state2 = txt2.innerText === 'Disable Amplitude Reactor' ? true : false;
+                    var txt2 = document.getElementById('ampl-txt0');
+                    var state2 = txt2.innerText === 'Disable Amplitude Reactor' ? true : false;
 
-                console.log(state, state2)
+                    console.log(state, state2)
 
-                if(state){
-                    document.getElementById('dust').style.display = 'block';
-                } else {
-                    document.getElementById('dust').style.opacity = '0%';
-                    setTimeout(() => {
-                        document.getElementById('dust').style.display = 'none';
-                        document.getElementById('dust').style.opacity = '70%';
-                    }, 1000);
-                }
-                localStorage.setItem('effectsState', JSON.stringify({dust: state, amplitude: state2}))
+                    if(state){
+                        document.getElementById('dust').style.display = 'block';
+                        EffectChangeTimeout = true;
+                    } else {
+                        document.getElementById('dust').style.opacity = '0%';
+                        setTimeout(() => {
+                            document.getElementById('dust').style.display = 'none';
+                            document.getElementById('dust').style.opacity = '70%';
+                            EffectChangeTimeout = true;
+                        }, 500);
+                    }
+                    localStorage.setItem('effectsState', JSON.stringify({dust: state, amplitude: state2}))}
                 ">
                     <a  style="left: 70px;" id="dust-txt0">
                         Disable dust particles
@@ -363,27 +367,29 @@
                 </div>
 
                 <div class="opt-txt" style="opacity:0%; top:300px; width:490px" onclick="
-                var txt = document.getElementById('ampl-txt0');
-                txt.innerText = txt.innerText === 'Disable Amplitude Reactor' ? 'Enable Amplitude Reactor' : 'Disable Amplitude Reactor';
-                var state = txt.innerText === 'Disable Amplitude Reactor' ? true : false;
-                
-                var txt2 = document.getElementById('dust-txt0');
-                var state2 = txt2.innerText == 'Disable dust particles' ? true : false;
+                if(EffectChangeTimeout){
+                    EffectChangeTimeout = false;
+                    var txt = document.getElementById('ampl-txt0');
+                    txt.innerText = txt.innerText === 'Disable Amplitude Reactor' ? 'Enable Amplitude Reactor' : 'Disable Amplitude Reactor';
+                    var state = txt.innerText === 'Disable Amplitude Reactor' ? true : false;
+                    
+                    var txt2 = document.getElementById('dust-txt0');
+                    var state2 = txt2.innerText == 'Disable dust particles' ? true : false;
 
-                console.log(state, state2)
+                    console.log(state, state2)
 
-                if(state){
-                    document.getElementById('gradient').style.display = 'block';
-                    document.getElementById('alternate-audio-react').style.display = 'block';
-                } else {
-                    document.getElementById('alternate-audio-react').style.opacity = '0%';
-                    setTimeout(() => {
-                        document.getElementById('alternate-audio-react').style.display = 'none';
-                        document.getElementById('alternate-audio-react').style.opacity = '70%';
-                        document.getElementById('gradient').style.display = 'none';
-                    }, 1000);
-                }
-                localStorage.setItem('effectsState', JSON.stringify({dust: state2, amplitude: state}))
+                    if(state){
+                        document.getElementById('alternate-audio-react').style.display = 'block';
+                        EffectChangeTimeout = true;
+                    } else {
+                        document.getElementById('alternate-audio-react').style.opacity = '0%';
+                        setTimeout(() => {
+                            document.getElementById('alternate-audio-react').style.display = 'none';
+                            document.getElementById('alternate-audio-react').style.opacity = '70%';
+                            EffectChangeTimeout = true;
+                        }, 200);
+                    }
+                    localStorage.setItem('effectsState', JSON.stringify({dust: state2, amplitude: state}))}
                 ">
                     <a  style="left: 70px;" id="ampl-txt0">
                         Disable Amplitude Reactor

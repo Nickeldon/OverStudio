@@ -1,3 +1,4 @@
+var EffectChangeTimeout = true
 var completesplash = false
 var corrupt = false
 const speeds = {
@@ -31,8 +32,7 @@ if(!enDust) {
   document.getElementById('dust').style.display = 'none'}
 if(!enAmpl) {
   document.getElementById('ampl-txt0').innerText = 'Enable Amplitude Reactor'
-  document.getElementById('alternate-audio-react').style.display = 'none'
-  document.getElementById('gradient').style.display = 'none'}
+  document.getElementById('alternate-audio-react').style.display = 'none'}
 localStorage.setItem('effectsState', JSON.stringify(effectsArray))
 
 
