@@ -319,7 +319,7 @@ app.get('/ParseLinks', (req, res, next) => {
                 "cover": getMediaMeta(combinedArray[0]).cover || undefined,
                 "artist": getMediaMeta(combinedArray[0]).artist || undefined,
                 "album": getMediaMeta(combinedArray[0]).album || undefined,
-                "File_format": getMediaMeta(elem).fformat || undefined
+                "File_format": getMediaMeta(combinedArray[0]).fformat || undefined
             })   
         } catch (e) {
             console.log(e)

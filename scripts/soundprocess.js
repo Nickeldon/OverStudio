@@ -8,6 +8,7 @@ var timemode = 'normal'
 var startloaddate = Date.now()
 var PlayBackMode = 'linear'
 var state = 'paused'
+var PrevSpeed = BGspeed
 var plpos = 0;
 var customBands = JSON.parse(localStorage.getItem('customBands')) || {
     custom1: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -31,7 +32,6 @@ localStorage.setItem('eq-save', selectedCustom)
 var BGready = false
 var refreshbuttons = []
 var eq = new p5.EQ(8)
-var BGspeed = '.2s'
 let imageMetadata = []
 var audioreact = document.getElementById('alternate-audio-react')
 var rs = getComputedStyle(audioreact)
@@ -434,6 +434,31 @@ playpausebtn.addEventListener('click', () => {
     }
 })
 
+document.getElementById('shuffle').addEventListener('click', () => {
+    if(PlayBackMode === 'linear'){
+        PlayBackMode = 'shuffle'
+        document.getElementById('shuffle').style.transition = 'transform 0s'
+        document.getElementById('shuffle').style.transform = 'rotate(0deg)'
+        document.getElementById('shuffle').src = './Addons/icons/SVG/shuffle.svg'
+    } else if(PlayBackMode === 'shuffle'){
+        PlayBackMode = 'loop'
+        document.getElementById('shuffle').style.transition = 'transform 0s'
+        document.getElementById('shuffle').style.transform = 'rotate(0deg)'
+        document.getElementById('shuffle').src = './Addons/icons/SVG/loop.svg'
+    } else{
+        PlayBackMode = 'linear'
+        document.getElementById('shuffle').style.transition = 'transform 0s'
+        document.getElementById('shuffle').style.transform = 'rotate(-90deg)'
+        document.getElementById('shuffle').src = './Addons/icons/SVG/linear.svg'
+    }
+    
+    if(rand){
+    rand = false}
+    else{
+        rand = true
+    }
+})
+
 function loaded(){
     try {
         if(started){
@@ -446,33 +471,7 @@ function loaded(){
             next = document.getElementById('next')
             prev = document.getElementById('back')
 
-            document.getElementById('shuffle').addEventListener('click', () => {
-                if(PlayBackMode === 'linear'){
-                    PlayBackMode = 'shuffle'
-                    document.getElementById('shuffle').style.transition = 'transform 0s'
-                    document.getElementById('shuffle').style.transform = 'rotate(0deg)'
-                    document.getElementById('shuffle').src = './Addons/icons/SVG/shuffle.svg'
-                } else if(PlayBackMode === 'shuffle'){
-                    PlayBackMode = 'loop'
-                    document.getElementById('shuffle').style.transition = 'transform 0s'
-                    document.getElementById('shuffle').style.transform = 'rotate(0deg)'
-                    document.getElementById('shuffle').src = './Addons/icons/SVG/loop.svg'
-                } else{
-                    PlayBackMode = 'linear'
-                    document.getElementById('shuffle').style.transition = 'transform 0s'
-                    document.getElementById('shuffle').style.transform = 'rotate(-90deg)'
-                    document.getElementById('shuffle').src = './Addons/icons/SVG/linear.svg'
-                }
-                
-                if(rand){
-                rand = false}
-                else{
-                    rand = true
-                }
-            })
-
             document.getElementById('timeslide').addEventListener('input', () => {
-                console.log('there was a change')
                 follow = false
             })
         
@@ -532,7 +531,8 @@ function loaded(){
                                 }
                               }, 10)
                             setTimeout(() => {
-                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                                PrevSpeed = BGspeed
                             }, 1000)}
                     }break;
 
@@ -574,7 +574,8 @@ function loaded(){
                                 }
                                 }, 10)
                             setTimeout(() => {
-                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                                PrevSpeed = BGspeed
                             }, 1000)}
                     }
                     break;
@@ -636,7 +637,8 @@ function loaded(){
                     }
                   }, 10)
                 setTimeout(() => {
-                    document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                    document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                    PrevSpeed = BGspeed 
                 }, 1000)}
             })        
         }    
@@ -685,12 +687,10 @@ window.addEventListener('keydown', (event) => {
 
             case ' ':{
                 if(!holdPL){
-                    console.log('there')
                 if(audio){
                     if(audio.isLoaded()){
                 playpausebtn.click()}}
             }else{
-                console.log('maybe there')
                 next.click()
                 
             }
@@ -760,8 +760,8 @@ function resetIdleTimer(){
     }
 }
 
-document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
-
+document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+PrevSpeed = BGspeed
 var trackinterval = setInterval(() => {
     if(audio){
     try {
@@ -791,6 +791,51 @@ function manageAudioData(){
         }
     }
 }
+
+const baseDustspeed = {
+    1: 50,
+    2: 100,
+    3: 150,
+    4: 600
+}
+
+/*function updateDustSpeed(amplitude) {
+    const maxSpeed = 600;
+    const minSpeed = 50;
+
+    const speedRange = maxSpeed - minSpeed;
+
+
+    const speed1 = baseDustspeed['1'] - (amplitude*10)
+    const speed2 = baseDustspeed['2'] - (amplitude*20)
+    const speed3 = baseDustspeed['3'] - (amplitude*35)
+    const speed4 = baseDustspeed['4'] - (amplitude*60)
+
+    console.log(speed1, speed2, speed3, speed4)
+
+    document.getElementById('dust-animation').childNodes.forEach((dustelement, index) => {
+        if (dustelement.nodeName === 'DIV') {
+            switch (index) {
+                case 1:
+                    dustelement.style.animationDuration = `${speed1}s`;
+                    break;
+                case 3:
+                    dustelement.style.animationDuration = `${speed2}s`;
+                    break;
+                case 5:
+                    dustelement.style.animationDuration = `${speed3}s`;
+                    break;
+                case 7:
+                    dustelement.style.animationDuration = `${speed4}s`;
+                    break;
+                default:
+                    break;
+            }
+        }
+    });
+}*/
+
+console.log(document.getElementById('dust-animation').childNodes)
 
 function draw(){
     try {
@@ -833,9 +878,21 @@ function draw(){
                         document.getElementById('timeslide').style.backgroundSize = `${(((audio.currentTime() / audio.duration()) * 100) + 1)}% 100%`
                         if(follow) document.getElementById('timeslide').value = (audio.currentTime())
                     if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1){
+                        if(PrevSpeed !== BGspeed){
+                            console.log('true')
+                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            PrevSpeed = BGspeed
+                        }
                         document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
                         //document.getElementById('gradient').style.animationDuration =`${50/(vol*100)}s`
                         }
+                    /*if(document.getElementById('dust').style.display === 'block' && vol*20 > 0.1){
+                        console.log('passed thee')
+                        updateDustSpeed(vol*10)
+                    }
+                    else{
+                        console.log(document.getElementById('dust').style.display)
+                    }*/
                     }
                     audio.onended(() => {
                         document.getElementById('timeslide').max = 100
@@ -846,7 +903,8 @@ function draw(){
                         document.getElementById('alternate-audio-react').style.transform = `scale(1)`
                 
                         setTimeout(() => {
-                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            PrevSpeed = BGspeed
                         }, 1000)} 
                         else{
                         if(started && audio.isLoaded() && !audio._paused && release){
@@ -856,7 +914,8 @@ function draw(){
                         document.getElementById('alternate-audio-react').style.transform = `scale(1)`
 
                         setTimeout(() => {
-                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed} ease-out`
+                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            PrevSpeed = BGspeed
                         }, 1000)
                         }
                     }
@@ -897,7 +956,6 @@ function draw(){
                     console.log('There might be an error in the audio file')}}
                     //startloaddate = Date.now()
                 }
-                console.log('there?????????????')
                 if(!holdPL){
                 document.getElementById('play-pause').style.opacity = '0%'
                 document.getElementById('loading').style.opacity = '100%'}

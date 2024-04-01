@@ -1,10 +1,17 @@
 var EffectChangeTimeout = true
 var completesplash = false
 var corrupt = false
+
+console.log(localStorage.getItem('Reactor-Speed'))
+var BGspeed = localStorage.getItem('Reactor-Speed') || '.2'
+localStorage.setItem('Reactor-Speed', BGspeed)
+document.getElementById('amp-speed-txt0').innerText = BGspeed
+
 const speeds = {
   baseSpeed: [1, 1, 1, 1, 1, 1000],
   fast: [0.5, 0.5, 0.5, 0.5, 0.5, 600]
 }
+
 var chosenSpeed = localStorage.getItem('animations') || 'baseSpeed'
 localStorage.setItem('animations', (chosenSpeed))
 animationSpeeds(speeds[chosenSpeed])
@@ -27,6 +34,11 @@ var goback = false
 var enDust = (/true/).test(effectsArray['dust']) || false
 var enAmpl = (/true/).test(effectsArray['amplitude']) || false
 
+document.getElementById('dust-txt0').innerText = 'Disable dust particles'
+document.getElementById('dust').style.display = 'block'
+document.getElementById('ampl-txt0').innerText = 'Disable Amplitude Reactor'
+document.getElementById('alternate-audio-react').style.display = 'block'
+
 if(!enDust) {
   document.getElementById('dust-txt0').innerText = 'Enable dust particles'
   document.getElementById('dust').style.display = 'none'}
@@ -42,6 +54,9 @@ localStorage.setItem('idletimeout', idletimeout)
 console.log(idletimeout)
 if(idletimeout == 25){
 document.getElementById('idle-txt0').innerText = '25s'}
+else if(idletimeout == 10){
+  document.getElementById('idle-txt0').innerText = '10s'
+}
 else{
   document.getElementById('idle-txt0').innerText = `${idletimeout/60} min`
 }
@@ -89,8 +104,21 @@ var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 
 var initx = 1777
 
+window.addEventListener('online',  verifyConnection);
+window.addEventListener('offline', verifyConnection);
+
+function verifyConnection(){
+  if(navigator.onLine){
+    console.log('online')
+  } else{
+    console.log('offline')
+  }
+
+}
+
 if(!emptyreload){
   window.onload = () => {
+
       if(bootsoundbool){
         document.querySelector('audio').play()
         document.querySelector('audio').volume = '0.3'}
@@ -120,6 +148,33 @@ if(!emptyreload){
   document.getElementById('splash-scr').style.display = 'none'
   localStorage.setItem('emptyreload', false)
 }
+
+/*
+function InternetHandler(status){
+  console.log(status)
+}
+
+function checkInternet(){
+  var xhr = new XMLHttpRequest();
+  setInterval(() => {
+    console.log('checking')
+    try {
+      xhr.open('GET', 'https://www.google.com', true);
+      xhr.send();
+
+        if(xhr.readyState === 4 && xhr.status === 200){
+          InternetHandler("Connected")
+          console.log(xhr.status, xhr.readyState)
+        } else{
+          console.log(xhr.status, xhr.readyState)
+          InternetHandler("Disconnected")
+        }
+    } catch (e) {
+      console.log(e)
+      //InternetHandler("Disconnected")
+    }
+  }, 1000)
+}*/
 
 function animationSpeeds(transitions){
   console.log(document.getElementById('eq-menu').style.transition,

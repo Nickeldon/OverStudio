@@ -14,7 +14,6 @@ try {
   //fs.writeFileSync(__dirname + '\\src\\error.log', '\n' + e)
 }
 
-
 //require('electron-reload')(__dirname,{electron: path.join(__dirname, 'node_modules', '.bin', 'electron')})
 
 let windowObj = null
@@ -53,7 +52,7 @@ if (!instancelimit) {
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
     try {
-    windowObj.webContents.openDevTools()
+    //windowObj.webContents.openDevTools()
     } catch (e) {
       const date = new Date().toUTCString()
       fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
