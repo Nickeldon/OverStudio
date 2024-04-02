@@ -38,7 +38,7 @@ async function GetYoutubeData(title){
 }
 
 
-function shuffle(array) {
+function shuffleArray(array) {
     //From StackOverflow
     let currentIndex = array.length,  randomIndex;
     while (currentIndex > 0) {

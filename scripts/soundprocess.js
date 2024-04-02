@@ -8,6 +8,7 @@ var timemode = 'normal'
 var startloaddate = Date.now()
 var PlayBackMode = 'linear'
 var state = 'paused'
+var SETBypassBGScan = false
 var PrevSpeed = BGspeed
 var plpos = 0;
 var customBands = JSON.parse(localStorage.getItem('customBands')) || {
@@ -29,7 +30,6 @@ console.log(localStorage)
 var selectedCustom = localStorage.getItem('eq-save') || 'flat'
 localStorage.setItem('customBands', JSON.stringify(customBands))
 localStorage.setItem('eq-save', selectedCustom)
-var BGready = false
 var refreshbuttons = []
 var eq = new p5.EQ(8)
 let imageMetadata = []
@@ -223,6 +223,7 @@ refreshbuttons.forEach((refresh) => {
         }}
         started = false
         ready = false
+        BGready = false
         document.getElementById('play-pause').style.opacity = '0%'
         document.getElementById('loading').style.opacity = '100%'
         playlist = null
@@ -234,6 +235,18 @@ refreshbuttons.forEach((refresh) => {
                 //console.log(data[0])
                 //console.log('refreshed')
                 ManageData(data); playlist = data[0]}})})
+        if(!SETBypassBGScan){
+        try {
+            BackgroundData = FetchBackgrounds(document.getElementById('BG-choice-txt0').innerText)
+        } catch (e) {
+            console.log(e)
+        }
+        let WaitForBG = setInterval(() => {
+            if(BackgroundData){
+                clearInterval(WaitForBG)
+                BGready = true
+            }
+        }, 500)}
             if(audio){
         let interval = setInterval(() => {
             if(playlist){
@@ -968,6 +981,7 @@ function draw(){
 
 setInterval(() => {
     if(!playlist){
+        SETBypassBGScan = true
         let difference = Date.now() - startloaddate
                 if(difference > 2000){
                     startloaddate = Date.now()
@@ -978,25 +992,61 @@ setInterval(() => {
                 //console.log('not started')
     }else{
         if(playlist.length === 0){
-        let difference = Date.now() - startloaddate
+            SETBypassBGScan = true
+            let difference = Date.now() - startloaddate
                 if(difference > 2000){
                     startloaddate = Date.now()
                     //console.log('refreshed')
+
                     document.getElementById('refr-alt').click()
                 }
                 prevnul = true
                 //console.log('not started')
+            } else{
+                SETBypassBGScan = false
             }
     }
 }, 1000)
 
-/*setInterval(() => {
-    if(imageMetadata.length > 0){
-        BGready = true
-        console.log('ready')
-        console.log(imageMetadata)
-    }else{
-        BGready = false
-    }
-}, 1000)*/
+function ChangeBG(){
+    let interval = setTimeout(() => {
+        if(BGready && document.getElementById('BG-choice-txt0').innerText === 'Custom'){
+            if(BackgroundData.length > 1){
+                console.log('passed-1')
+                if(BGpos < BackgroundData.length - 1){
+                    BGpos++
+                } else{
+                    BGpos = 0
+                }
+                document.getElementById('Audio-react').style.transition = 'none'
+                document.getElementById('Audio-react').style.display = 'block'
+                document.getElementById('Audio-react').style.opacity = '100%'
+                document.getElementById('Audio-react').style.transition = `all 1s ease-out`
+
+                            setTimeout(() => {
+                                console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
+                                document.getElementById('Audio-react').style.opacity = '0%'
+                                setTimeout(() => {
+                                        document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                                        setTimeout(() => {
+                                            document.getElementById('Audio-react').style.opacity = '100%'
+                                            clearTimeout(interval)
+                                            ChangeBG()
+                                    }, 100)
+                                }, 1000)
+                            }, 100)
+            }
+            else{
+                clearTimeout(interval)
+                ChangeBG()
+            }
+        }else{
+            //console.log(BGready, BGpos, document.getElementById('BG-choice-txt0').innerText)
+            clearTimeout(interval)
+            ChangeBG()
+        }
+    }, BGrefresh)
+}
+
+ChangeBG()
 

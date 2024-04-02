@@ -2,6 +2,23 @@ var EffectChangeTimeout = true
 var completesplash = false
 var corrupt = false
 
+var BackgroundData = []
+var BGready = false
+
+var BGrefresh = localStorage.getItem('Background-Cooldown') || 10000
+localStorage.setItem('Background-Cooldown', BGrefresh)
+if(BGrefresh < 60000){
+document.getElementById('BG-cooldown-txt0').innerText = `${BGrefresh/1000}s`}
+else{
+  document.getElementById('BG-cooldown-txt0').innerText = `${BGrefresh/60000}min`
+}
+
+var BGpos = 0
+
+var BGchoice = localStorage.getItem('Background-Type') || 'Reactor'
+localStorage.setItem('Background-Type', BGchoice)
+BGchoice === 'Reactor' ? document.getElementById('BG-choice-txt0').innerText = 'Reactor' : document.getElementById('BG-choice-txt0').innerText = 'Custom'
+
 console.log(localStorage.getItem('Reactor-Speed'))
 var BGspeed = localStorage.getItem('Reactor-Speed') || '.2'
 localStorage.setItem('Reactor-Speed', BGspeed)
@@ -83,6 +100,126 @@ $(document).ready(() => {
     })
 })
 
+var cooldownBGState = true
+
+function SwitchBackgrounds(choice){
+  if(cooldownBGState){
+    cooldownBGState = false;
+  if(choice === 'Reactor'){
+    BGready = false
+    var prevTransition = document.getElementById('alternate-audio-react').style.transition
+    document.getElementById('alternate-audio-react').style.transition = 'none'
+    document.getElementById('Audio-react').style.transition = 'none'
+
+    document.getElementById('alternate-audio-react').style.opacity = '0%'
+    document.getElementById('alternate-audio-react').style.display = 'block'
+    document.getElementById('Audio-react').style.opacity = '100%'
+
+    document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+    setTimeout(() => {
+      document.getElementById('Audio-react').style.opacity = '0%'
+      document.getElementById('alternate-audio-react').style.opacity = '100%'
+      setTimeout(() => {
+        document.getElementById('Audio-react').style.display = 'none'
+        document.getElementById('alternate-audio-react').style.transition = prevTransition
+        cooldownBGState = true
+      }, 1000)
+    }, 100)
+    
+} else if(choice === 'Custom'){
+    document.getElementById('Audio-react').style.transition = 'none'
+    document.getElementById('Audio-react').style.display = 'none'
+    setTimeout(() => {
+      document.getElementById('alternate-audio-react').style.display = 'block'
+      document.getElementById('Audio-react').style.opacity = '0%'
+      document.getElementById('Audio-react').style.display = 'block'
+      document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+      setTimeout(() => {
+        document.getElementById('Audio-react').style.opacity = '100%'
+      }, 100)
+      var prevTransition = document.getElementById('alternate-audio-react').style.transition
+        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
+        document.getElementById('alternate-audio-react').style.opacity = '0%'
+      setTimeout(() => {
+        document.getElementById('alternate-audio-react').style.display = 'none'
+        document.getElementById('alternate-audio-react').style.transition = prevTransition
+        document.getElementById('Audio-react').style.transition = 'none'
+        document.getElementById('Audio-react').style.opacity = '0%'
+        document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+        document.getElementById('Audio-react').src = BackgroundData[BGpos]
+        setTimeout(() => {
+            document.getElementById('Audio-react').style.opacity = '100%'
+        }, 100)
+        cooldownBGState = true
+        BGready = true
+      }, 1000)
+    }, 100)
+  
+  }}
+}
+
+function FetchBackgrounds(State){
+    console.log('loaded')
+  fetch(`http://localhost:${PORT}/getBackgrounds`)
+  .then((res) => res.json())
+  .then((res) => {
+      console.log(res)
+      BackgroundData = shuffleArray(res)
+    if(State === 'Reactor'){
+      document.getElementById('Audio-react').style.display = 'none'
+      document.getElementById('alternate-audio-react').style.display = 'none'
+      setTimeout(() => {
+        var prevTransition = document.getElementById('alternate-audio-react').style.transition
+        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
+        document.getElementById('alternate-audio-react').style.display = 'block'
+        setTimeout(() => {
+            document.getElementById('alternate-audio-react').style.opacity = '100%'
+            setTimeout(() => {
+                document.getElementById('alternate-audio-react').style.transition = prevTransition
+            }, 1000)
+        }, 10)
+      }, 100)
+      
+    } else if(State === 'Custom'){
+      if(BackgroundData){
+        if(BackgroundData.length > 0){
+          console.log(BackgroundData[BGpos]) 
+            try {
+              document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+              document.getElementById('Audio-react').style.display = 'none'
+              document.getElementById('alternate-audio-react').style.display = 'none'
+
+                document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                document.getElementById('Audio-react').onerror = () => {
+                BGpos++
+                document.getElementById('Audio-react').src = BackgroundData[BGpos]
+              }
+            document.getElementById('Audio-react').style.display = 'block'
+            setTimeout(() => {
+                document.getElementById('Audio-react').style.opacity = '100%'
+            }, 10)
+            var prevTransition = document.getElementById('alternate-audio-react').style.transition
+            document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
+            document.getElementById('alternate-audio-react').style.opacity = '0%'
+            setTimeout(() => {
+                document.getElementById('alternate-audio-react').style.display = 'none'
+                document.getElementById('alternate-audio-react').style.transition = prevTransition
+                BGready = true
+            }, 1000)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+    }
+    else{
+        console.log('no data')
+        document.getElementById('BG-choice-txt0').innerText = 'Reactor'
+    }
+    }
+    return BackgroundData
+      })
+}
+
 function IdleIncrease() {
     idle++
     //console.log(idle, idletimeout)
@@ -118,7 +255,8 @@ function verifyConnection(){
 
 if(!emptyreload){
   window.onload = () => {
-
+    FetchBackgrounds(BGchoice)
+    document.getElementById('Audio-react').style.display = 'none'
       if(bootsoundbool){
         document.querySelector('audio').play()
         document.querySelector('audio').volume = '0.3'}

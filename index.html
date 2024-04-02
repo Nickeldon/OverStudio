@@ -37,11 +37,10 @@
         <div class="draggable" id="draggable" style="background-color: transparent; z-index:99; position:absolute; top:0; right:0; width:80%; height:130px">
 
         </div>
-        <div style=" position: relative; width: 100%; height: 100%; user-select:none;" class="BG-anim" id="BG-anim">
-            <object id="Audio-react" data="" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out">
-            </object>
+        <div style=" position: relative; width: 100%; height: 100%; user-select:none; display:block; overflow:hidden" class="BG-anim" id="BG-anim">
+            <img id="Audio-react" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out; overflow:hidden">
 
-            <div id="alternative-background">
+            <div id="alternative-background" style="display: block;">
                 <div id="dust" style="position: absolute; bottom:0; width:100%; height:100%">
                     <div id="nc-main" class="nc-main bg-cover bg-cc" style="position: absolute; bottom:0; width:100%; height:100%;">
     
@@ -335,8 +334,8 @@
 
             </div> 
             
-            <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px; overflow-y:scroll; overflow-x:hidden;">
-                <div class="opt-txt" style="opacity:0%; top:190px; width:450px" onclick="
+            <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:80%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px; overflow-y:scroll; overflow-x:hidden; top:150px">
+                <div class="opt-txt" style="opacity:0%; top:40px; width:450px" onclick="
                 if(EffectChangeTimeout){
                     EffectChangeTimeout = false;
                     var txt = document.getElementById('dust-txt0');
@@ -366,7 +365,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:300px; width:490px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:150px; width:490px" onclick="
                 if(EffectChangeTimeout){
                     EffectChangeTimeout = false;
                     var txt = document.getElementById('ampl-txt0');
@@ -396,7 +395,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:410px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:260px; width:450px" onclick="
                 var txt = document.getElementById('anim-txt0');
                 txt.innerText = txt.innerText === 'Animations speed: 1x' ? 'Animations speed: 2x' : 'Animations speed: 1x';
                 var state = txt.innerText === 'Animations speed: 1x' ? true : false;
@@ -415,7 +414,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:520px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:370px; width:450px" onclick="
                 var txt = document.getElementById('boot-snd-txt0');
                 txt.innerText = txt.innerText === 'Enable Sound at boot' ? 'Disable Sound at boot' : 'Enable Sound at boot';
                 var state = txt.innerText === 'Enable Sound at boot' ? false : true;
@@ -427,7 +426,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:630px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:480px; width:450px" onclick="
                 var txt = document.getElementById('idle-txt0');
                 var value
                 idle = 0
@@ -456,7 +455,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:740px; width:450px" onclick="
+                <div class="opt-txt" style="opacity:0%; top:590px; width:450px" onclick="
                 var txt = document.getElementById('amp-speed-txt0');
                 console.log(txt.innerText, localStorage.getItem('Reactor-Speed'))
                 if(txt.innerText == '.1' || txt.innerText == '0.1'){
@@ -478,6 +477,43 @@
                 ">
                     <a  style="left: 70px;">
                         Reactor Speed: <span id="amp-speed-txt0">0.2</span>s
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:700px; width:450px" onclick="
+                if(cooldownBGState && BackgroundData.length > 0){
+                var txt = document.getElementById('BG-choice-txt0');
+                txt.innerText = txt.innerText === 'Reactor' ? 'Custom' : 'Reactor';
+                txt.innerText === 'Reactor' ? SwitchBackgrounds('Reactor') : SwitchBackgrounds('Custom');
+                localStorage.setItem('Background-Type', (txt.innerText))}
+                ">
+                    <a  style="left: 70px;">
+                        Background choice: <span id="BG-choice-txt0">Reactor</span>
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:810px; width:450px;" onclick="
+                var txt = document.getElementById('BG-cooldown-txt0');
+                if(txt.innerText === '5s'){
+                    txt.innerText = '10s';
+                    BGrefresh = 10000;
+                } else if(txt.innerText === '10s'){
+                    txt.innerText = '30s';
+                    BGrefresh = 30000;
+                } else if(txt.innerText === '30s'){
+                    txt.innerText = '45s';
+                    BGrefresh = 45000;
+                } else if(txt.innerText === '45s'){
+                    txt.innerText = '1min';
+                    BGrefresh = 60000;
+                } else if(txt.innerText === '1min'){
+                    txt.innerText = '5s';
+                    BGrefresh = 5000;
+                }
+                localStorage.setItem('Background-Cooldown', (txt.innerText))
+                ">
+                    <a  style="left: 70px;">
+                        Background choice: <span id="BG-cooldown-txt0">Reactor</span>
                     </a>
                 </div>
 

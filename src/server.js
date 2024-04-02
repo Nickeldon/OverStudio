@@ -345,6 +345,52 @@ app.get('/ParseLinks', (req, res, next) => {
     res.json(completeArray)
 })
 
+app.get('/getBackgrounds', (req, res, next) => {
+    const CurrentTime = new Date().toUTCString()
+    fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
+    var data = []
+
+    try {
+        var Path = path.resolve(__dirname + '\\..\\Media\\CustomBackgrounds')
+    fs.readdirSync(__dirname + '\\..\\Media\\CustomBackgrounds').forEach((elem) => {
+        if(!fs.statSync(__dirname + `\\..\\Media\\CustomBackgrounds\\${elem}`).isDirectory()){
+            var cont = true
+                    for(let i = elem.length; i > 0 && cont; i--){
+                        if(elem[i] === '.'){
+                            elem = elem.split('.')
+                            elem[1] = elem[1].toLowerCase()
+                            if(elem[1] === 'webp' || elem[1] === 'png' || elem[1] === 'jpg' || elem[1] === 'jpeg'){
+                            data.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
+                            cont = false
+                        }
+                    }
+        }
+    })
+    } catch (e) {
+        console.error(e)
+        const CurrentTime = new Date().toUTCString()
+        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
+    }
+
+    if(data){
+        try {
+            const CurrentTime = new Date().toUTCString()
+            data.forEach((elem) => {
+                fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Background found: ' + elem + '\n')
+            })
+            res.json(data)
+        } catch (e) {
+            console.error(e)
+            const CurrentTime = new Date().toUTCString()
+            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
+        }
+    }else{
+        res.json([])
+        const CurrentTime = new Date().toUTCString()
+        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No Backgrounds found \n\n')
+    }
+})
+
 function verifyURIIntegrity(URI){
     try {
         if(fs.existsSync(URI)) return true
