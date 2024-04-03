@@ -1,6 +1,6 @@
 {
   "name": "overstudio",
-  "version": "4.0.0",
+  "version": "4.3.0",
   "description": "Listen to music in a new way",
   "main": "electron.js",
   "scripts": {
@@ -12,6 +12,7 @@
   "author": "Nickeldon",
   "license": "ISC",
   "dependencies": {
+    "auto-git-update": "^2.1.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "http": "^0.0.1-security",

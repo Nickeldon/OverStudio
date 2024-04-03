@@ -17,6 +17,21 @@ var reversed = (/true/).test(localStorage.getItem('reversed')) || false
 localStorage.setItem('reversed', reversed)
 var ready = false
 
+function AutoUpdateSource(){
+    fetch('http://localhost:8000/AutoUpdater',{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then((res) => {
+        console.log(res)
+    })
+    
+}
+
+//AutoUpdateSource()
+
 async function GetYoutubeData(title){
     if(title){
     try {

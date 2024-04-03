@@ -6,6 +6,7 @@ const cors = require('cors')
 const app = express()
 let PORT = 8000
 const path = require('path')
+const Updater = require('auto-git-update')
 var ppos  = 0
 var URIsend
 var PLpos = 0
@@ -343,6 +344,27 @@ app.get('/ParseLinks', (req, res, next) => {
    fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Parsed links \n')
     }
     res.json(completeArray)
+})
+
+app.get('/AutoUpdater', (req, res, next) => {
+    const CurrentTime = new Date().toUTCString()
+    fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Received Auto Update Request \n')
+    const config = {
+        repository: 'https://github.com/Nickeldon/OverStudio',
+        fromReleases: true,
+        tempLocation: __dirname + '../temp',
+        ignoreFiles: [__dirname + '../electron.js'],
+        //executeOnComplete: __dirname  + '../scripts/Reboot.bat',
+        exitOnComplete: true
+    }
+    
+    try {
+        const updater = new Updater(config);
+        updater.autoUpdate();    
+    } catch (e) {
+        const CurrentTime = new Date().toUTCString()
+        fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Something Wrong Happened during the Autoupdate \n' + JSON.stringify(e) + '\n\n')
+    }
 })
 
 app.get('/getBackgrounds', (req, res, next) => {
