@@ -7,6 +7,7 @@ var BGready = false
 
 var BGrefresh = localStorage.getItem('Background-Cooldown') || 10000
 localStorage.setItem('Background-Cooldown', BGrefresh)
+console.log(BGrefresh)
 if(BGrefresh < 60000){
 document.getElementById('BG-cooldown-txt0').innerText = `${BGrefresh/1000}s`}
 else{
@@ -14,6 +15,8 @@ else{
 }
 
 var BGpos = 0
+
+console.log(localStorage.getItem('Sound_boot'))
 
 var BGchoice = localStorage.getItem('Background-Type') || 'Reactor'
 localStorage.setItem('Background-Type', BGchoice)
@@ -36,7 +39,9 @@ animationSpeeds(speeds[chosenSpeed])
 if(chosenSpeed === 'fast'){document.getElementById('anim-txt0').innerHTML = 'Animations speed: 2x'}
 else {document.getElementById('anim-txt0').innerHTML = 'Animations speed: 1x'}
 
-var bootsoundbool = (/true/).test(localStorage.getItem('Sound_boot')) || true
+var bootsoundbool = (localStorage.getItem('Sound_boot')) || 'true'
+if(bootsoundbool == 'false') bootsoundbool = false
+else bootsoundbool = false
 localStorage.setItem('Sound_boot', bootsoundbool)
 console.log(bootsoundbool)
 if(bootsoundbool){
@@ -158,64 +163,65 @@ function SwitchBackgrounds(choice){
   }}
 }
 
-function FetchBackgrounds(State){
-    console.log('loaded')
+function FetchBackgrounds(State, Bypass){
+    //console.log('loaded')
   fetch(`http://localhost:${PORT}/getBackgrounds`)
   .then((res) => res.json())
   .then((res) => {
-      console.log(res)
+      //console.log(res)
       BackgroundData = shuffleArray(res)
-    if(State === 'Reactor'){
-      document.getElementById('Audio-react').style.display = 'none'
-      document.getElementById('alternate-audio-react').style.display = 'none'
-      setTimeout(() => {
-        var prevTransition = document.getElementById('alternate-audio-react').style.transition
-        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-        document.getElementById('alternate-audio-react').style.display = 'block'
-        setTimeout(() => {
-            document.getElementById('alternate-audio-react').style.opacity = '100%'
-            setTimeout(() => {
-                document.getElementById('alternate-audio-react').style.transition = prevTransition
-            }, 1000)
-        }, 10)
-      }, 100)
-      
-    } else if(State === 'Custom'){
-      if(BackgroundData){
-        if(BackgroundData.length > 0){
-          console.log(BackgroundData[BGpos]) 
-            try {
-              document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
-              document.getElementById('Audio-react').style.display = 'none'
-              document.getElementById('alternate-audio-react').style.display = 'none'
-
-                document.getElementById('Audio-react').src = BackgroundData[BGpos]
-                document.getElementById('Audio-react').onerror = () => {
-                BGpos++
-                document.getElementById('Audio-react').src = BackgroundData[BGpos]
-              }
-            document.getElementById('Audio-react').style.display = 'block'
-            setTimeout(() => {
-                document.getElementById('Audio-react').style.opacity = '100%'
-            }, 10)
+      if(!Bypass){
+        if(State === 'Reactor'){
+          document.getElementById('Audio-react').style.display = 'none'
+          document.getElementById('alternate-audio-react').style.display = 'none'
+          setTimeout(() => {
             var prevTransition = document.getElementById('alternate-audio-react').style.transition
             document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-            document.getElementById('alternate-audio-react').style.opacity = '0%'
+            document.getElementById('alternate-audio-react').style.display = 'block'
             setTimeout(() => {
-                document.getElementById('alternate-audio-react').style.display = 'none'
-                document.getElementById('alternate-audio-react').style.transition = prevTransition
-                BGready = true
-            }, 1000)
-            } catch (e) {
-                console.log(e)
+                document.getElementById('alternate-audio-react').style.opacity = '100%'
+                setTimeout(() => {
+                    document.getElementById('alternate-audio-react').style.transition = prevTransition
+                }, 1000)
+            }, 10)
+          }, 100)
+          
+        } else if(State === 'Custom'){
+          if(BackgroundData){
+            if(BackgroundData.length > 0){
+              console.log(BackgroundData[BGpos]) 
+                try {
+                  document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+                  document.getElementById('Audio-react').style.display = 'none'
+                  document.getElementById('alternate-audio-react').style.display = 'none'
+
+                    document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                    document.getElementById('Audio-react').onerror = () => {
+                    BGpos++
+                    document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                  }
+                document.getElementById('Audio-react').style.display = 'block'
+                setTimeout(() => {
+                    document.getElementById('Audio-react').style.opacity = '100%'
+                }, 10)
+                var prevTransition = document.getElementById('alternate-audio-react').style.transition
+                document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
+                document.getElementById('alternate-audio-react').style.opacity = '0%'
+                setTimeout(() => {
+                    document.getElementById('alternate-audio-react').style.display = 'none'
+                    document.getElementById('alternate-audio-react').style.transition = prevTransition
+                    BGready = true
+                }, 1000)
+                } catch (e) {
+                    console.log(e)
+                }
             }
         }
-    }
-    else{
-        console.log('no data')
-        document.getElementById('BG-choice-txt0').innerText = 'Reactor'
-    }
-    }
+        else{
+            console.log('no data')
+            document.getElementById('BG-choice-txt0').innerText = 'Reactor'
+        }
+        }}
     return BackgroundData
       })
 }
@@ -347,6 +353,11 @@ function displayERR(type){
     var icparent = document.getElementById('corrupt-icon-parent')
     var ic = document.getElementById('corrupt-icon')
     var err = document.getElementById('corrupt-message')
+  } 
+  else if(type === 'No-Background-file'){
+    var icparent = document.getElementById('No-BG-icon-parent')
+    var ic = document.getElementById('No-BG-icon')
+    var err = document.getElementById('No-BG-message')
   }
   err.style.display = 'block'
   setTimeout(() => {

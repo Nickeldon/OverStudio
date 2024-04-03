@@ -218,7 +218,7 @@ refreshbuttons.forEach((refresh) => {
             try {
                 audio = loadSound(playlist[plpos].url, loaded)
             } catch (e) {
-                console.log(e)
+                if(e.message !== 'Cannot read properties of undefined (reading \'url\')' && e.message !== 'Cannot read properties of null (reading \'0\')') console.log(e)
                 prevnul = true
         }}
         started = false
@@ -1050,3 +1050,20 @@ function ChangeBG(){
 
 ChangeBG()
 
+setInterval(() => {
+    //console.log(SETBypassBGScan)
+    if(BackgroundData){
+    if(BackgroundData.length == 0){
+        //console.log('Trying to fetch backgrounds')
+        try {
+            BackgroundData = FetchBackgrounds(document.getElementById('BG-choice-txt0').innerText, true)
+        } catch (e) {
+            console.log(e)
+        }
+        let WaitForBG = setInterval(() => {
+            if(BackgroundData){
+                clearInterval(WaitForBG)
+                BGready = true
+            }
+        }, 500)}}
+}, 2000)

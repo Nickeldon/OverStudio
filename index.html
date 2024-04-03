@@ -80,6 +80,19 @@
             </div>
         </div>
 
+        <div class="No-BG-message" id="No-BG-message" style="position:absolute; top:0; right:-400px; width:400px; height:120px; background-color:#417397; opacity:80%; border-radius:20px; border-top-left-radius:0px; border-bottom-right-radius:0px; opacity:0%; color:white; transition:all.5s ease-out">
+
+            <i style="position: absolute; top:20%; left:10%; filter:invert(80%)" id="No-BG-icon-parent">
+                <img src="./Addons/icons/warning.png" style="height: 60px;" id="No-BG-icon">
+            </i>
+
+            <div style="position: absolute; top:20%; right:10%;">
+                <h3 style="width: 200px; font-size:23px">
+                    No Backgrounds detected on set directory
+                </h3>
+            </div>
+        </div>
+
         <div class="corrupt-message" id="corrupt-message" style="position:absolute; top:0; right:-400px; width:400px; height:120px; background-color:#545454; opacity:80%; border-radius:20px; border-top-left-radius:0px; border-bottom-right-radius:0px; opacity:0%; color:white; transition:all.5s ease-out">
 
             <i style="position: absolute; top:20%; left:10%; filter:invert(80%)" id="corrupt-icon-parent">
@@ -486,6 +499,9 @@
                 txt.innerText = txt.innerText === 'Reactor' ? 'Custom' : 'Reactor';
                 txt.innerText === 'Reactor' ? SwitchBackgrounds('Reactor') : SwitchBackgrounds('Custom');
                 localStorage.setItem('Background-Type', (txt.innerText))}
+                else{
+                    displayERR('No-Background-file')
+                }
                 ">
                     <a  style="left: 70px;">
                         Background choice: <span id="BG-choice-txt0">Reactor</span>
@@ -510,10 +526,10 @@
                     txt.innerText = '5s';
                     BGrefresh = 5000;
                 }
-                localStorage.setItem('Background-Cooldown', (txt.innerText))
+                localStorage.setItem('Background-Cooldown', BGrefresh)
                 ">
                     <a  style="left: 70px;">
-                        Background choice: <span id="BG-cooldown-txt0">Reactor</span>
+                        Background speed: <span id="BG-cooldown-txt0">25s</span>
                     </a>
                 </div>
 

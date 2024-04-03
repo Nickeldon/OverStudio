@@ -392,7 +392,8 @@ async function fetchPlaylist(){
     try {
         return await data.json()   
     } catch (e) {
-        console.log(e)
+        if(e.message !== 'Unexpected end of JSON input'){
+        console.log(e)}
         return [[], []]
     }
 }

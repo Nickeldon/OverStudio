@@ -221,7 +221,7 @@ app.get('/delPath', (req, res, next) => {
 
 app.get('/ParseLinks', (req, res, next) => {
 
-    console.log('received call')
+    //console.log('received call')
     const CurrentTime = new Date().toUTCString()
     fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
 
@@ -245,10 +245,10 @@ app.get('/ParseLinks', (req, res, next) => {
         }
     } else{
         try {
-            console.log('passed')
+            //console.log('passed')
             //console.log(savedPL.meta)
             if(savedPL.meta.links.length === 0){
-                console.log('no links')
+                //console.log('no links')
                 const CurrentTime = new Date().toUTCString()
                 fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No playlist detected' + '\n\n')
             }
