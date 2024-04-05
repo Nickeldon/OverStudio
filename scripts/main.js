@@ -41,13 +41,11 @@ else {document.getElementById('anim-txt0').innerHTML = 'Animations speed: 1x'}
 
 var bootsoundbool = (localStorage.getItem('Sound_boot')) || 'true'
 if(bootsoundbool == 'false') bootsoundbool = false
-else bootsoundbool = false
+else bootsoundbool = true
 localStorage.setItem('Sound_boot', bootsoundbool)
-console.log(bootsoundbool)
 if(bootsoundbool){
   document.getElementById('boot-snd-txt0').innerText = 'Disable Sound at boot'
-}
-else{
+} else{
   document.getElementById('boot-snd-txt0').innerText = 'Enable Sound at boot'
 }
 

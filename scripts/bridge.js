@@ -27,10 +27,7 @@ function AutoUpdateSource(){
     .then((res) => {
         console.log(res)
     })
-    
 }
-
-//AutoUpdateSource()
 
 async function GetYoutubeData(title){
     if(title){

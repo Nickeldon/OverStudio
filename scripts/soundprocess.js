@@ -472,6 +472,18 @@ document.getElementById('shuffle').addEventListener('click', () => {
     }
 })
 
+navigator.mediaDevices.addEventListener('devicechange', () => {
+    navigator.mediaDevices.enumerateDevices()
+    .then(devices => {
+        if(audio){
+            if(audio.isPlaying()){
+                PlayPause(audio)
+                devices.forEach((device) => {
+                if(device.kind === 'audiooutput') console.log(device);
+            })}}
+    });
+});
+
 function loaded(){
     try {
         if(started){
@@ -1011,35 +1023,36 @@ setInterval(() => {
 function ChangeBG(){
     let interval = setTimeout(() => {
         if(BGready && document.getElementById('BG-choice-txt0').innerText === 'Custom'){
-            if(BackgroundData.length > 1){
-                console.log('passed-1')
-                if(BGpos < BackgroundData.length - 1){
-                    BGpos++
-                } else{
-                    BGpos = 0
-                }
-                document.getElementById('Audio-react').style.transition = 'none'
-                document.getElementById('Audio-react').style.display = 'block'
-                document.getElementById('Audio-react').style.opacity = '100%'
-                document.getElementById('Audio-react').style.transition = `all 1s ease-out`
+            if(BackgroundData){
+                if(BackgroundData.length > 1){
+                    console.log('passed-1')
+                    if(BGpos < BackgroundData.length - 1){
+                        BGpos++
+                    } else{
+                        BGpos = 0
+                    }
+                    document.getElementById('Audio-react').style.transition = 'none'
+                    document.getElementById('Audio-react').style.display = 'block'
+                    document.getElementById('Audio-react').style.opacity = '100%'
+                    document.getElementById('Audio-react').style.transition = `all 1s ease-out`
 
-                            setTimeout(() => {
-                                console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
-                                document.getElementById('Audio-react').style.opacity = '0%'
                                 setTimeout(() => {
-                                        document.getElementById('Audio-react').data = BackgroundData[BGpos]
-                                        setTimeout(() => {
-                                            document.getElementById('Audio-react').style.opacity = '100%'
-                                            clearTimeout(interval)
-                                            ChangeBG()
-                                    }, 100)
-                                }, 1000)
-                            }, 100)
-            }
-            else{
-                clearTimeout(interval)
-                ChangeBG()
-            }
+                                    console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
+                                    document.getElementById('Audio-react').style.opacity = '0%'
+                                    setTimeout(() => {
+                                            document.getElementById('Audio-react').data = BackgroundData[BGpos]
+                                            setTimeout(() => {
+                                                document.getElementById('Audio-react').style.opacity = '100%'
+                                                clearTimeout(interval)
+                                                ChangeBG()
+                                        }, 100)
+                                    }, 1000)
+                                }, 100)
+                }
+                else{
+                    clearTimeout(interval)
+                    ChangeBG()
+                }}
         }else{
             //console.log(BGready, BGpos, document.getElementById('BG-choice-txt0').innerText)
             clearTimeout(interval)
