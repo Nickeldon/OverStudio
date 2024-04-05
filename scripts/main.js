@@ -151,7 +151,7 @@ function SwitchBackgrounds(choice){
         document.getElementById('Audio-react').style.transition = 'none'
         document.getElementById('Audio-react').style.opacity = '0%'
         document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
-        document.getElementById('Audio-react').src = BackgroundData[BGpos]
+        document.getElementById('Audio-react').data = BackgroundData[BGpos]
         setTimeout(() => {
             document.getElementById('Audio-react').style.opacity = '100%'
         }, 100)
@@ -195,10 +195,10 @@ function FetchBackgrounds(State, Bypass){
                   document.getElementById('Audio-react').style.display = 'none'
                   document.getElementById('alternate-audio-react').style.display = 'none'
 
-                    document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                    document.getElementById('Audio-react').data = BackgroundData[BGpos]
                     document.getElementById('Audio-react').onerror = () => {
                     BGpos++
-                    document.getElementById('Audio-react').src = BackgroundData[BGpos]
+                    document.getElementById('Audio-react').data = BackgroundData[BGpos]
                   }
                 document.getElementById('Audio-react').style.display = 'block'
                 setTimeout(() => {

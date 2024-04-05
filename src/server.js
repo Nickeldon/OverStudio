@@ -381,7 +381,7 @@ app.get('/getBackgrounds', (req, res, next) => {
                         if(elem[i] === '.'){
                             elem = elem.split('.')
                             elem[1] = elem[1].toLowerCase()
-                            if(elem[1] === 'webp' || elem[1] === 'png' || elem[1] === 'jpg' || elem[1] === 'jpeg'){
+                            if(elem[1] === 'webp' || elem[1] === 'png' || elem[1] === 'jpg' || elem[1] === 'jpeg' || elem[1] === 'gif'){
                             data.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
                             cont = false
                         }
