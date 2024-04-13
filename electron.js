@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {app, BrowserWindow, contextBridge} = electron
+const {app, BrowserWindow, contextBridge, Tray} = electron
 const url = require('url')
 const path = require('path');
 const electronIpcMain = require('electron').ipcMain;
@@ -17,7 +17,7 @@ try {
 //require('electron-reload')(__dirname,{electron: path.join(__dirname, 'node_modules', '.bin', 'electron')})
 
 let windowObj = null
-
+let tray = null
 if (!instancelimit) {
   app.quit()
 } else{
@@ -79,6 +79,43 @@ if (!instancelimit) {
           windowObj.setSize(size[0], parseInt(size[0] * 10 / 9));
         }, 0);
       });
+
+      const { app, Menu, Tray } = require('electron')
+
+    app.whenReady().then(() => {
+      tray = new Tray('./Addons/logo/logowin.png')
+      const contextMenu = Menu.buildFromTemplate([
+        { label: 'Play',
+        click: () => {
+          RendererRequest('Play')
+        }
+        },
+        { label: 'Pause',
+        click: () => {
+          RendererRequest('Pause')
+        }},
+        { label: 'Next',
+        click: () => {
+          RendererRequest('Next')
+        }},
+        { label: 'Previous',
+        click: () => {
+          RendererRequest('Previous')
+        }},
+        { label: 'Mute / Unmute',
+        click: () => {
+          RendererRequest('Mute')
+        }},
+        { type: 'separator' },
+        { label: 'Quit', 
+          click: () => {
+            app.quit()
+          }
+        },
+      ])
+      tray.setToolTip('OverStudio')
+      tray.setContextMenu(contextMenu)
+    })
   }
   
   app.on('window-all-closed', () => {
@@ -96,4 +133,9 @@ if (!instancelimit) {
     console.log('received request 2')
     windowObj.restore();
   })
+
+  function RendererRequest(request){
+    windowObj.webContents.send('Multi-Instance', request)
+  }
+
 }
