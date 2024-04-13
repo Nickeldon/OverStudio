@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {app, BrowserWindow, contextBridge, Tray} = electron
+const {app, BrowserWindow, contextBridge, Tray, Menu} = electron
 const url = require('url')
 const path = require('path');
 const electronIpcMain = require('electron').ipcMain;
@@ -80,10 +80,21 @@ if (!instancelimit) {
         }, 0);
       });
 
-      const { app, Menu, Tray } = require('electron')
+    const readyListener = () => {
+      if (app.isReady()) {
+        return createTray();
+      }
+      return setTimeout(readyListener, 250);
+    };
 
-    app.whenReady().then(() => {
-      tray = new Tray('./Addons/logo/logowin.png')
+    readyListener();
+
+    function createTray(){
+      if(process.platform === 'win32'){
+      tray = new Tray(__dirname + '\\Addons\\logo\\logowin.ico')}
+      else{
+        tray = new Tray(__dirname + '\\Addons\\logo\\logowin.png')
+      }
       const contextMenu = Menu.buildFromTemplate([
         { label: 'Play',
         click: () => {
@@ -115,7 +126,7 @@ if (!instancelimit) {
       ])
       tray.setToolTip('OverStudio')
       tray.setContextMenu(contextMenu)
-    })
+    }
   }
   
   app.on('window-all-closed', () => {
