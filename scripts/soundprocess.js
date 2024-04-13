@@ -41,7 +41,7 @@ var eq = new p5.EQ(8)
 
 var refreshbuttons = []
 let imageMetadata = []
-var audioreact = document.getElementById('alternate-audio-react')
+var audioreact = document.getElementById('Blob-Reactor-Obj')
 var rs = getComputedStyle(audioreact)
 var timeoutplaypause = Date.now()
 
@@ -598,14 +598,14 @@ function loaded(){
 
                                 /*if(imageMetadata[plpos]){
                                     if(imageMetadata[plpos].thumbnail){
-                                        document.getElementById('alternate-audio-react').style.backgroundImage = `url(${imageMetadata[plpos].thumbnail})`
+                                        document.getElementById('Blob-Reactor-Obj').style.backgroundImage = `url(${imageMetadata[plpos].thumbnail})`
                                     }
                                 }*/
                                   clearInterval(interval)
                                 }
                               }, 10)
                             setTimeout(() => {
-                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                                document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                                 PrevSpeed = BGspeed
                             }, 1000)}
                     }break;
@@ -648,7 +648,7 @@ function loaded(){
                                 }
                                 }, 10)
                             setTimeout(() => {
-                                document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                                document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                                 PrevSpeed = BGspeed
                             }, 1000)}
                     }
@@ -711,7 +711,7 @@ function loaded(){
                     }
                   }, 10)
                 setTimeout(() => {
-                    document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                    document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                     PrevSpeed = BGspeed 
                 }, 1000)}
             })        
@@ -834,7 +834,7 @@ function resetIdleTimer(){
     }
 }
 
-document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
 PrevSpeed = BGspeed
 var trackinterval = setInterval(() => {
     if(audio){
@@ -905,24 +905,24 @@ function draw(){
                         document.getElementById('timeslide').max = audio.duration()
                         document.getElementById('timeslide').style.backgroundSize = `${(((audio.currentTime() / audio.duration()) * 100) + 1)}% 100%`
                         if(follow) document.getElementById('timeslide').value = (audio.currentTime())
-                    if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1 && VisualMode === 'BlobReactor'){
-                        if(document.getElementById('alternate-audio-react').style.display !== 'block'){
-                            document.getElementById('alternate-audio-react').style.display = 'block'}
+                    if(document.getElementById('Blob-Reactor-Obj').style.display === 'block' && vol*20 > 0.1 && VisualMode === 'BlobReactor'){
+                        if(document.getElementById('Blob-Reactor-Obj').style.display !== 'block'){
+                            document.getElementById('Blob-Reactor-Obj').style.display = 'block'}
                         if(PrevSpeed !== BGspeed){
                             console.log('true')
-                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }
                         if(vol*20 > 0.1){
-                            document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
+                            document.getElementById('Blob-Reactor-Obj').style.transform = `scale(${vol*10})`
                         }
                     }
                     if(VisualMode == 'ActiveReactor'){
-                        if(document.getElementById('alternate-audio-react').style.display !== 'none'
+                        if(document.getElementById('Blob-Reactor-Obj').style.display !== 'none'
                         || document.getElementById('Audio-react').style.display !== 'none'
                         || document.getElementById('Audio-Visulizer').style.display !== 'block'){
                             document.getElementById('Audio-react').style.display = 'none'
-                            document.getElementById('alternate-audio-react').style.display = 'none'
+                            document.getElementById('Blob-Reactor-Obj').style.display = 'none'
                             document.getElementById('Audio-Visulizer').style.display = 'block'
                         }   
                         if(prevwidth !== window.innerWidth || prevheight !== window.innerHeight){
@@ -1014,22 +1014,22 @@ function draw(){
                         document.getElementById('timeslide').value = 0
                         if(!audio._paused){
                         if(plpos >= playlist.length - 1){
-                        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-                        document.getElementById('alternate-audio-react').style.transform = `scale(1)`
+                        document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
+                        document.getElementById('Blob-Reactor-Obj').style.transform = `scale(1)`
                 
                         setTimeout(() => {
-                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }, 1000)} 
                         else{
                         if(started && audio.isLoaded() && !audio._paused && release){
                         next.click()
                         }
-                        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-                        document.getElementById('alternate-audio-react').style.transform = `scale(1)`
+                        document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
+                        document.getElementById('Blob-Reactor-Obj').style.transform = `scale(1)`
 
                         setTimeout(() => {
-                            document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
+                            document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }, 1000)
                         }

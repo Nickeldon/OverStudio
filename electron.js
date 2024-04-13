@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {app, BrowserWindow, contextBridge, Tray, Menu} = electron
+const {app, BrowserWindow, contextBridge, Tray, Menu, nativeImage} = electron
 const url = require('url')
 const path = require('path');
 const electronIpcMain = require('electron').ipcMain;
@@ -53,7 +53,7 @@ if (!instancelimit) {
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
     try {
-    //windowObj.webContents.openDevTools()
+    windowObj.webContents.openDevTools()
     } catch (e) {
       const date = new Date().toUTCString()
       fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
@@ -91,9 +91,15 @@ if (!instancelimit) {
 
     function createTray(){
       if(process.platform === 'win32'){
-      tray = new Tray(__dirname + '\\Addons\\logo\\logowin.ico')}
+        const image = nativeImage.createFromPath(
+          path.join(__dirname, "\\Addons\\logo\\logowin.ico")
+        );
+        tray = new Tray(image.resize({ width: 256, height: 256 }));}
       else{
-        tray = new Tray(__dirname + '\\Addons\\logo\\logowin.png')
+        const image = nativeImage.createFromPath(
+          path.join(__dirname, "\\Addons\\logo\\logowin.png")
+        );
+        tray = new Tray(image.resize({ width: 256, height: 256 }))
       }
       const contextMenu = Menu.buildFromTemplate([
         { label: 'Play',
@@ -120,7 +126,7 @@ if (!instancelimit) {
         { type: 'separator' },
         { label: 'Quit', 
           click: () => {
-            app.quit()
+            RendererRequest('Quit')
           }
         },
       ])

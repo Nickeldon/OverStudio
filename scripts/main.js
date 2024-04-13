@@ -1,6 +1,11 @@
 var EffectChangeTimeout = true
 var completesplash = false
 var corrupt = false
+var noError = false
+var prevautochanged = false
+var cooldownBGState = true
+
+var MenuTimeout = [0, 0, 0, 0, 0, 0]
 
 var BackgroundData = []
 var BGready = false
@@ -57,14 +62,14 @@ var enAmpl = (/true/).test(effectsArray['amplitude']) || false
 document.getElementById('dust-txt0').innerText = 'Disable dust particles'
 document.getElementById('dust').style.display = 'block'
 document.getElementById('ampl-txt0').innerText = 'Disable Amplitude BlobReactor'
-document.getElementById('alternate-audio-react').style.display = 'block'
+document.getElementById('Blob-Reactor-Obj').style.display = 'block'
 
 if(!enDust) {
   document.getElementById('dust-txt0').innerText = 'Enable dust particles'
   document.getElementById('dust').style.display = 'none'}
 if(!enAmpl) {
   document.getElementById('ampl-txt0').innerText = 'Enable Amplitude BlobReactor'
-  document.getElementById('alternate-audio-react').style.display = 'none'}
+  document.getElementById('Blob-Reactor-Obj').style.display = 'none'}
 localStorage.setItem('effectsState', JSON.stringify(effectsArray))
 
 
@@ -81,8 +86,6 @@ else{
   document.getElementById('idle-txt0').innerText = `${idletimeout/60} min`
 }
 
-var noError = false
-var prevautochanged = false
 $(document).ready(() => {
 
     setInterval(() => {if(idletimeout > 0){IdleIncrease()} else idle = 0}, 1000);
@@ -103,62 +106,105 @@ $(document).ready(() => {
     })
 })
 
-var cooldownBGState = true
+var fadeBool = (localStorage.getItem('fadeAtClose')) || 'true'
+
+document.getElementById('fade-txt0').innerText = fadeBool
+localStorage.setItem('fadeAtClose', fadeBool)
+
+function changeOptionState(optionDOM, state){
+  if(state){
+    optionDOM.style.filter = 'blur(0px) brightness(100%)'
+    optionDOM.style.pointerEvents = 'all'
+    optionDOM.style.userSelect = 'none'
+    optionDOM.style.transform = 'scale(1)'
+  } else{
+    optionDOM.style.filter = 'blur(1px) brightness(40%)'
+    optionDOM.style.pointerEvents = 'none'
+    optionDOM.style.userSelect = 'none'
+    optionDOM.style.transform = 'scale(0.96)'
+  }
+}
 
 function SwitchBackgrounds(choice){
   if(cooldownBGState){
+    document.getElementById('Audio-react').style.display = 'none'
+    document.getElementById('Blob-Reactor-Obj').style.display = 'none'
     cooldownBGState = false;
   if(choice === 'BlobReactor'){
+    changeOptionState(document.getElementById('blob-speed-opt'), true)
+    changeOptionState(document.getElementById('blob-react-parent'), true)
+    changeOptionState(document.getElementById('Custom-BG-speed'), false)
+    changeOptionState(document.getElementById('ActiveVisulizer-opt-choice'), false)
     BGready = false
-    var prevTransition = document.getElementById('alternate-audio-react').style.transition
-    document.getElementById('alternate-audio-react').style.transition = 'none'
+    var prevTransition = document.getElementById('Blob-Reactor-Obj').style.transition
+    document.getElementById('Blob-Reactor-Obj').style.transition = 'none'
     document.getElementById('Audio-react').style.transition = 'none'
 
-    document.getElementById('alternate-audio-react').style.opacity = '0%'
-    document.getElementById('alternate-audio-react').style.display = 'block'
+    document.getElementById('Blob-Reactor-Obj').style.opacity = '0%'
+    document.getElementById('Blob-Reactor-Obj').style.display = 'block'
     document.getElementById('Audio-react').style.opacity = '100%'
 
     document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
     setTimeout(() => {
       document.getElementById('Audio-react').style.opacity = '0%'
-      document.getElementById('alternate-audio-react').style.opacity = '100%'
+      document.getElementById('Blob-Reactor-Obj').style.opacity = '100%'
       setTimeout(() => {
         document.getElementById('Audio-react').style.display = 'none'
-        document.getElementById('alternate-audio-react').style.transition = prevTransition
+        document.getElementById('Blob-Reactor-Obj').style.transition = prevTransition
         cooldownBGState = true
       }, 1000)
     }, 100)
     
-} else if(choice === 'Custom'){
-    document.getElementById('Audio-react').style.transition = 'none'
-    document.getElementById('Audio-react').style.display = 'none'
-    setTimeout(() => {
-      document.getElementById('alternate-audio-react').style.display = 'block'
-      document.getElementById('Audio-react').style.opacity = '0%'
-      document.getElementById('Audio-react').style.display = 'block'
-      document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+} else if(choice === 'BGCustom'){
+  if(BackgroundData){
+    if(BackgroundData.length > 0){
+      changeOptionState(document.getElementById('blob-speed-opt'), false)
+      changeOptionState(document.getElementById('blob-react-parent'), false)
+      changeOptionState(document.getElementById('Custom-BG-speed'), true)
+      changeOptionState(document.getElementById('ActiveVisulizer-opt-choice'), false)
+      document.getElementById('Audio-react').style.transition = 'none'
+      document.getElementById('Audio-react').style.display = 'none'
       setTimeout(() => {
-        document.getElementById('Audio-react').style.opacity = '100%'
-      }, 100)
-      var prevTransition = document.getElementById('alternate-audio-react').style.transition
-        document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-        document.getElementById('alternate-audio-react').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('alternate-audio-react').style.display = 'none'
-        document.getElementById('alternate-audio-react').style.transition = prevTransition
-        document.getElementById('Audio-react').style.transition = 'none'
+        document.getElementById('Blob-Reactor-Obj').style.display = 'block'
         document.getElementById('Audio-react').style.opacity = '0%'
+        document.getElementById('Audio-react').style.display = 'block'
         document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
-        document.getElementById('Audio-react').data = BackgroundData[BGpos]
         setTimeout(() => {
-            document.getElementById('Audio-react').style.opacity = '100%'
+          document.getElementById('Audio-react').style.opacity = '100%'
         }, 100)
-        cooldownBGState = true
-        BGready = true
-      }, 1000)
-    }, 100)
-  
-  }}
+        var prevTransition = document.getElementById('Blob-Reactor-Obj').style.transition
+          document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
+          document.getElementById('Blob-Reactor-Obj').style.opacity = '0%'
+        setTimeout(() => {
+          document.getElementById('Blob-Reactor-Obj').style.display = 'none'
+          document.getElementById('Blob-Reactor-Obj').style.transition = prevTransition
+          document.getElementById('Audio-react').style.transition = 'none'
+          document.getElementById('Audio-react').style.opacity = '0%'
+          document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
+          document.getElementById('Audio-react').data = BackgroundData[BGpos]
+          setTimeout(() => {
+              document.getElementById('Audio-react').style.opacity = '100%'
+          }, 100)
+          cooldownBGState = true
+          BGready = true
+          document.getElementById('refr-alt').click()
+        }, 1000)
+        }, 100)}
+        else{
+          console.log('no data')
+          document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+      }
+  }
+  else{
+    console.log('no data')
+    document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+}
+}
+    else{
+      console.log('no data')
+      document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+  }
+  }
 }
 
 function FetchBackgrounds(State, Bypass){
@@ -169,29 +215,39 @@ function FetchBackgrounds(State, Bypass){
       //console.log(res)
       BackgroundData = shuffleArray(res)
       if(!Bypass){
+        document.getElementById('Audio-react').style.display = 'none'
+        document.getElementById('Blob-Reactor-Obj').style.display = 'none'
         if(State === 'BlobReactor'){
+          changeOptionState(document.getElementById('blob-speed-opt'), true)
+          changeOptionState(document.getElementById('blob-react-parent'), true)
+          changeOptionState(document.getElementById('Custom-BG-speed'), false)
+          changeOptionState(document.getElementById('ActiveVisulizer-opt-choice'), false)
           document.getElementById('Audio-react').style.display = 'none'
-          document.getElementById('alternate-audio-react').style.display = 'none'
+          document.getElementById('Blob-Reactor-Obj').style.display = 'none'
           setTimeout(() => {
-            var prevTransition = document.getElementById('alternate-audio-react').style.transition
-            document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-            document.getElementById('alternate-audio-react').style.display = 'block'
+            var prevTransition = document.getElementById('Blob-Reactor-Obj').style.transition
+            document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
+            document.getElementById('Blob-Reactor-Obj').style.display = 'block'
             setTimeout(() => {
-                document.getElementById('alternate-audio-react').style.opacity = '100%'
+                document.getElementById('Blob-Reactor-Obj').style.opacity = '100%'
                 setTimeout(() => {
-                    document.getElementById('alternate-audio-react').style.transition = prevTransition
+                    document.getElementById('Blob-Reactor-Obj').style.transition = prevTransition
                 }, 1000)
             }, 10)
           }, 100)
           
-        } else if(State === 'Custom'){
+        } else if(State === 'BGCustom'){
           if(BackgroundData){
             if(BackgroundData.length > 0){
+              changeOptionState(document.getElementById('blob-speed-opt'), false)
+              changeOptionState(document.getElementById('blob-react-parent'), false)
+              changeOptionState(document.getElementById('Custom-BG-speed'), true)
+              changeOptionState(document.getElementById('ActiveVisulizer-opt-choice'), false)
               console.log(BackgroundData[BGpos]) 
                 try {
                   document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
                   document.getElementById('Audio-react').style.display = 'none'
-                  document.getElementById('alternate-audio-react').style.display = 'none'
+                  document.getElementById('Blob-Reactor-Obj').style.display = 'none'
 
                     document.getElementById('Audio-react').data = BackgroundData[BGpos]
                     document.getElementById('Audio-react').onerror = () => {
@@ -202,18 +258,22 @@ function FetchBackgrounds(State, Bypass){
                 setTimeout(() => {
                     document.getElementById('Audio-react').style.opacity = '100%'
                 }, 10)
-                var prevTransition = document.getElementById('alternate-audio-react').style.transition
-                document.getElementById('alternate-audio-react').style.transition = 'all 1s ease-out'
-                document.getElementById('alternate-audio-react').style.opacity = '0%'
+                var prevTransition = document.getElementById('Blob-Reactor-Obj').style.transition
+                document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
+                document.getElementById('Blob-Reactor-Obj').style.opacity = '0%'
                 setTimeout(() => {
-                    document.getElementById('alternate-audio-react').style.display = 'none'
-                    document.getElementById('alternate-audio-react').style.transition = prevTransition
+                    document.getElementById('Blob-Reactor-Obj').style.display = 'none'
+                    document.getElementById('Blob-Reactor-Obj').style.transition = prevTransition
                     BGready = true
                 }, 1000)
                 } catch (e) {
                     console.log(e)
                 }
             }
+            else{
+              console.log('no data')
+              document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+          }
         }
         else{
             console.log('no data')
@@ -363,6 +423,14 @@ function displayERR(type){
     var ic = document.getElementById('No-BG-icon')
     var err = document.getElementById('No-BG-message')
   }
+  else if(type === 'Reset-Settings'){
+    var icparent = document.getElementById('Reboot-cond-icon-parent')
+    var ic = document.getElementById('Reboot-cond-icon')
+    var err = document.getElementById('Reboot-condition')
+  }
+  else{
+    return undefined
+  }
   err.style.display = 'block'
   setTimeout(() => {
     err.style.right = '0%'
@@ -451,6 +519,12 @@ function changeState(){
 }
 
 function openMENU(){
+
+  clearTimeout(MenuTimeout[0])
+  clearTimeout(MenuTimeout[1])
+  clearTimeout(MenuTimeout[2])
+  clearTimeout(MenuTimeout[3])
+  clearTimeout(MenuTimeout[4])
   
   opentab.play()
   var opt = document.getElementById('options')
@@ -463,7 +537,7 @@ function openMENU(){
   document.getElementById('opt-menu6').style.opacity = '0%'
   optprev.style.display = 'block'
   let deletespeed = parseInt(speeds[chosenSpeed][5]) - 200
-  setTimeout(() => {
+  MenuTimeout[0] = setTimeout(() => {
     document.getElementById('opt-menu2').style.display = 'none'
     document.getElementById('opt-menu3').style.display = 'none'
     document.getElementById('opt-menu4').style.display = 'none'
@@ -480,7 +554,7 @@ function openMENU(){
     document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
     document.getElementById('eq-menu').style.top = '-500px'
   document.getElementById('eq-menu').style.opacity = '0%'
-  setTimeout(() => {
+  MenuTimeout[1] = setTimeout(() => {
     document.getElementById('eq-menu').style.display = 'none'
   }, 1000);
   document.getElementById('opt-menu2').style.opacity = '0%'
@@ -498,7 +572,7 @@ function openMENU(){
     elem.style.animation = '1s pop both'
   })
 
-  setTimeout(() => {
+  MenuTimeout[3] = setTimeout(() => {
     opt.style.opacity = '80%'
     opt.style.left = '0px'
   }, 100)} 
@@ -513,7 +587,7 @@ function openMENU(){
       elem.style.animation = ''
     })
 
-  setTimeout(() => {
+  MenuTimeout[4] = setTimeout(() => {
     opt.style.opacity = '30%'
     opt.style.display = 'block'
   }, 100)
@@ -521,158 +595,169 @@ function openMENU(){
 }
 
 function options(choice){
+  clearTimeout(MenuTimeout[5])
+  clearTimeout(MenuTimeout[6])
   console.log(parseInt(speeds[chosenSpeed][5]) + 100)
+  document.getElementById('side').style.pointerEvents = 'none'
   document.getElementsByClassName('menu-icns').forEach((elem) => {
     elem.style.pointerEvents = 'none'
     setTimeout(() => {
       elem.style.pointerEvents = 'all'
       console.log('passed')
-    }, (parseInt(speeds[chosenSpeed][5]) + 100))
+    }, (parseInt(speeds[chosenSpeed][5]) + 400))
   })
+  setTimeout(() => {
+    document.getElementById('side').style.pointerEvents = 'all'
+  }, (parseInt(speeds[chosenSpeed][5]) + 400))
+
   document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
   document.getElementById('eq-menu').style.top = '-500px'
   document.getElementById('eq-menu').style.opacity = '0%'
-  setTimeout(() => {
+  MenuTimeout[5] = setTimeout(() => {
     document.getElementById('eq-menu').style.display = 'none'
   }, 1000);
-  switch(choice){
-    case 1: {
-      //document.getElementById('menu-folder').style.pointerEvents = 'none'
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu2').style.display = 'block'
+
+  MenuTimeout[6] = setTimeout(() => {
+    switch(choice){
+      case 1: {
+        //document.getElementById('menu-folder').style.pointerEvents = 'none'
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
         setTimeout(() => {
+          document.getElementById('opt-menu2').style.display = 'block'
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-            //document.getElementById('menu-folder').style.pointerEvents = 'all'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu2').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-
-    }break;
-
-    case 2: {
-      //document.getElementById('menu-add').style.pointerEvents = 'none'
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu3').style.display = 'block'
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+              //document.getElementById('menu-folder').style.pointerEvents = 'all'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu2').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+  
+      }break;
+  
+      case 2: {
+        //document.getElementById('menu-add').style.pointerEvents = 'none'
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
         setTimeout(() => {
+          document.getElementById('opt-menu3').style.display = 'block'
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-            //document.getElementById('opt-menu3').style.pointerEvents = 'all'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu3').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-    }break;
-
-    case 3: {
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-menu3').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu4').style.display = 'block'
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+              //document.getElementById('opt-menu3').style.pointerEvents = 'all'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu3').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+      }break;
+  
+      case 3: {
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-menu3').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
         setTimeout(() => {
+          document.getElementById('opt-menu4').style.display = 'block'
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu4').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-    }break;
-
-    case 4: {
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-menu3').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu5').style.display = 'block'
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu4').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+      }break;
+  
+      case 4: {
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-menu3').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
         setTimeout(() => {
+          document.getElementById('opt-menu5').style.display = 'block'
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu5').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-    }break;
-
-    case 5: {
-      if(document.getElementById('eq-menu').style.top === '-500px'){
-      openMENU()
-      document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(40%)'
-      document.getElementById('current-track').style.filter = 'blur(5px) brightness(10%)'
-      document.getElementById('app-title').style.filter = 'blur(5px) brightness(10%)'
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-menu3').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('eq-menu').style.display = 'block'
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu5').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+      }break;
+  
+      case 5: {
+        if(document.getElementById('eq-menu').style.top === '-500px'){
+        openMENU()
+        document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(40%)'
+        document.getElementById('current-track').style.filter = 'blur(5px) brightness(10%)'
+        document.getElementById('app-title').style.filter = 'blur(5px) brightness(10%)'
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-menu3').style.opacity = '0%'
         setTimeout(() => {
           document.getElementById('eq-menu').style.display = 'block'
-          document.getElementById('eq-menu').style.top = '0px'
-          document.getElementById('eq-menu').style.opacity = '100%'
-        }, 10)
-      }, 1000)}
-      else{
-        document.getElementById('eq-menu').style.top = '-500px'
-        document.getElementById('eq-menu').style.opacity = '0%'
-        setTimeout(() => {
-          document.getElementById('eq-menu').style.display = 'none'
-        }, 1000)
-      }
-    }break;
-
-    case 6: {
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-menu3').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu6').style.display = 'block'
-        setTimeout(() => {
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu6').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-    }break;
-
-    case 7: {
-      document.getElementById('options').style.left = '-380px'
-      document.getElementById('opt-menu1').style.opacity = '0%'
-      document.getElementById('opt-menu6').style.opacity = '0%'
-      document.getElementById('opt-preview').style.opacity = '0%'
-      setTimeout(() => {
-        document.getElementById('opt-menu7').style.display = 'block'
-        setTimeout(() => {
+            document.getElementById('eq-menu').style.display = 'block'
+            document.getElementById('eq-menu').style.top = '0px'
+            document.getElementById('eq-menu').style.opacity = '100%'
+          }, 10)
+        }, 1000)}
+        else{
+          document.getElementById('eq-menu').style.top = '-500px'
+          document.getElementById('eq-menu').style.opacity = '0%'
           setTimeout(() => {
-            document.getElementById('opt-preview').style.display = 'none'
-          }, 200)
-          
-          document.getElementById('options').style.left = '0%'
-          document.getElementById('opt-menu7').style.opacity = '100%'
-        }, 10)
-      }, parseInt(speeds[chosenSpeed][5]))
-    }break;
-  }
+            document.getElementById('eq-menu').style.display = 'none'
+          }, 1000)
+        }
+      }break;
+  
+      case 6: {
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-menu3').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
+        setTimeout(() => {
+          document.getElementById('opt-menu6').style.display = 'block'
+          setTimeout(() => {
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu6').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+      }break;
+  
+      case 7: {
+        document.getElementById('options').style.left = '-380px'
+        document.getElementById('opt-menu1').style.opacity = '0%'
+        document.getElementById('opt-menu6').style.opacity = '0%'
+        document.getElementById('opt-preview').style.opacity = '0%'
+        setTimeout(() => {
+          document.getElementById('opt-menu7').style.display = 'block'
+          setTimeout(() => {
+            setTimeout(() => {
+              document.getElementById('opt-preview').style.display = 'none'
+            }, 200)
+            
+            document.getElementById('options').style.left = '0%'
+            document.getElementById('opt-menu7').style.opacity = '100%'
+          }, 10)
+        }, parseInt(speeds[chosenSpeed][5]))
+      }break;
+    }
+  }, 10)
+  
 }
 
 function NextSong(playlist, position){

@@ -33,7 +33,7 @@
     </div>
 
     <i style="pointer-events: all; z-index:97">
-        <img src="./Addons/icons/SVG/minimize.svg" style="height: 60px; filter:invert(70%); position:absolute; right:170px; top:60px; opacity:80%; pointer-events:all; user-select:all;" id="min-app"
+        <img src="./Addons/icons/SVG/minimize.svg" style="height: 60px; filter:invert(70%); position:absolute; right:195px; top:70px; opacity:80%; pointer-events:all; user-select:all;" id="min-app"
         onclick="
         document.querySelector('body').style.transition = 'all .3s ease-out';
         document.querySelector('body').style.opacity = '0%'; 
@@ -49,7 +49,7 @@
         <div class="draggable" id="draggable" style="background-color: transparent; position:absolute; top:0; right:10%; width:70%; height:130px">
 
         </div>
-        <div style=" position: relative; width: 100%; height: 100%; user-select:none; display:block; overflow:hidden" class="BG-anim" id="BG-anim">
+        <div class="BG-anim" id="BG-anim" style="position: relative; width: 100%; height: 100%; user-select:none; display:block; overflow:hidden">
             <object id="Audio-react" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out; overflow:hidden">
             </object>
 
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="alternate-audio-react" style="transition:all 1s ease-out; display:block; position:absolute; width:100%; height:100%;">
+                <div id="Blob-Reactor-Obj" style="transition:all 1s ease-out; display:block; position:absolute; width:100%; height:100%;">
                     <div class="gradient" id="gradient" style="margin:auto; position:absolute; top:27%; left:36%"></div>
                 </div>
             </div>
@@ -113,6 +113,19 @@
             <div style="position: absolute; top:20%; right:10%;">
                 <h3 style="width: 200px; font-size:23px">
                     No Backgrounds detected on set directory
+                </h3>
+            </div>
+        </div>
+
+        <div class="Reboot-condition" id="Reboot-condition" style="position:absolute; top:0; right:-400px; width:400px; height:120px; background-color:#4252bc; opacity:80%; border-radius:20px; border-top-left-radius:0px; border-bottom-right-radius:0px; opacity:0%; color:white; transition:all.5s ease-out">
+
+            <i style="position: absolute; top:20%; left:10%; filter:invert(80%)" id="Reboot-cond-icon-parent">
+                <img src="./Addons/icons/SVG/info.svg" style="height: 60px;" id="Reboot-cond-icon">
+            </i>
+
+            <div style="position: absolute; top:20%; right:10%;">
+                <h3 style="width: 200px; font-size:23px">
+                    Changes will take effect after reboot
                 </h3>
             </div>
         </div>
@@ -232,10 +245,14 @@
                     </div>
 
                 <div class="opt-txt" style="opacity:0%; bottom:25px; width:400px" onclick="
+                if(localStorage.getItem('fadeAtClose') == 'true'){
                 document.getElementById('main').style.opacity = '0%';
                 setTimeout(() => {
                     window.close();
-                }, 1500);
+                }, 1500);}
+                else{
+                    window.close();
+                }
                 "> 
                     <a style="left: 170px;">
                         Close the app
@@ -402,7 +419,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:150px; width:490px" onclick="
+                <div id="blob-react-parent" class="opt-txt" style="opacity:0%; top:150px; width:490px" onclick="
                 if(EffectChangeTimeout){
                     EffectChangeTimeout = false;
                     var txt = document.getElementById('ampl-txt0');
@@ -415,13 +432,13 @@
                     console.log(state, state2)
 
                     if(state){
-                        document.getElementById('alternate-audio-react').style.display = 'block';
+                        document.getElementById('Blob-Reactor-Obj').style.display = 'block';
                         EffectChangeTimeout = true;
                     } else {
-                        document.getElementById('alternate-audio-react').style.opacity = '0%';
+                        document.getElementById('Blob-Reactor-Obj').style.opacity = '0%';
                         setTimeout(() => {
-                            document.getElementById('alternate-audio-react').style.display = 'none';
-                            document.getElementById('alternate-audio-react').style.opacity = '70%';
+                            document.getElementById('Blob-Reactor-Obj').style.display = 'none';
+                            document.getElementById('Blob-Reactor-Obj').style.opacity = '70%';
                             EffectChangeTimeout = true;
                         }, 200);
                     }
@@ -492,7 +509,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:590px; width:450px" onclick="
+                <div id="blob-speed-opt" class="opt-txt" style="opacity:0%; top:590px; width:450px" onclick="
                 var txt = document.getElementById('amp-speed-txt0');
                 console.log(txt.innerText, localStorage.getItem('Reactor-Speed'))
                 if(txt.innerText == '.1' || txt.innerText == '0.1'){
@@ -538,7 +555,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:810px; width:450px;" onclick="
+                <div id="Custom-BG-speed" class="opt-txt" style="opacity:0%; top:810px; width:450px;" onclick="
                 var txt = document.getElementById('BG-cooldown-txt0');
                 if(txt.innerText === '5s'){
                     txt.innerText = '10s';
@@ -563,7 +580,7 @@
                     </a>
                 </div>
 
-                <div class="opt-txt" style="opacity:0%; top:920px; width:450px" onclick="
+                <div id="ActiveVisulizer-opt-choice" class="opt-txt" style="opacity:0%; top:920px; width:450px" onclick="
                 options(7)
                 ">
                     <a style="left: 70px;">
@@ -571,6 +588,26 @@
                     </a>
                 </div>
 
+                <div class="opt-txt" style="opacity:0%; top:1030px; width:450px" onclick="
+                    var txt = document.getElementById('fade-txt0');
+                    txt.innerText = txt.innerText === 'true' ? 'false' : 'true';
+                    localStorage.setItem('fadeAtClose', txt.innerText)
+                ">
+                    <a style="left: 70px;">
+                        Fade when closing: <span id="fade-txt0">true</span>
+                    </a>
+                </div>
+
+                <div class="opt-txt" style="opacity:0%; top:1140px; width:450px"
+                onclick="
+                    localStorage.clear()
+
+                    displayERR('Reset-Settings')
+                ">
+                    <a style="left: 70px;">
+                        Reset all settings
+                    </a>
+                </div>
                 
             </div>
 
@@ -593,11 +630,15 @@
                 <img id="MoreContext" src="./Addons/icons/SVG/add.svg" style="height: 70px; filter:invert(70%); left:25px; top:452px; position:absolute">
             </i>
      
-             <i class="menu-icns" onclick="
-             document.getElementById('main').style.opacity = '0%';
-             setTimeout(() => {
-                 window.close();
-             }, 1500);
+             <i id="leave" class="menu-icns" onclick="
+             if(localStorage.getItem('fadeAtClose') == 'true'){
+                document.getElementById('main').style.opacity = '0%';
+                setTimeout(() => {
+                    window.close();
+                }, 1500);}
+                else{
+                    window.close();
+                }
              ">
                  <img src="./Addons/icons/SVG/leave.svg" style="height: 55px; filter:invert(70%); left:35px; bottom:120px; position:absolute">
              </i>
@@ -610,7 +651,19 @@
                 </h1>
     
                 <i class="side" style="position: absolute; top: -5px; left: 60px; height:100px; width:100px">
-                    <img onclick="openMENU()" id="side" src="./Addons/icons/menu.png" style="height: 50px; transition:all 1.5s ease-out; position:absolute; top:25px; left:25px">
+                    <img onclick="
+                    openMENU()
+                    document.getElementById('side').style.pointerEvents = 'none'
+                    setTimeout(() => {
+                        document.getElementById('side').style.pointerEvents = 'all'
+                      }, (parseInt(speeds[chosenSpeed][5]) + 100))
+                    document.getElementsByClassName('menu-icns').forEach((elem) => {
+                    elem.style.pointerEvents = 'none'
+                    setTimeout(() => {
+                        elem.style.pointerEvents = 'all'
+                        console.log('passed')
+                    }, (parseInt(speeds[chosenSpeed][5]) + 400))
+                    })" id="side" src="./Addons/icons/menu.png" style="height: 50px; transition:all 1.5s ease-out; position:absolute; top:25px; left:25px">
                 </i>
             </div>
         </div>

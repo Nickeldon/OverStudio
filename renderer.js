@@ -27,9 +27,9 @@ ipcRenderer.on('Multi-Instance', (event, args) => {
     console.log(typeof args)
 
     if(args == 'Play' || args == 'Pause') document.getElementById('play-pause').click()
-    if(args == 'Next') document.getElementById('next').click()
-    if(args == 'Previous') document.getElementById('back').click()
-    if(args == 'Mute') {
+    else if(args == 'Next') document.getElementById('next').click()
+    else if(args == 'Previous') document.getElementById('back').click()
+    else if(args == 'Mute') {
         console.log(prevVolState)
         if(document.getElementById('volslide').value !== '0'){
         prevVolState = document.getElementById('volslide').value
@@ -41,6 +41,8 @@ ipcRenderer.on('Multi-Instance', (event, args) => {
         }
         document.getElementById('volslide').dispatchEvent(new Event('input', { bubbles: true }))
     }
+    else if(args == 'Quit') document.getElementById('leave').click()
+    else console.log('Invalid Request')
 })
 
 // Exposed protected methods in the render process.
