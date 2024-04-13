@@ -1,6 +1,6 @@
 {
   "name": "overstudio",
-  "version": "4.3.0",
+  "version": "5.1.0",
   "description": "Listen to music in a new way",
   "main": "electron.js",
   "scripts": {

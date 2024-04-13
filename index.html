@@ -28,18 +28,42 @@
         <object data="./splashscr.html" style="width: 1777px; height:1000px; position:absolute; top:0; left:0; z-index:99; pointer-events:none; user-select:none; border-radius:20px" id="splash-scr-obj"></object>
     </div>
 
-    <div id="vintage-filter" style="pointer-events: none; user-select: none; height:1000px">
+    <div id="vintage-filter" style="pointer-events: none; user-select: none; height:1000px; z-index:98">
 
     </div>
 
-    <div class="main" id="main" style="width: 1777px; height:1000px; position:relative; background-color:black; border-radius:20px; top:0; left:0">
+    <i style="pointer-events: all; z-index:97">
+        <img src="./Addons/icons/SVG/minimize.svg" style="height: 60px; filter:invert(70%); position:absolute; right:170px; top:60px; opacity:80%; pointer-events:all; user-select:all;" id="min-app"
+        onclick="
+        document.querySelector('body').style.transition = 'all .3s ease-out';
+        document.querySelector('body').style.opacity = '0%'; 
+        setTimeout(() => {document.querySelector('body').style.opacity = '100%'; 
+        document.querySelector('body').style.transition = 'all .5s ease-out'; 
+        window.ipcRender.send('window:minimize');}, 400)
+        ">
+    </i>
 
-        <div class="draggable" id="draggable" style="background-color: transparent; z-index:99; position:absolute; top:0; right:0; width:80%; height:130px">
+    <div class="main" id="main" style="width: 1777px; height:1000px; position:relative; background-color:black; border-radius:20px; top:0; left:0">
+    
+
+        <div class="draggable" id="draggable" style="background-color: transparent; position:absolute; top:0; right:10%; width:70%; height:130px">
 
         </div>
         <div style=" position: relative; width: 100%; height: 100%; user-select:none; display:block; overflow:hidden" class="BG-anim" id="BG-anim">
             <object id="Audio-react" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out; overflow:hidden">
             </object>
+
+            <div id="Audio-Visulizer" style="width: 100%; height: 100%; background-color: black; opacity:100%; filter:blur(0px) brightness(80%); position:absolute; transition:all 1s ease-out; overflow:hidden; border-radius:20px; display:none">
+
+                <canvas id="Audio-Visulizer-Canv" style="display: block; padding:0; margin:0; position:absolute; top:0; left:0;">
+
+                </canvas>
+
+                <div style="display:block; border-width:5px; background-color:white; border-color:blue; border-style:solid; border-radius:50%; position:absolute; width:200px; height:200px" id="stroke">
+                    <div id="imgReact" style="position: absolute; top:0; height:100%; width:100%;"></div>
+                </div>
+            </div>
+
             <div id="alternative-background" style="display: block;">
                 <div id="dust" style="position: absolute; bottom:0; width:100%; height:100%">
                     <div id="nc-main" class="nc-main bg-cover bg-cc" style="position: absolute; bottom:0; width:100%; height:100%;">
@@ -356,7 +380,7 @@
                     var state = txt.innerText === 'Disable dust particles' ? true : false;
 
                     var txt2 = document.getElementById('ampl-txt0');
-                    var state2 = txt2.innerText === 'Disable Amplitude Reactor' ? true : false;
+                    var state2 = txt2.innerText === 'Disable Amplitude BlobReactor' ? true : false;
 
                     console.log(state, state2)
 
@@ -382,8 +406,8 @@
                 if(EffectChangeTimeout){
                     EffectChangeTimeout = false;
                     var txt = document.getElementById('ampl-txt0');
-                    txt.innerText = txt.innerText === 'Disable Amplitude Reactor' ? 'Enable Amplitude Reactor' : 'Disable Amplitude Reactor';
-                    var state = txt.innerText === 'Disable Amplitude Reactor' ? true : false;
+                    txt.innerText = txt.innerText === 'Disable Amplitude BlobReactor' ? 'Enable Amplitude BlobReactor' : 'Disable Amplitude BlobReactor';
+                    var state = txt.innerText === 'Disable Amplitude BlobReactor' ? true : false;
                     
                     var txt2 = document.getElementById('dust-txt0');
                     var state2 = txt2.innerText == 'Disable dust particles' ? true : false;
@@ -404,7 +428,7 @@
                     localStorage.setItem('effectsState', JSON.stringify({dust: state2, amplitude: state}))}
                 ">
                     <a  style="left: 70px;" id="ampl-txt0">
-                        Disable Amplitude Reactor
+                        Disable Amplitude BlobReactor
                     </a>
                 </div>
 
@@ -496,15 +520,21 @@
                 <div class="opt-txt" style="opacity:0%; top:700px; width:450px" onclick="
                 if(cooldownBGState && BackgroundData.length > 0){
                 var txt = document.getElementById('BG-choice-txt0');
-                txt.innerText = txt.innerText === 'Reactor' ? 'Custom' : 'Reactor';
-                txt.innerText === 'Reactor' ? SwitchBackgrounds('Reactor') : SwitchBackgrounds('Custom');
+                txt.innerText = txt.innerText === 'BlobReactor' ? 'BGCustom' : 'BlobReactor';
+                if(txt.innerText === 'BlobReactor'){
+                    SwitchBackgrounds('BlobReactor')
+                } else if(txt.innerText === 'BGCustom') {
+                    SwitchBackgrounds('BGCustom')
+                } else if(txt.innerText === 'ActiveReactor'){
+                    //SwitchBackgrounds('ActiveReactor')
+                }
                 localStorage.setItem('Background-Type', (txt.innerText))}
                 else{
                     displayERR('No-Background-file')
                 }
                 ">
                     <a  style="left: 70px;">
-                        Background choice: <span id="BG-choice-txt0">Reactor</span>
+                        Background choice: <span id="BG-choice-txt0">BlobReactor</span>
                     </a>
                 </div>
 
@@ -533,8 +563,20 @@
                     </a>
                 </div>
 
+                <div class="opt-txt" style="opacity:0%; top:920px; width:450px" onclick="
+                options(7)
+                ">
+                    <a style="left: 70px;">
+                        ActiveVisulizer settings
+                    </a>
+                </div>
+
                 
             </div>
+
+            <div id="opt-menu7" class="opt-menu7" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
+
+            </div> 
                 
          </div>
  
@@ -664,6 +706,70 @@
 </body>
 
 <style>
+
+    #min-app:hover{
+        cursor: pointer;
+        filter:blur(1px), brightness(110%);
+        transform:scale(0.91)
+    }
+
+    #imgReact{
+        background-image: url('./test/images.jpeg');
+        animation: rotate 300s linear infinite;
+        background-size: cover;
+    }
+
+    #stroke{
+        box-shadow: 0 0 50px #ccc;
+        user-select: none;
+        pointer-events: none;
+        transition: all 1s;
+    }
+    
+    @keyframes rotate {
+        from{
+            transform: rotate(-360deg);
+        }
+        to{
+            transform: rotate(360deg);
+        }
+    }
+
+    .shake{
+        animation: shake 0.2s infinite;
+    }
+
+    .shakelvl2{
+        animation: shakelvl2 0.1s infinite;
+    }
+
+    @keyframes shake{
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        30% { transform: translate(3px, 2px) rotate(0deg); }
+        40% { transform: translate(1px, -1px) rotate(1deg); }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        70% { transform: translate(3px, 1px) rotate(-1deg); }
+        80% { transform: translate(-1px, -1px) rotate(1deg); }
+        90% { transform: translate(1px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    @keyframes shakelvl2{
+        0% { transform: translate(5px, 5px) rotate(3deg); }
+        20% { transform: translate(-5px, -6px) rotate(-4deg); }
+        20% { transform: translate(-6px, 1px) rotate(4deg); }
+        30% { transform: translate(4px, 5px) rotate(3deg); }
+        40% { transform: translate(5px, -5px) rotate(4deg); }
+        50% { transform: translate(-5px, 5px) rotate(-4deg); }
+        60% { transform: translate(-6px, 5px) rotate(3deg); }
+        70% { transform: translate(6px, 5px) rotate(-4deg); }
+        80% { transform: translate(-5px, -5px) rotate(4deg); }
+        90% { transform: translate(5px, 6px) rotate(0deg); }
+        200% { transform: translate(5px, -6px) rotate(-4deg); }
+    }
 
     .current-time:hover{
         cursor: pointer;
@@ -1243,5 +1349,6 @@
 
 <script src="scripts/themeselect.js"></script>
 <script src="scripts/main.js"></script>
+<script src="scripts/circularvisualizer.js"></script>
 <script src="scripts/soundprocess.js"></script>
 </html>

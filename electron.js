@@ -48,6 +48,7 @@ if (!instancelimit) {
         nodeIntegration: false, // is default value after Electron v5
         contextIsolation: true, // protect against prototype pollution
         enableRemoteModule: false,
+        preload: path.join(__dirname, 'renderer.js')
       }
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
@@ -80,7 +81,6 @@ if (!instancelimit) {
       });
   }
   
-  
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
@@ -88,10 +88,12 @@ if (!instancelimit) {
   app.on('ready', createWindow);
   
   electronIpcMain.on('window:minimize', () => {
+    console.log('received request')
     windowObj.minimize();
   })
   
   electronIpcMain.on('window:restore', () => {
+    console.log('received request 2')
     windowObj.restore();
   })
 }

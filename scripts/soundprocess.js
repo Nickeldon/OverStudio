@@ -1,4 +1,4 @@
-let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol
+let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol, amp
 var unlockkey = false;
 var prevnul, rand, started = false
 let isPlaying, release = true;
@@ -11,6 +11,14 @@ var state = 'paused'
 var SETBypassBGScan = false
 var PrevSpeed = BGspeed
 var plpos = 0;
+
+// p5.js AudioVisualizer global variables
+var fft
+var particlesArray = []
+var themecolor = '#3773ff'
+var prevwidth, prevheight
+
+// p5.js Equalizer global variables
 var customBands = JSON.parse(localStorage.getItem('customBands')) || {
     custom1: [0, 0, 0, 0, 0, 0, 0, 0],
     custom2: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -26,16 +34,17 @@ var customBands = JSON.parse(localStorage.getItem('customBands')) || {
     metal: [8, 6, 4, 0, -2, -4, 4, 8],
     flat: [0, 0, 0, 0, 0, 0, 0, 0]
 }
-console.log(localStorage)
 var selectedCustom = localStorage.getItem('eq-save') || 'flat'
 localStorage.setItem('customBands', JSON.stringify(customBands))
 localStorage.setItem('eq-save', selectedCustom)
-var refreshbuttons = []
 var eq = new p5.EQ(8)
+
+var refreshbuttons = []
 let imageMetadata = []
 var audioreact = document.getElementById('alternate-audio-react')
 var rs = getComputedStyle(audioreact)
 var timeoutplaypause = Date.now()
+
 document.getElementById('timeslide').style.transition = 'background-size 0.2s ease-out'
 
 try {
@@ -43,7 +52,6 @@ try {
 } catch (e) {
     eqbands = [0, 0, 0, 0, 0, 0, 0, 0];    
 }
-
 if(selectedCustom){
 document.getElementsByClassName('eq-range').forEach((range, index) => {
     console.log(selectedCustom)
@@ -107,32 +115,73 @@ let interval = setInterval(() => {
     }
 }, 10)
 
-//Verification if all the required modules are loaded
+function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 function setup(){
+    fft  = new p5.FFT()
+    angleMode(DEGREES)
+    window.onload = () => createCanvas(window.innerWidth, window.innerHeight, document.getElementById('Audio-Visulizer-Canv'))
+    background(0)
     if(started){
-    try {
-        if(playlist[plpos]){
-        audio = loadSound(playlist[plpos].url, loaded) }  
-    } catch (e) {
-        console.log(e)
-    }
-    //console.log(playlist)
-    plpos = 0
+        try {
+            if(playlist[plpos]){
+            audio = loadSound(playlist[plpos].url, loaded) }  
+        } catch (e) {
+            console.log(e)
+        }
+        //console.log(playlist)
+        plpos = 0
 
-    try {
-        //Start the p5.Amplitude module
-        amplitude = new p5.Amplitude();
-    } catch (e) {
+        try {
+            //Start the p5.Amplitude module
+            amplitude = new p5.Amplitude();
+        } catch (e) {
     
-        //If not, then the error is logged and the app restarts
-        if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
-        else localStorage.setItem('PlMenuOpened', false)
-        localStorage.setItem('emptyreload', true)
-        window.location.reload()
+            //If not, then the error is logged and the app restarts
+            if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+            else localStorage.setItem('PlMenuOpened', false)
+            localStorage.setItem('emptyreload', true)
+            window.location.reload()
+        }
+        //If all the required modules are loaded, then Keyboard support is set to true
+        if(amplitude) noError = true}
+}
+
+class DustParticles{
+    constructor(velvector){
+        this.pos = p5.Vector.random2D().mult(window.innerWidth/10);
+        this.vel = velvector
+        this.acc = this.pos.copy().mult(getRandom(0.0001, 0.00001));
+        this.w = getRandom(1, 5);
     }
-    //If all the required modules are loaded, then Keyboard support is set to true
-    if(amplitude) noError = true}
+
+    update(multiplier){
+        //console.log(this.acc, this.vel, this.pos)
+        this.vel.add(this.acc);
+        //console.log(multiplier)
+        if(multiplier){
+            for(var i = 0; i<multiplier; i++){
+            this.pos.add(this.vel);}}
+        else{
+            this.pos.add(this.vel)
+        }
+    }
+
+    edges(){
+        if(this.pos.x < -window.innerWidth || this.pos.x > window.innerWidth || this.pos.y < -window.innerHeight || this.pos.y > window.innerHeight){
+            return true
+        } else {
+            return false
+        }
+    }
+
+    show(){
+        noStroke();
+        fill(255)
+        ellipse(this.pos.x, this.pos.y, this.w);
+    }
 }
 
 volumeSlider = document.getElementById('volslide')
@@ -817,51 +866,6 @@ function manageAudioData(){
     }
 }
 
-const baseDustspeed = {
-    1: 50,
-    2: 100,
-    3: 150,
-    4: 600
-}
-
-/*function updateDustSpeed(amplitude) {
-    const maxSpeed = 600;
-    const minSpeed = 50;
-
-    const speedRange = maxSpeed - minSpeed;
-
-
-    const speed1 = baseDustspeed['1'] - (amplitude*10)
-    const speed2 = baseDustspeed['2'] - (amplitude*20)
-    const speed3 = baseDustspeed['3'] - (amplitude*35)
-    const speed4 = baseDustspeed['4'] - (amplitude*60)
-
-    console.log(speed1, speed2, speed3, speed4)
-
-    document.getElementById('dust-animation').childNodes.forEach((dustelement, index) => {
-        if (dustelement.nodeName === 'DIV') {
-            switch (index) {
-                case 1:
-                    dustelement.style.animationDuration = `${speed1}s`;
-                    break;
-                case 3:
-                    dustelement.style.animationDuration = `${speed2}s`;
-                    break;
-                case 5:
-                    dustelement.style.animationDuration = `${speed3}s`;
-                    break;
-                case 7:
-                    dustelement.style.animationDuration = `${speed4}s`;
-                    break;
-                default:
-                    break;
-            }
-        }
-    });
-}*/
-
-console.log(document.getElementById('dust-animation').childNodes)
-
 function draw(){
     try {
         if(audio){
@@ -875,7 +879,6 @@ function draw(){
                         localStorage.setItem('emptyreload', true)
                         window.location.reload()
                     }
-                    //console.log(amplitude, vol)
 
                     if(audio.isLoaded()){
                         startloaddate = Date.now()             
@@ -902,23 +905,110 @@ function draw(){
                         document.getElementById('timeslide').max = audio.duration()
                         document.getElementById('timeslide').style.backgroundSize = `${(((audio.currentTime() / audio.duration()) * 100) + 1)}% 100%`
                         if(follow) document.getElementById('timeslide').value = (audio.currentTime())
-                    if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1){
+                    if(document.getElementById('alternate-audio-react').style.display === 'block' && vol*20 > 0.1 && VisualMode === 'BlobReactor'){
+                        if(document.getElementById('alternate-audio-react').style.display !== 'block'){
+                            document.getElementById('alternate-audio-react').style.display = 'block'}
                         if(PrevSpeed !== BGspeed){
                             console.log('true')
                             document.getElementById('alternate-audio-react').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }
-                        document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
-                        //document.getElementById('gradient').style.animationDuration =`${50/(vol*100)}s`
+                        if(vol*20 > 0.1){
+                            document.getElementById('alternate-audio-react').style.transform = `scale(${vol*10})`
                         }
-                    /*if(document.getElementById('dust').style.display === 'block' && vol*20 > 0.1){
-                        console.log('passed thee')
-                        updateDustSpeed(vol*10)
                     }
-                    else{
-                        console.log(document.getElementById('dust').style.display)
-                    }*/
+                    if(VisualMode == 'ActiveReactor'){
+                        if(document.getElementById('alternate-audio-react').style.display !== 'none'
+                        || document.getElementById('Audio-react').style.display !== 'none'
+                        || document.getElementById('Audio-Visulizer').style.display !== 'block'){
+                            document.getElementById('Audio-react').style.display = 'none'
+                            document.getElementById('alternate-audio-react').style.display = 'none'
+                            document.getElementById('Audio-Visulizer').style.display = 'block'
+                        }   
+                        if(prevwidth !== window.innerWidth || prevheight !== window.innerHeight){
+                            var strokelem = document.getElementById('stroke')
+                            strokelem.style.width = ((window.innerWidth/20)/100)*50
+                            strokelem.style.height = ((window.innerWidth/20)/100)*50
+                            strokelem.style.left = '49.77%'
+                            strokelem.style.top = '49.7%'
+                            strokelem.style.marginLeft = -(float(strokelem.style.width) || 0 + float(strokelem.style.padding) || 0 + float(strokelem.style.borderWidth) || 0)/1.95 + 'px'
+                            strokelem.style.marginTop = -(float(strokelem.style.height) || 0 + float(strokelem.style.padding) || 0 + float(strokelem.style.borderWidth) || 0)/1.95 + 'px'
+                            console.log(window.innerWidth, window.innerHeight, strokelem.style.padding, strokelem.style.borderWidth, strokelem.style.marginLeft, strokelem.style.marginTop)
+                            prevwidth = window.innerWidth
+                            prevheight = window.innerHeight
+                            createCanvas(1024*1.73, 576*1.73, document.getElementById('Audio-Visulizer-Canv'))
+                            //document.getElementById('Audio-Visulizer-Canv').width = window.innerWidth
+                            //document.getElementById('Audio-Visulizer-Canv').height = window.innerHeight
+                            //document.getElementById('stroke').style.transform = 'translate(-50%, -50%)'
+                        }
+
+                        background(0)
+                        stroke(255)
+                        strokeWeight(10)
+                        translate(width/2, height/2)
+                        rotate(90)
+                        frameRate(144)
+                        fft.analyze()
+                        var wave = fft.waveform()
+
+                        for(var t = -1; t <= 1; t += 2){
+                            beginShape()
+                            for(var i = 0; i < 180; i += 0.2){
+                                var index = floor(map(i, 0, 300, 0, wave.length - 1))
+                                console.log(document.getElementById('stroke').style.width)
+                                var r = map(wave[index] * 3, -1, 1, document.getElementById('stroke').style.width, window.innerWidth/9.5)
+                                var x = r * cos(i)
+                                var y = r * sin(i) * t
+                                vertex(x, y)
+                            }
+                            endShape()
+                        }
+
+                        var p = new DustParticles(createVector(0, 0))
+                        particlesArray.push(p)
+                        amp = amplitude.getLevel() * 20
+                        if(!audio.isPlaying()){amp = 0} 
+                        console.log(document.getElementById('imgReact').style.transform)
+                        if(document.getElementById('imgReact').style.transition !== 'transform 1s ease-out'){
+                        document.getElementById('Audio-Visulizer').style.transition = 'transform 1s ease-out'}
+                        document.getElementById('Audio-Visulizer').style.transform = 'scale(' + (amp/5 + 1) + ')'
+
+                        //console.log(document.getElementById('imgReact').style.transform, amp)
+
+                        if(amp > 1.5){
+                            document.getElementById('stroke').style.boxShadow = '0 0 50px #ef7b28'
+                        }
+                        if(amp > 3){
+                            document.getElementById('stroke').style.boxShadow = '0 0 50px #e19118'
+                        } else{
+                            document.getElementById('stroke').style.boxShadow = '0 0 50px #ccc'
+                        }
+
+                        if(amp > 3.85){
+                            if(amp > 5){
+                                console.log('lvl2')
+                                document.getElementById('stroke').style.animation = 'shakelvl2 0.1s infinite running'
+                            } else {
+                                console.log('lvl1'); 
+                                document.getElementById('stroke').style.animation = 'shake 0.2s infinite running'}
+                        }
+                        else{
+                            document.getElementById('stroke').style.animation = 'none'
+                        }
+
+                        //console.log(particlesArray.length)
+
+                        for(var i = 0; i < particlesArray.length; i++){
+                            if(!particlesArray[i].edges()){
+                                particlesArray[i].update(Math.ceil(amp*2))
+                                particlesArray[i].show()}
+                            else{
+                                //console.log('removed')
+                                particlesArray.splice(i, 1)
+                            }
+                        }
                     }
+                }
                     audio.onended(() => {
                         document.getElementById('timeslide').max = 100
                         document.getElementById('timeslide').value = 0
@@ -987,7 +1077,7 @@ function draw(){
                 //console.log('not loaded')
             }}
     } catch (e) {
-            //console.log(e)
+        console.log(e)
     }
 }
 
@@ -1022,7 +1112,7 @@ setInterval(() => {
 
 function ChangeBG(){
     let interval = setTimeout(() => {
-        if(BGready && document.getElementById('BG-choice-txt0').innerText === 'Custom'){
+        if(BGready && document.getElementById('BG-choice-txt0').innerText === 'BGCustom'){
             if(BackgroundData){
                 if(BackgroundData.length > 1){
                     console.log('passed-1')
