@@ -193,16 +193,22 @@ function SwitchBackgrounds(choice){
         else{
           console.log('no data')
           document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+          localStorage.setItem('Background-Type', 'BlobReactor')
+          SwitchBackgrounds('BlobReactor')
       }
   }
   else{
     console.log('no data')
     document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+    localStorage.setItem('Background-Type', 'BlobReactor')
+    SwitchBackgrounds('BlobReactor')
 }
 }
     else{
       console.log('no data')
       document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+      localStorage.setItem('Background-Type', 'BlobReactor')
+      SwitchBackgrounds('BlobReactor')
   }
   }
 }
@@ -273,11 +279,15 @@ function FetchBackgrounds(State, Bypass){
             else{
               console.log('no data')
               document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+              localStorage.setItem('Background-Type', 'BlobReactor')
+              SwitchBackgrounds('BlobReactor')
           }
         }
         else{
-            console.log('no data')
-            document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+          console.log('no data')
+          document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+          localStorage.setItem('Background-Type', 'BlobReactor')
+          SwitchBackgrounds('BlobReactor')
         }
         }}
     return BackgroundData

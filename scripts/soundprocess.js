@@ -1126,18 +1126,27 @@ function ChangeBG(){
                     document.getElementById('Audio-react').style.opacity = '100%'
                     document.getElementById('Audio-react').style.transition = `all 1s ease-out`
 
+                    setTimeout(() => {
+                        console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
+                        document.getElementById('Audio-react').style.opacity = '0%'
+                        setTimeout(() => {
+                            try {
+                                document.getElementById('Audio-react').data = BackgroundData[BGpos]
                                 setTimeout(() => {
-                                    console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
-                                    document.getElementById('Audio-react').style.opacity = '0%'
-                                    setTimeout(() => {
-                                            document.getElementById('Audio-react').data = BackgroundData[BGpos]
-                                            setTimeout(() => {
-                                                document.getElementById('Audio-react').style.opacity = '100%'
-                                                clearTimeout(interval)
-                                                ChangeBG()
-                                        }, 100)
-                                    }, 1000)
+                                    document.getElementById('Audio-react').style.opacity = '100%'
+                                    clearTimeout(interval)
+                                    ChangeBG()
                                 }, 100)
+                            } catch (e) {
+                                console.log(e)
+                                document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+                                localStorage.setItem('Background-Type', 'BlobReactor')
+                                setTimeout(() => {
+                                    window.location.reload()
+                                }, 100)
+                            }
+                        }, 1000)
+                    }, 100)
                 }
                 else{
                     clearTimeout(interval)
