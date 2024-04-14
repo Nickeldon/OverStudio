@@ -4,6 +4,8 @@ var corrupt = false
 var noError = false
 var prevautochanged = false
 var cooldownBGState = true
+var prevBlurred = false
+var prevEQBlurred = false
 
 var MenuTimeout = [0, 0, 0, 0, 0, 0]
 
@@ -343,7 +345,7 @@ if(!emptyreload){
       setTimeout(() => {
         document.getElementById('splash-scr').style.display = 'none'
         completesplash = true
-      }, 600)
+      }, 300)
     }, 1000)
 }
 }else{
@@ -491,8 +493,22 @@ var normscale = 1.3
 document.getElementById('Audio-react').style.transform = `rotate(${rotdeg}deg) scale(${normscale})`
 
 function changeState(){
-  console.log('yes')
   if(rotdeg === 11){
+    document.getElementById('side').style.pointerEvents = 'none'
+    document.getElementsByClassName('menu-icns').forEach((elem) => {
+      elem.style.pointerEvents = 'none'
+    })
+    document.getElementsByClassName('options').forEach((elem) => {
+      elem.style.pointerEvents = 'none'
+    })
+    if(document.getElementById('Audio-react').style.filter === 'blur(5px) brightness(60%)'){
+      prevBlurred = true
+      document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
+    }
+    if(document.getElementById('Audio-react').style.filter === 'blur(5px) brightness(40%)'){
+      prevEQBlurred = true
+      document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
+    }
     document.getElementById('min-app').style.transition = 'all .5s ease-out'
     document.getElementById('min-app').style.pointerEvents = 'none'
     document.getElementById('min-app').style.opacity = '0%'
@@ -511,6 +527,21 @@ function changeState(){
       document.getElementById('track-info').style.right = '-50px'}
     }, 1500)
   } else{
+    document.getElementById('side').style.pointerEvents = 'all'
+    document.getElementsByClassName('menu-icns').forEach((elem) => {
+      elem.style.pointerEvents = 'all'
+    })
+    document.getElementsByClassName('options').forEach((elem) => {
+      elem.style.pointerEvents = 'all'
+    })
+    if(prevBlurred){
+      document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(60%)'
+      prevBlurred = false
+    }
+    if(prevEQBlurred){
+      document.getElementById('Audio-react').style.filter = 'blur(5px) brightness(40%)'
+      prevEQBlurred = false
+    }
     setTimeout(() => {
       document.getElementById('filter').style.opacity = '50%'
       document.getElementById('cont-bar').style.borderColor = 'white'
@@ -615,6 +646,12 @@ function options(choice){
       elem.style.pointerEvents = 'all'
       console.log('passed')
     }, (parseInt(speeds[chosenSpeed][5]) + 400))
+  })
+  document.getElementsByClassName('options').forEach((elem) => {
+    elem.style.pointerEvents = 'none'
+    setTimeout(() => {
+      elem.style.pointerEvents = 'all'
+    }, parseInt(speeds[chosenSpeed][5]) + 400)
   })
   setTimeout(() => {
     document.getElementById('side').style.pointerEvents = 'all'

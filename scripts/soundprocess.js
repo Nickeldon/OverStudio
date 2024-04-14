@@ -1131,6 +1131,7 @@ function ChangeBG(){
                         document.getElementById('Audio-react').style.opacity = '0%'
                         setTimeout(() => {
                             try {
+                                console.log('passed')
                                 document.getElementById('Audio-react').data = BackgroundData[BGpos]
                                 setTimeout(() => {
                                     document.getElementById('Audio-react').style.opacity = '100%'

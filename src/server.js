@@ -14,6 +14,8 @@ var server
 var PlaylistURL
 const YoutubeParser = require('youtube-sr')
 var mediaarray = []
+var prevNoPLFlag = false
+var prevNoBGFlag = false
 
 app.use(cors())
 server = app.listen(PORT, () => {
@@ -223,8 +225,6 @@ app.get('/delPath', (req, res, next) => {
 app.get('/ParseLinks', (req, res, next) => {
 
     //console.log('received call')
-    const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
 
     var jsonPL, savedPL
     try {
@@ -248,13 +248,15 @@ app.get('/ParseLinks', (req, res, next) => {
         try {
             //console.log('passed')
             //console.log(savedPL.meta)
-            if(savedPL.meta.links.length === 0){
+            if(savedPL.meta.links.length === 0 && !prevNoPLFlag){
                 //console.log('no links')
+                prevNoPLFlag = true
                 const CurrentTime = new Date().toUTCString()
+                fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
                 fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No playlist detected' + '\n\n')
             }
             else{
-            savedPL.meta.links.forEach((elem) => {
+                savedPL.meta.links.forEach((elem) => {
                 //console.log(getMediaArray(elem))
                 if(getMediaArray(elem).length > 0){
                 mediaarr.push(getMediaArray(elem))}
@@ -341,7 +343,9 @@ app.get('/ParseLinks', (req, res, next) => {
     completeArray.push(savedPL.meta.links)
    // console.log(completeArray)
    const CurrentTime = new Date().toUTCString()
+    fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
    fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Parsed links \n')
+   prevNoPLFlag = false
     }
     res.json(completeArray)
 })
@@ -368,8 +372,6 @@ app.get('/AutoUpdater', (req, res, next) => {
 })
 
 app.get('/getBackgrounds', (req, res, next) => {
-    const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
     var data = []
 
     try {
@@ -395,21 +397,33 @@ app.get('/getBackgrounds', (req, res, next) => {
     }
 
     if(data){
+        if(data.length > 0){
         try {
             const CurrentTime = new Date().toUTCString()
+            fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
             data.forEach((elem) => {
                 fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Background found: ' + elem + '\n')
             })
+            prevNoBGFlag = false
             res.json(data)
         } catch (e) {
             console.error(e)
             const CurrentTime = new Date().toUTCString()
             fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
+        }}else{
+            res.json([])
+            if(!prevNoBGFlag){
+            const CurrentTime = new Date().toUTCString()
+            fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
+            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No Backgrounds found \n\n')
+            prevNoBGFlag = true}
         }
     }else{
         res.json([])
+        if(!prevNoBGFlag){
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No Backgrounds found \n\n')
+        fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n' + 'No Backgrounds found \n\n')
+        prevNoBGFlag = true}
     }
 })
 

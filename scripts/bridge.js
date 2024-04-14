@@ -17,6 +17,14 @@ var reversed = (/true/).test(localStorage.getItem('reversed')) || false
 localStorage.setItem('reversed', reversed)
 var ready = false
 
+function BGErrHandle(){
+    document.getElementById('BG-choice-txt0').innerText = 'BlobReactor'
+    localStorage.setItem('Background-Type', 'BlobReactor')
+    setTimeout(() => {
+    window.location.reload()
+    }, 100)
+}
+
 function AutoUpdateSource(){
     fetch('http://localhost:8000/AutoUpdater',{
         method: 'GET',

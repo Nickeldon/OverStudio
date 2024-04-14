@@ -50,7 +50,7 @@
 
         </div>
         <div class="BG-anim" id="BG-anim" style="position: relative; width: 100%; height: 100%; user-select:none; display:block; overflow:hidden">
-            <object id="Audio-react" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out; overflow:hidden">
+            <object id="Audio-react" style="width: 100%; height: 100%; background-color: transparent; opacity:70%; filter:blur(0px) brightness(60%); position:absolute; transition:all 1s ease-out; overflow:hidden;">
             </object>
 
             <div id="Audio-Visulizer" style="width: 100%; height: 100%; background-color: black; opacity:100%; filter:blur(0px) brightness(80%); position:absolute; transition:all 1s ease-out; overflow:hidden; border-radius:20px; display:none">
@@ -388,8 +388,9 @@
 
             </div> 
             
-            <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:80%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px; overflow-y:scroll; overflow-x:hidden; top:150px">
-                <div class="opt-txt" style="opacity:0%; top:40px; width:450px" onclick="
+            <div id="opt-menu6" class="opt-menu6" style="width: 100%; height:80%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px; overflow-y:hidden; overflow-x:hidden; top:150px">
+                <div id="opt-menu6-child-container" style="width: 100%; height:100%; overflow-y:scroll; position:absolute; top:0;">
+                    <div class="opt-txt" style="opacity:0%; top:40px; width:450px" onclick="
                 if(EffectChangeTimeout){
                     EffectChangeTimeout = false;
                     var txt = document.getElementById('dust-txt0');
@@ -609,6 +610,9 @@
                     </a>
                 </div>
                 
+                </div>
+                <div class="opt-menu6-mask">
+                </div>
             </div>
 
             <div id="opt-menu7" class="opt-menu7" style="width: 100%; height:100%; display:none; transition:all 1s ease-in-out; opacity:0%; position:absolute; left:20px">
@@ -618,7 +622,9 @@
          </div>
  
          <div id="opt-preview" class="opt-preview" style="display:block; height: 80%; width:100px; background-color:transparent; position:absolute; top:130px; left:55px; opacity:20%">
-             <i class="menu-icns" onclick="openMENU(); options(1)" id="menu-folder">  
+             <i class="menu-icns" onclick="
+             if(document.getElementById('options').style.left === '-380px') openMENU(); 
+             options(1)" id="menu-folder">  
                  <img src="./Addons/icons/SVG/folder.svg" style="height: 65px; filter:invert(70%); left:20px; top:100px; position:absolute">
              </i>
      
@@ -626,7 +632,9 @@
                  <img id="Refresh" src="./Addons/icons/SVG/refresh.svg" style="height: 55px; filter:invert(70%); left:30px; top:280px; position:absolute">
              </i>
 
-             <i class="menu-icns" onclick="openMENU(); options(2)" id="menu-add">
+             <i class="menu-icns" onclick="
+             if(document.getElementById('options').style.left === '-380px') openMENU(); 
+             options(2)" id="menu-add">
                 <img id="MoreContext" src="./Addons/icons/SVG/add.svg" style="height: 70px; filter:invert(70%); left:25px; top:452px; position:absolute">
             </i>
      
@@ -759,6 +767,23 @@
 </body>
 
 <style>
+
+    .opt-menu6-mask{
+        border-top-left-radius: 0;
+        border-top-right-radius: 20px;
+        width: 80%;
+        z-index: 99;
+        height: 15%;
+        position: absolute;
+        top: 0;
+        left: -50px;
+        opacity: 100%;
+        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 80%);
+        mask-image: linear-gradient(to bottom, black 0%, transparent 80%);
+        pointer-events: none;
+        user-select: none;
+        display: block;
+    }
 
     #min-app:hover{
         cursor: pointer;
