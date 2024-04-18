@@ -4,7 +4,6 @@
   "description": "Listen to music in a new way",
   "main": "electron.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverStudio",
     "package-linux": "electron-packager . --overwrite --platform=linux --icon=Addons/logowin.png --arch=x64 --prune=true --out=OverStudio",
     "start": "node electron.js"
@@ -20,5 +19,8 @@
     "url": "^0.11.3",
     "ws": "^8.16.0",
     "youtube-sr": "^4.3.10"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0"
   }
 }
