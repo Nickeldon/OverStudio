@@ -5,6 +5,7 @@
   "main": "electron.js",
   "scripts": {
     "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverStudio",
+    "package-win_x64": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=x64 --prune=true --out=OverStudio",
     "package-linux": "electron-packager . --overwrite --platform=linux --icon=Addons/logo/logowin.png --arch=x64 --prune=true --out=OverStudio",
     "start": "electron ."
   },

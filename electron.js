@@ -8,6 +8,8 @@ const fs = require('fs')
 var size
 var tempsize
 var date
+//app.disableHardwareAcceleration = true
+
 try {
   require(__dirname + "/src/server")  
   var date = new Date().toUTCString()
@@ -51,10 +53,10 @@ if (!instancelimit) {
         nodeIntegration: false, // is default value after Electron v5
         contextIsolation: true, // protect against prototype pollution
         enableRemoteModule: false,
-        preload: path.join(__dirname, 'renderer.js')
+        preload: path.join(__dirname, '/renderer.js')
       }
     });
-    windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
+    windowObj.loadFile(url.format(path.join(__dirname, '/index.html'))); 
     try {
       //windowObj.webContents.openDevTools()
     } catch (e) {
