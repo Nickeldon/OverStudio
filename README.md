@@ -29,7 +29,38 @@ How to run OverStudio
 - Click 'Add Playlist' > 'Open Explorer'
 
 - Choose your music playlists
-    
+
+### Customize the client
+
+Change the theme
+
+- Onto OverStudio, go to 'More Options' > 'Change the theme'
+
+- Choose your favorite theme to create your own custom OverStudio client! (More themes are coming / Theme creator)
+
+Add custom backgrounds
+
+- Go inside the application file and navigate into ``ressouces\app\Media\CustomBackgrounds\``
+
+- Paste inside the folder the desired backgrounds `Supported file formats: .png, .jpg, .jpeg, .gif, .webp`
+
+- OverStudio should have fetched all your backgrounds successfully
+--------------------------
+- Onto OverStudio, go to 'More Options' > 'effects' > [Scroll down] > 'Background choice'
+
+- Press the option to switch between your desired Background mode (Do not spam)
+
+Modify the Custom Background refresh speed
+
+- Onto OverStudio, go to 'More Options' > 'effects' > [Scroll down] > 'Background speed'
+
+- Press the option to switch between your desired Background time refresh speed
+
+Modify the BlobReactor movement speed
+
+- Onto OverStudio, go to 'More Options' > 'effects' > 'Reactor speed'
+
+- Press the option to switch between your desired Reactor speed
 
 ## Notes
 
