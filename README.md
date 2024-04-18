@@ -33,13 +33,15 @@ How to run OverStudio
 
 ### Customize the client
 
-Change the theme
+</br>
+<b>Change the theme</b>
 
 - Onto OverStudio, go to 'More Options' > 'Change the theme'
 
 - Choose your favorite theme to create your own custom OverStudio client! (More themes are coming / Theme creator)
 
-Add custom backgrounds
+</br>
+<b>Add custom backgrounds</b>
 
 - Go inside the application file and navigate into ``ressouces\app\Media\CustomBackgrounds\``
 
@@ -51,15 +53,15 @@ Add custom backgrounds
 
 - Press the option to switch between your desired Background mode (Do not spam)
 
-
-Modify the Custom Background refresh speed
+</br>
+<b>Modify the Custom Background refresh speed</b>
 
 - Onto OverStudio, go to 'More Options' > 'effects' > [Scroll down] > 'Background speed'
 
 - Press the option to switch between your desired Background time refresh speed
 
-
-Modify the BlobReactor movement speed
+</br>
+<b>Modify the BlobReactor movement speed</b>
 
 - Onto OverStudio, go to 'More Options' > 'effects' > 'Reactor speed'
 
