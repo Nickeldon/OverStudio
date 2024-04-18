@@ -1,5 +1,4 @@
-
-![Logo](https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png)
+<img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img>
 # OverStudio
 
 Listen to music in a more fashioned way 
@@ -29,7 +28,45 @@ How to run OverStudio
 - Click 'Add Playlist' > 'Open Explorer'
 
 - Choose your music playlists
-    
+
+----------------------------------------
+
+### Customize the client
+
+</br>
+<b>Change the theme</b>
+
+- Onto OverStudio, go to 'More Options' > 'Change the theme'
+
+- Choose your favorite theme to create your own custom OverStudio client! (More themes are coming / Theme creator)
+
+</br>
+<b>Add custom backgrounds</b>
+
+- Go inside the application file and navigate into ``ressouces\app\Media\CustomBackgrounds\``
+
+- Paste inside the folder the desired backgrounds `Supported file formats: .png, .jpg, .jpeg, .gif, .webp`
+
+- OverStudio should have fetched all your backgrounds successfully
+
+- Onto OverStudio, go to 'More Options' > 'effects' > [Scroll down] > 'Background choice'
+
+- Press the option to switch between your desired Background mode (Do not spam)
+
+</br>
+<b>Modify the Custom Background refresh speed</b>
+
+- Onto OverStudio, go to 'More Options' > 'effects' > [Scroll down] > 'Background speed'
+
+- Press the option to switch between your desired Background time refresh speed
+
+</br>
+<b>Modify the BlobReactor movement speed</b>
+
+- Onto OverStudio, go to 'More Options' > 'effects' > 'Reactor speed'
+
+- Press the option to switch between your desired Reactor speed
+
 
 ## Notes
 
@@ -39,6 +76,7 @@ How to run OverStudio
 
 - OverStudio can only read `FLAC`, `MP3`, `WAV`, `OPUS` and `AAC` file formats. Other file formats will be added in future releases
 
+-----------------------------------------------------
 ### Recommended Requirements
 - Intel 7th gen or sooner or AMD Ryzen series processors
 
