@@ -318,20 +318,6 @@ document.getElementById('eq-menu').style.top = '0px'
 var emptyreload = (/true/).test(localStorage.getItem('emptyreload')) || false
 var PlMenuOpened = (/true/).test(localStorage.getItem('PlMenuOpened')) || false
 
-var initx = 1777
-
-window.addEventListener('online',  verifyConnection);
-window.addEventListener('offline', verifyConnection);
-
-function verifyConnection(){
-  if(navigator.onLine){
-    console.log('online')
-  } else{
-    console.log('offline')
-  }
-
-}
-
 if(!emptyreload){
   window.onload = () => {
     FetchBackgrounds(VisualMode)
@@ -475,18 +461,16 @@ function displayERR(type){
 
 }
 
-var givenres
+var initx = 1777
+
 document.querySelector('body').style.transition = 'none'
 document.querySelector('body').style.transform = `scale(${1024/initx})`
-setTimeout(() => {
-  document.querySelector('body').style.transition = 'transition: all 1s ease-out;'
-}, 1000)
+document.querySelector('body').style.transition = 'transition: all 1s ease-out;'
 
-setInterval(() => {
-  var givenres = window.innerHeight 
+window.addEventListener('resize', () => {
   document.querySelector('body').style.transform = `scale(${window.innerWidth/initx})`
+})
 
-}, 0)
 
 var rotdeg = 11
 var normscale = 1.3
@@ -807,72 +791,61 @@ function options(choice){
   
 }
 
-function NextSong(playlist, position){
-  console.log(position)
+function NextSong(playlist, position, state, promise){
   if(!reversed){
   document.getElementById('current-track').childNodes.forEach((elem) => {
-    var toppos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
+    let toppos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
     if(elem.id === 'child-track' && parseInt(toppos.replace('px', '')) < 280){
-    var ipos = elem.style.top 
-    ipos = ipos.replace('px', '')
-    const fpos = parseInt(ipos) + 150
-    elem.style.top = `${fpos}px`}
+      let ipos = elem.style.top 
+      let fpos = parseInt(ipos.replace('px', '')) + 150
+      elem.style.top = `${fpos}px`}
   })}
   else{
     try {
-      var bottompos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
+      let bottompos = document.getElementById('current-track').childNodes[document.getElementById('current-track').childNodes.length - 1].style.top
       document.getElementById('current-track').childNodes.forEach((elem) => {
       if(elem.id === 'child-track' && parseInt(bottompos.replace('px', '')) > 290){
-      var ipos = elem.style.top 
-      ipos = ipos.replace('px', '')
-      const fpos = parseInt(ipos) - 150
-      elem.style.top = `${fpos}px`}
+        let ipos = elem.style.top 
+        let fpos = parseInt(ipos.replace('px', '')) - 150
+        elem.style.top = `${fpos}px`}
     }) 
     } catch (e) {
       console.log(e)
     }
   }
   if(playlist[position] !== undefined){
-    var audio
     try {
-      audio = loadSound(playlist[position].url, loaded, () => {corrupt = true})      
+      return loadSound(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true})      
     } catch (e) {
       console.log('there was an error')
       console.log(e)
+      return undefined
     }
-  //console.log(playlist[position].url, audio)
-  return audio
   } else{
     console.log('did not passed', position, playlist.length - 1, playlist)
     return undefined
   }
 }
 
-function PrevSong(playlist, position){
+function PrevSong(playlist, position, state, promise){
   if(!reversed){
-  var bottompos = document.getElementById('current-track').childNodes[3].style.top
-  document.getElementById('current-track').childNodes.forEach((elem) => {
-    if(elem.id === 'child-track' && parseInt(bottompos.replace('px', '')) > 280){
-    var ipos = elem.style.top 
-    ipos = ipos.replace('px', '')
-    const fpos = parseInt(ipos) - 150
-    elem.style.top = `${fpos}px`}
-  })}else{
-    var toppos = document.getElementById('current-track').childNodes[3].style.top
+    let bottompos = document.getElementById('current-track').childNodes[3].style.top
     document.getElementById('current-track').childNodes.forEach((elem) => {
-        if(elem.id === 'child-track' && parseInt(toppos.replace('px', '')) < 280){
-        var ipos = elem.style.top 
-        ipos = ipos.replace('px', '')
-        const fpos = parseInt(ipos) + 150
-        elem.style.top = `${fpos}px`} else {
-          //console.log(document.getElementById('current-track').childNodes)
-        }
-    })
-  }
+      if(elem.id === 'child-track' && parseInt(bottompos.replace('px', '')) > 280){
+        let ipos = elem.style.top 
+        let fpos = parseInt(ipos.replace('px', '')) - 150
+        elem.style.top = `${fpos}px`}
+  })}else{
+      let toppos = document.getElementById('current-track').childNodes[3].style.top
+      document.getElementById('current-track').childNodes.forEach((elem) => {
+          if(elem.id === 'child-track' && parseInt(toppos.replace('px', '')) < 280){
+            let ipos = elem.style.top 
+            let fpos = parseInt(ipos.replace('px', '')) + 150
+            elem.style.top = `${fpos}px`}
+        })
+      }
   if(position > -1){
-    const audio = loadSound(playlist[position].url, loaded, () => {corrupt = true; goback = true})
-    //console.log(playlist[position].url, audio)
-    return audio
+    return loadSound(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true; goback = true})
     } else{
       console.log('did not passed', position, playlist.length - 1)
       return undefined
@@ -880,7 +853,7 @@ function PrevSong(playlist, position){
 }
 
 function PlayPause(audio, state){
-  const btn = document.getElementById('play-pause')
+  let btn = document.getElementById('play-pause')
   if(audio){
   if(!audio.isPlaying()){
     document.getElementById('state-track').innerHTML = 'Now Playing'
@@ -909,9 +882,9 @@ function PlayPause(audio, state){
 }
 
 function MoveToCurrent(url, playlist){
-  const array = document.getElementById('current-track').childNodes
-  var childarray = []
-  var position;
+  let array = document.getElementById('current-track').childNodes
+  let childarray = [];
+  let position = 0
   if(!reversed){
 
   playlist.forEach((elem) => {
@@ -925,13 +898,11 @@ function MoveToCurrent(url, playlist){
       childarray.push(elem)
     }
   })
-//console.log(position)
-      //console.log('passed')
+
       array.forEach((elem) => {
         if(elem.id === 'child-track'){
-        var ipos = elem.style.top 
-        ipos = ipos.replace('px', '')
-        const fpos = parseInt(ipos) + (150*position)
+        let ipos = elem.style.top 
+        let fpos = parseInt(ipos.replace('px', '')) + (150*position)
         elem.style.top = `${fpos}px`}
       })
       
@@ -952,9 +923,8 @@ function MoveToCurrent(url, playlist){
             //console.log('passed')
             array.forEach((elem) => {
               if(elem.id === 'child-track'){
-              var ipos = elem.style.top 
-              ipos = ipos.replace('px', '')
-              const fpos = parseInt(ipos) - (150*position)
+              let ipos = elem.style.top 
+              let fpos = parseInt(ipos.replace('px', '')) - (150*position)
               elem.style.top = `${fpos}px`}
             })
             
@@ -962,24 +932,20 @@ function MoveToCurrent(url, playlist){
       }
 }
 
-function PlayShuffleSong(playlist, position, initialPos, difference){
+function PlayShuffleSong(playlist, position, initialPos, difference, promise){
   if(!reversed){
-    console.log(document.getElementById('current-track').childNodes)
     document.getElementById('current-track').childNodes.forEach((elem) => {
       if(elem.id === 'child-track'){
-      var ipos = elem.style.top 
-      ipos = ipos.replace('px', '')
-      const fpos = parseInt(ipos) + (150*(difference))
+      let ipos = elem.style.top 
+      let fpos = parseInt(ipos.replace('px', '')) + (150*(difference))
       elem.style.top = `${fpos}px`}
     })}
     else{
       try {
         document.getElementById('current-track').childNodes.forEach((elem) => {
         if(elem.id === 'child-track'){
-        var ipos = elem.style.top 
-        ipos = ipos.replace('px', '')
-        var fpos
-        fpos = parseInt(ipos) - (150*(difference))
+        let ipos = elem.style.top 
+        let fpos = parseInt(ipos.replace('px', '')) - (150*(difference))
         elem.style.top = `${fpos}px`}
       }) 
       } catch (e) {
@@ -987,9 +953,7 @@ function PlayShuffleSong(playlist, position, initialPos, difference){
       }
     }
     if(playlist[position] !== undefined){
-    const audio = loadSound(playlist[position].url, loaded)
-    //console.log(playlist[position].url, audio)
-    return audio
+    return loadSound(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true})
     } else{
       console.log('did not passed', position, playlist.length - 1, playlist)
       return undefined

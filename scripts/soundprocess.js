@@ -1,4 +1,4 @@
-let audio, volumeSlider, playpausebtn, refresh, playlist, next, prev, refralt, volbtn, eqbands, vol, amp
+let volumeSlider, playpausebtn, refresh, playlist, refralt, volbtn, eqbands, vol, amp, diffpos, pos, value
 var unlockkey = false;
 var prevnul, rand, started = false
 let isPlaying, release = true;
@@ -11,6 +11,10 @@ var state = 'paused'
 var SETBypassBGScan = false
 var PrevSpeed = BGspeed
 var plpos = 0;
+var audio
+let next, prev
+let trackinplaylist
+
 
 // p5.js AudioVisualizer global variables
 var fft
@@ -72,7 +76,7 @@ document.getElementsByClassName('eq-range').forEach((range) => {
     eqbands.push(range.value)
 })
 for(let i = 0; i < eqbands.length; i++){
-    let value = parseInt(eqbands[i])
+    value = parseInt(eqbands[i])
     try {
         eq.bands[i].gain(value)
     } catch (e) {
@@ -299,19 +303,17 @@ refreshbuttons.forEach((refresh) => {
             if(audio){
         let interval = setInterval(() => {
             if(playlist){
-                let trackinplaylist = false
+                trackinplaylist = false
                 if(playlist.length > 0 && audio){
-                console.log('entered')
                 playlist.forEach((song) => {
                     if(song.url === audio.url){
-                        console.log('in playlist')
                         trackinplaylist = true
                     }
                 })
                 if(!trackinplaylist){
                     console.log('not in playlist')
                     plpos = 0
-                    if(audio.isLoaded()) audio.stop();
+                    if(audio.isLoaded()) ;
                     audio = loadSound(playlist[plpos].url, loaded)
                     let interval2 = setInterval(() => {
                         if(audio.isLoaded()){
@@ -342,7 +344,6 @@ refreshbuttons.forEach((refresh) => {
 
 document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
     presetelem.addEventListener('click', () => {
-        console.log('clicked')
         document.getElementById('eq-pres-ch').style.height = '0%'
         document.getElementById('draggable').style.display = 'block'
         eqbands = []
@@ -426,7 +427,7 @@ document.querySelectorAll('.eq-presets-choices a').forEach((presetelem) => {
             document.getElementsByClassName('eq-range')[index].value = eqbands[index]
         })
         for(let i = 0; i < eqbands.length; i++){
-            let value = parseInt(eqbands[i])
+            value = parseInt(eqbands[i])
             try {
                 eq.bands[i].gain(value)
             } catch (e) {
@@ -456,7 +457,7 @@ document.getElementsByClassName('eq-range').forEach((range) => {
         })
         //console.log(eqbands)
         for(let i = 0; i < eqbands.length; i++){
-            let value = parseInt(eqbands[i])
+            value = parseInt(eqbands[i])
             try {
                 eq.bands[i].gain(value)
             } catch (e) {
@@ -533,6 +534,158 @@ navigator.mediaDevices.addEventListener('devicechange', () => {
     });
 });
 
+next = document.getElementById('next')
+prev = document.getElementById('back')
+
+next.addEventListener('click',  () => {
+    console.log('next')
+    if(!holdPL){
+    if(started){
+    switch(PlayBackMode){
+        case 'linear':{
+                if(playlist[plpos+1] && started){
+                plpos++
+                document.getElementById('play-pause').style.opacity = '0%'
+                document.getElementById('loading').style.opacity = '100%'
+                if(!audio.isPlaying()) state = 'paused'
+                else state = 'playing'
+                audio.stop()
+                setTimeout(() => {
+                    audio.disconnect(eq)
+                    audio.disconnect()
+                    delete audio
+
+                    started = false
+                    ready = false
+                    audio = NextSong(playlist, plpos, state, () => {
+                        started = true
+                        ready = true
+                        manageAudioData()
+                        audio.play()
+                        if(state === 'paused') audio.pause()
+                    })
+                    const timeout = setTimeout(() => {
+                        document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
+                        PrevSpeed = BGspeed
+                    }, 1000)
+                    clearTimeout(timeout)
+                }, 100)
+            }
+        }break;
+
+        case 'shuffle':{
+            if(started){
+                let ipos
+                if(corrupt){
+                    corrupt = false
+                    ipos = plpos
+                    plpos = 0
+                } else{
+                    ipos = plpos
+                    while (plpos === ipos){
+                    plpos = Math.floor(Math.random() * playlist.length)}
+                }
+                
+                diffpos = plpos - ipos
+                document.getElementById('play-pause').style.opacity = '0%'
+                document.getElementById('loading').style.opacity = '100%'
+                if(!audio.isPlaying()) state = 'paused'
+                else state = 'playing'
+                audio.stop()
+                started = false
+                ready = false
+                audio = PlayShuffleSong(playlist, plpos, ipos, diffpos, () => {
+                    started = true
+                    manageAudioData()
+                    audio.play()
+                    if(state === 'paused') audio.pause()
+                })
+                const timeout = setTimeout(() => {
+                    document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
+                    PrevSpeed = BGspeed
+                }, 1000)
+                clearTimeout(timeout)}
+        }
+        break;
+
+        case 'loop':{
+            if(started){
+            pos = plpos
+            started = false
+            //ready = false
+            if(!audio.isPlaying()) state = 'paused'
+            else state = 'playing'
+            document.getElementById('play-pause').style.opacity = '0%'
+            document.getElementById('loading').style.opacity = '100%'
+            audio.stop()
+            audio = loadSound(playlist[pos].url, () => {
+                started = true
+                ready = true
+                manageAudioData()
+                console.log(state)
+                if(state === 'paused') audio.pause()
+                else audio.play()
+            })
+        }
+        }break;
+    }}}
+    else{
+        console.log('true')
+        corrupt = true
+        started = true
+        holdPL = false
+        let previousmode = PlayBackMode
+            PlayBackMode = 'shuffle'
+            next.click()
+            PlayBackMode = previousmode
+    }
+})
+
+prev.addEventListener('click',  () => {
+    if(plpos > 0 && started){
+    plpos--
+    document.getElementById('play-pause').style.opacity = '0%'
+    document.getElementById('loading').style.opacity = '100%'
+    if(!audio.isPlaying()) state = 'paused';
+    else state = 'playing'
+    audio.stop()
+    started = false
+    audio = PrevSong(playlist, plpos, state, () => {
+        started = true
+        manageAudioData()
+        audio.play()
+        if(state === 'paused'){
+        audio.pause()}
+    }) || audio
+    const timeout = setTimeout(() => {
+        document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
+        PrevSpeed = BGspeed 
+    }, 1000)
+    clearTimeout(timeout)}
+})  
+
+document.getElementById('timeslide').addEventListener('input', () => {
+    follow = false
+})
+
+document.getElementById('timeslide').addEventListener('change', () => {
+        if(audio.isLoaded() && release){
+            release = false
+        document.getElementById('play-pause').style.opacity = '0%'
+        document.getElementById('loading').style.opacity = '100%'
+        audio.jump(document.getElementById('timeslide').value)
+        let interval = setInterval(() => {
+            if(audio.isLoaded()){
+                follow = true
+                release = true
+                started = true
+                clearInterval(interval)
+            }
+        }, 10)} else{
+            console.log('not released')
+        }
+})
+
 function loaded(){
     try {
         if(started){
@@ -541,180 +694,6 @@ function loaded(){
             audio.play()
             audio.connect(eq)
             if(state === 'paused') audio.pause()
-            
-            next = document.getElementById('next')
-            prev = document.getElementById('back')
-
-            document.getElementById('timeslide').addEventListener('input', () => {
-                follow = false
-            })
-        
-            document.getElementById('timeslide').addEventListener('change', () => {
-                    if(audio.isLoaded() && release){
-                        release = false
-                    document.getElementById('play-pause').style.opacity = '0%'
-                    document.getElementById('loading').style.opacity = '100%'
-                    //console.log(document.getElementById('timeslide').value / 10, audio.currentTime())
-                    audio.jump(document.getElementById('timeslide').value)
-                    let interval = setInterval(() => {
-                        if(audio.isLoaded()){
-                            follow = true
-                            release = true
-                            started = true
-                            clearInterval(interval)
-                        }
-                    }, 10)} else{
-                        console.log('not released')
-                    }
-            })
-        
-            next.addEventListener('click',  () => {
-                console.log(holdPL, started)
-                if(!holdPL){
-                    console.log('yes')
-                if(started){
-                    console.log('yes')
-                switch(PlayBackMode){
-                    case 'linear':{
-                            console.log('clicked')
-                            if(playlist[plpos+1] && started){
-                            plpos++
-                            document.getElementById('play-pause').style.opacity = '0%'
-                            document.getElementById('loading').style.opacity = '100%'
-                            if(audio._paused) state = 'paused'
-                            else state = 'playing'
-                            audio.stop()
-                            audio = NextSong(playlist, plpos, state) || audio
-                            //console.log(audio)
-                            started = false
-                            ready = false
-                            const interval = setInterval(() => {
-                                if(audio.isLoaded() && !started){
-                                started = true
-                                ready = true
-                                manageAudioData()
-                                audio.play()
-                                if(state === 'paused') audio.pause()
-
-                                /*if(imageMetadata[plpos]){
-                                    if(imageMetadata[plpos].thumbnail){
-                                        document.getElementById('Blob-Reactor-Obj').style.backgroundImage = `url(${imageMetadata[plpos].thumbnail})`
-                                    }
-                                }*/
-                                  clearInterval(interval)
-                                }
-                              }, 10)
-                            setTimeout(() => {
-                                document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
-                                PrevSpeed = BGspeed
-                            }, 1000)}
-                    }break;
-
-                    case 'shuffle':{
-                        console.log('yes')
-                        if(started){
-                            console.log('shuffle')
-                            console.log(audio)
-                            let ipos;
-                            if(corrupt){
-                                console.log('corrupt')
-                                corrupt = false
-                                ipos = plpos
-                                plpos = 0
-                            } else{
-                                ipos = plpos
-                                while (plpos === ipos){
-                                plpos = Math.floor(Math.random() * playlist.length)}
-                            }
-                            
-                            let diffpos = plpos - ipos
-                            document.getElementById('play-pause').style.opacity = '0%'
-                            document.getElementById('loading').style.opacity = '100%'
-                            if(audio._paused) state = 'paused'
-                            else state = 'playing'
-                            audio.stop()
-                            audio = PlayShuffleSong(playlist, plpos, ipos, diffpos)
-                            started = false
-                            ready = false
-
-                            let interval = setInterval(() => {
-                                if(audio.isLoaded() && !started){
-                                started = true
-                                manageAudioData()
-                                audio.play()
-                                if(state === 'paused') audio.pause()
-                                //document.getElementById('refr-alt').click()
-                                clearInterval(interval)
-                                }
-                                }, 10)
-                            setTimeout(() => {
-                                document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
-                                PrevSpeed = BGspeed
-                            }, 1000)}
-                    }
-                    break;
-
-                    case 'loop':{
-                        if(started){
-                        let pos = plpos
-                        started = false
-                        ready = false
-                        document.getElementById('play-pause').style.opacity = '0%'
-                        document.getElementById('loading').style.opacity = '100%'
-                        audio.stop()
-                        audio = null
-                        audio = loadSound(playlist[pos].url, loaded)
-                        
-                        let interval = setInterval(() => {
-                            if(audio.isLoaded() && !started){
-                                started = true
-                                ready = true
-                                manageAudioData()
-                                audio.play()
-                                if(state === 'paused') audio.pause()
-                                clearInterval(interval)
-                            }
-                        })
-                        //if(audio.isLoaded()) audio.play()
-                    }
-                    }break;
-                }}}
-                else{
-                    console.log('true')
-                    corrupt = true
-                    started = true
-                    holdPL = false
-                    let previousmode = PlayBackMode
-                        PlayBackMode = 'shuffle'
-                        next.click()
-                        PlayBackMode = previousmode
-                }
-            })
-            prev.addEventListener('click',  () => {
-                if(plpos > 0 && started){
-                plpos--
-                document.getElementById('play-pause').style.opacity = '0%'
-                document.getElementById('loading').style.opacity = '100%'
-                if(audio._paused) state = 'paused';
-                else state = 'playing'
-                audio.stop()
-                audio = PrevSong(playlist, plpos, state) || audio
-                started = false
-                const interval = setInterval(() => {
-                    if(audio.isLoaded() && !started){
-                    started = true
-                    manageAudioData()
-                    audio.play()
-                    if(state === 'paused'){
-                    audio.pause()}
-                    clearInterval(interval)
-                    }
-                  }, 10)
-                setTimeout(() => {
-                    document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
-                    PrevSpeed = BGspeed 
-                }, 1000)}
-            })        
         }    
     } catch (e) {
         console.log('not loaded')
@@ -816,12 +795,13 @@ window.addEventListener('keydown', (event) => {
                 }
                 document.getElementById('eq-menu').style.top = '-500px'
                 document.getElementById('eq-menu').style.opacity = '0%'
-                setTimeout(() => {
+                const timeout = setTimeout(() => {
                 document.getElementById('eq-menu').style.display = 'none'
                 document.getElementById('app-title').style.filter = 'blur(0px) brightness(100%)'
                 document.getElementById('Audio-react').style.filter = 'blur(0px) brightness(60%)'
                 document.getElementById('current-track').style.filter = 'blur(0px) brightness(120%)'
                 }, 1000)
+                clearTimeout(timeout)
             }break;
         }}
 })
@@ -847,13 +827,14 @@ var trackinterval = setInterval(() => {
     }}
 }, 100)
 
+let temptime, totalseconds, totaltime
 
 function manageAudioData(){
     if(audio){
         if(audio.isLoaded()){
-            let temptime = Math.max(Math.floor(audio.duration() % 60), 0)
-            let totalseconds = temptime < 10? '0' + temptime: temptime.toString()
-            let totaltime = Math.max(Math.floor(audio.duration() / 60), 0) + ':' + totalseconds
+            temptime = Math.max(Math.floor(audio.duration() % 60), 0)
+            totalseconds = temptime < 10? '0' + temptime: temptime.toString()
+            totaltime = Math.max(Math.floor(audio.duration() / 60), 0) + ':' + totalseconds
             document.getElementById('total-time').innerHTML = totaltime
             //audio.output.channelCount = 8
             audio.setVolume(volumeSlider.value / 20)
@@ -866,35 +847,32 @@ function manageAudioData(){
     }
 }
 
+let time
+var seconds
+let RemainingtimeSec, rmin, rsec
+var Remainingtime
+var strokelem
+
 function draw(){
     try {
         if(audio){
                 if(started && !holdPL){
-                    try {
                         vol = amplitude.getLevel()
-                    } catch (e) {
-                        if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
-                        else localStorage.setItem('PlMenuOpened', false)
-
-                        localStorage.setItem('emptyreload', true)
-                        window.location.reload()
-                    }
 
                     if(audio.isLoaded()){
                         startloaddate = Date.now()             
                         document.getElementById('play-pause').style.opacity = '100%'
                         document.getElementById('loading').style.opacity = '0%'
-                        let time = Math.max(Math.floor(audio.currentTime() % 60), 0)
-                        const seconds = time < 10? '0' + time: time.toString()
+                        time = Math.max(Math.floor(audio.currentTime() % 60), 0)
+                        seconds = time < 10? '0' + time: time.toString()
                         if(timemode === 'normal'){ 
                             document.getElementById('current-time').innerHTML = Math.max(Math.floor(audio.currentTime() / 60), 0) + ':' + seconds
                         }
                         else{
-                            let RemainingtimeSec = (audio.duration() - audio.currentTime());
-                            let rmin = Math.floor(RemainingtimeSec / 60);
-                            let rs = Math.floor(RemainingtimeSec % 60);
-                            var Remainingtime
-                            Remainingtime = ('-') + rmin + ':' + (rs < 10 ? '0' : '') + rs;
+                            RemainingtimeSec = (audio.duration() - audio.currentTime());
+                            rmin = Math.floor(RemainingtimeSec / 60);
+                            rsec = Math.floor(RemainingtimeSec % 60);
+                            Remainingtime = ('-') + rmin + ':' + (rsec < 10 ? '0' : '') + rsec;
 
                             if(Remainingtime === '-0:00'){  
                                 Remainingtime = '0:00'
@@ -909,7 +887,6 @@ function draw(){
                         if(document.getElementById('Blob-Reactor-Obj').style.display !== 'block'){
                             document.getElementById('Blob-Reactor-Obj').style.display = 'block'}
                         if(PrevSpeed !== BGspeed){
-                            console.log('true')
                             document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }
@@ -926,14 +903,13 @@ function draw(){
                             document.getElementById('Audio-Visulizer').style.display = 'block'
                         }   
                         if(prevwidth !== window.innerWidth || prevheight !== window.innerHeight){
-                            var strokelem = document.getElementById('stroke')
+                            strokelem = document.getElementById('stroke')
                             strokelem.style.width = ((window.innerWidth/20)/100)*50
                             strokelem.style.height = ((window.innerWidth/20)/100)*50
                             strokelem.style.left = '49.77%'
                             strokelem.style.top = '49.7%'
                             strokelem.style.marginLeft = -(float(strokelem.style.width) || 0 + float(strokelem.style.padding) || 0 + float(strokelem.style.borderWidth) || 0)/1.95 + 'px'
                             strokelem.style.marginTop = -(float(strokelem.style.height) || 0 + float(strokelem.style.padding) || 0 + float(strokelem.style.borderWidth) || 0)/1.95 + 'px'
-                            console.log(window.innerWidth, window.innerHeight, strokelem.style.padding, strokelem.style.borderWidth, strokelem.style.marginLeft, strokelem.style.marginTop)
                             prevwidth = window.innerWidth
                             prevheight = window.innerHeight
                             createCanvas(1024*1.73, 576*1.73, document.getElementById('Audio-Visulizer-Canv'))
@@ -1010,17 +986,17 @@ function draw(){
                     }
                 }
                     audio.onended(() => {
-                        document.getElementById('timeslide').max = 100
                         document.getElementById('timeslide').value = 0
                         if(!audio._paused){
                         if(plpos >= playlist.length - 1){
                         document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
                         document.getElementById('Blob-Reactor-Obj').style.transform = `scale(1)`
                 
-                        setTimeout(() => {
+                        const timeout = setTimeout(() => {
                             document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
-                        }, 1000)} 
+                        }, 1000)
+                        clearTimeout(timeout)} 
                         else{
                         if(started && audio.isLoaded() && !audio._paused && release){
                         next.click()
@@ -1028,16 +1004,15 @@ function draw(){
                         document.getElementById('Blob-Reactor-Obj').style.transition = 'all 1s ease-out'
                         document.getElementById('Blob-Reactor-Obj').style.transform = `scale(1)`
 
-                        setTimeout(() => {
+                        const timeout = setTimeout(() => {
                             document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
                             PrevSpeed = BGspeed
                         }, 1000)
+                        clearTimeout(timeout)
                         }
                     }
                     })}
                  else{
-                //let difference = Date.now() - startloaddate
-                //console.log(corrupt)
                 if(corrupt){
                     if(audio.buffer === null || audio.duration() === 0){
                         if(corrupt){
@@ -1048,12 +1023,10 @@ function draw(){
                         if(plpos < playlist.length - 1){
                         next.click()}
                         else{
-                            console.log('passed')
                             if(playlist.length > 0){
                             plpos = 0
                             holdPL = true
-                            audio.stop()
-                            console.log('passed there also')
+                            
                             document.getElementById('play-pause').style.opacity = '100%'
                             document.getElementById('loading').style.opacity = '0%'
                             state = 'paused'
@@ -1081,10 +1054,12 @@ function draw(){
     }
 }
 
+let difference
+
 setInterval(() => {
     if(!playlist){
         SETBypassBGScan = true
-        let difference = Date.now() - startloaddate
+        difference = Date.now() - startloaddate
                 if(difference > 2000){
                     startloaddate = Date.now()
                     //console.log('refreshed')
@@ -1095,7 +1070,7 @@ setInterval(() => {
     }else{
         if(playlist.length === 0){
             SETBypassBGScan = true
-            let difference = Date.now() - startloaddate
+            difference = Date.now() - startloaddate
                 if(difference > 2000){
                     startloaddate = Date.now()
                     //console.log('refreshed')
@@ -1115,7 +1090,6 @@ function ChangeBG(){
         if(BGready && document.getElementById('BG-choice-txt0').innerText === 'BGCustom'){
             if(BackgroundData){
                 if(BackgroundData.length > 1){
-                    console.log('passed-1')
                     if(BGpos < BackgroundData.length - 1){
                         BGpos++
                     } else{
@@ -1127,15 +1101,14 @@ function ChangeBG(){
                     document.getElementById('Audio-react').style.transition = `all 1s ease-out`
 
                     setTimeout(() => {
-                        console.log(document.getElementById('Audio-react').style.display, document.getElementById('Audio-react').style.opacity, BackgroundData[BGpos])
-                        document.getElementById('Audio-react').style.opacity = '0%'
-                        setTimeout(() => {
+                       document.getElementById('Audio-react').style.opacity = '0%'
+                        const timeout = setTimeout(() => {
                             try {
-                                console.log('passed')
                                 document.getElementById('Audio-react').data = BackgroundData[BGpos]
-                                setTimeout(() => {
+                                const timeout2 = setTimeout(() => {
                                     document.getElementById('Audio-react').style.opacity = '100%'
                                     clearTimeout(interval)
+                                    clearTimeout(timeout2)
                                     ChangeBG()
                                 }, 100)
                             } catch (e) {
@@ -1147,6 +1120,7 @@ function ChangeBG(){
                                 }, 100)
                             }
                         }, 1000)
+                        clearTimeout(timeout)
                     }, 100)
                 }
                 else{

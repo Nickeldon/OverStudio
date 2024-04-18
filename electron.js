@@ -5,9 +5,12 @@ const path = require('path');
 const electronIpcMain = require('electron').ipcMain;
 const instancelimit = app.requestSingleInstanceLock()
 const fs = require('fs')
+var size
+var tempsize
+var date
 try {
   require(__dirname + "\\src\\server")  
-  const date = new Date().toUTCString()
+  var date = new Date().toUTCString()
   fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + 'Back-End started \n\n')
 } catch (e) {
   console.log(e)
@@ -53,9 +56,9 @@ if (!instancelimit) {
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
     try {
-    //windowObj.webContents.openDevTools()
+    windowObj.webContents.openDevTools()
     } catch (e) {
-      const date = new Date().toUTCString()
+      var date = new Date().toUTCString()
       fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
     }
     windowObj.on('closed', () => {
@@ -74,10 +77,12 @@ if (!instancelimit) {
     windowObj.setSize(w, h);
 
     windowObj.on('resize', function () {
-        setTimeout(() => {
-          var size = windowObj.getSize();
+      setTimeout(() => {
+        size = windowObj.getSize();
+        if(tempsize != Math.floor(parseInt(size[0]))){
           windowObj.setSize(size[0], parseInt(size[0] * 10 / 9));
-        }, 0);
+          tempsize = Math.floor(parseInt(size[0]));}
+      })
       });
 
     const readyListener = () => {
