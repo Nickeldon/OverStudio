@@ -14,7 +14,6 @@ var BGready = false
 
 var BGrefresh = localStorage.getItem('Background-Cooldown') || 10000
 localStorage.setItem('Background-Cooldown', BGrefresh)
-console.log(BGrefresh)
 if(BGrefresh < 60000){
 document.getElementById('BG-cooldown-txt0').innerText = `${BGrefresh/1000}s`}
 else{
@@ -23,13 +22,10 @@ else{
 
 var BGpos = 0
 
-console.log(localStorage.getItem('Sound_boot'))
-
 var VisualMode = localStorage.getItem('Background-Type') || 'BlobReactor'
 localStorage.setItem('Background-Type', VisualMode)
 document.getElementById('BG-choice-txt0').innerText = VisualMode
 
-console.log(localStorage.getItem('Reactor-Speed'))
 var BGspeed = localStorage.getItem('Reactor-Speed') || '.2'
 localStorage.setItem('Reactor-Speed', BGspeed)
 document.getElementById('amp-speed-txt0').innerText = BGspeed
@@ -78,7 +74,7 @@ localStorage.setItem('effectsState', JSON.stringify(effectsArray))
 var idle = 0;
 var idletimeout = parseInt(localStorage.getItem('idletimeout')) || 25
 localStorage.setItem('idletimeout', idletimeout)
-console.log(idletimeout)
+
 if(idletimeout == 25){
 document.getElementById('idle-txt0').innerText = '25s'}
 else if(idletimeout == 10){
@@ -251,7 +247,6 @@ function FetchBackgrounds(State, Bypass){
               changeOptionState(document.getElementById('blob-react-parent'), false)
               changeOptionState(document.getElementById('Custom-BG-speed'), true)
               changeOptionState(document.getElementById('ActiveVisulizer-opt-choice'), false)
-              console.log(BackgroundData[BGpos]) 
                 try {
                   document.getElementById('Audio-react').style.transition = 'all 1s ease-out'
                   document.getElementById('Audio-react').style.display = 'none'
@@ -380,17 +375,7 @@ function checkInternet(){
 }*/
 
 function animationSpeeds(transitions){
-  console.log(document.getElementById('eq-menu').style.transition,
-  document.getElementById('opt-menu2').style.transition, 
-  document.getElementById('opt-menu3').style.transition, 
-  document.getElementById('opt-menu4').style.transition,
-  document.getElementById('opt-menu5').style.transition,
-  document.getElementById('opt-menu6').style.transition,
-  document.getElementById('options').style.transition,
-  document.getElementById('Audio-react').style.transition,
-  document.getElementById('UI-scr1').style.transition)
   if(transitions){
-    console.log('yes passed')
   document.getElementById('eq-menu').style.transition = `all ${transitions[0]}s ease-out`
   document.getElementById('opt-menu2').style.transition, 
   document.getElementById('opt-menu3').style.transition, 
@@ -622,13 +607,11 @@ function openMENU(){
 function options(choice){
   clearTimeout(MenuTimeout[5])
   clearTimeout(MenuTimeout[6])
-  console.log(parseInt(speeds[chosenSpeed][5]) + 100)
   document.getElementById('side').style.pointerEvents = 'none'
   document.getElementsByClassName('menu-icns').forEach((elem) => {
     elem.style.pointerEvents = 'none'
     setTimeout(() => {
       elem.style.pointerEvents = 'all'
-      console.log('passed')
     }, (parseInt(speeds[chosenSpeed][5]) + 400))
   })
   document.getElementsByClassName('options').forEach((elem) => {

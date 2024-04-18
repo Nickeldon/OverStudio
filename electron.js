@@ -9,12 +9,12 @@ var size
 var tempsize
 var date
 try {
-  require(__dirname + "\\src\\server")  
+  require(__dirname + "/src/server")  
   var date = new Date().toUTCString()
-  fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + 'Back-End started \n\n')
+  fs.writeFileSync(__dirname + '/src/log.txt', '[' + date + '] => ' + 'Back-End started \n\n')
 } catch (e) {
   console.log(e)
-  //fs.writeFileSync(__dirname + '\\src\\error.log', '\n' + e)
+  //fs.writeFileSync(__dirname + '/src/error.log', '\n' + e)
 }
 
 //require('electron-reload')(__dirname,{electron: path.join(__dirname, 'node_modules', '.bin', 'electron')})
@@ -56,10 +56,10 @@ if (!instancelimit) {
     });
     windowObj.loadURL(url.format(path.join(__dirname, 'index.html'))); 
     try {
-    //windowObj.webContents.openDevTools()
+      //windowObj.webContents.openDevTools()
     } catch (e) {
       var date = new Date().toUTCString()
-      fs.writeFileSync(__dirname + '\\src\\log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
+      fs.writeFileSync(__dirname + '/src/log.txt', '[' + date + '] => ' + JSON.stringify(e) + '\n\n')
     }
     windowObj.on('closed', () => {
       windowObj = null
@@ -97,12 +97,12 @@ if (!instancelimit) {
     function createTray(){
       if(process.platform === 'win32'){
         const image = nativeImage.createFromPath(
-          path.join(__dirname, "\\Addons\\logo\\logowin.ico")
+          path.join(__dirname, "/Addons/logo/logowin.ico")
         );
         tray = new Tray(image.resize({ width: 256, height: 256 }));}
       else{
         const image = nativeImage.createFromPath(
-          path.join(__dirname, "\\Addons\\logo\\logowin.png")
+          path.join(__dirname, "/Addons/logo/logowin.png")
         );
         tray = new Tray(image.resize({ width: 256, height: 256 }))
       }

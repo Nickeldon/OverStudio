@@ -14,7 +14,7 @@ var plpos = 0;
 var audio
 let next, prev
 let trackinplaylist
-
+var amplitude
 
 // p5.js AudioVisualizer global variables
 var fft
@@ -58,7 +58,7 @@ try {
 }
 if(selectedCustom){
 document.getElementsByClassName('eq-range').forEach((range, index) => {
-    console.log(selectedCustom)
+    //console.log(selectedCustom)
         document.getElementsByClassName('eq-range')[index].value = customBands[selectedCustom][index]
 })
 try {
@@ -136,21 +136,21 @@ function setup(){
             console.log(e)
         }
         //console.log(playlist)
-        plpos = 0
+        plpos = 0}
 
-        try {
-            //Start the p5.Amplitude module
-            amplitude = new p5.Amplitude();
-        } catch (e) {
-    
-            //If not, then the error is logged and the app restarts
-            if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
-            else localStorage.setItem('PlMenuOpened', false)
-            localStorage.setItem('emptyreload', true)
-            window.location.reload()
-        }
-        //If all the required modules are loaded, then Keyboard support is set to true
-        if(amplitude) noError = true}
+    try {
+        //Start the p5.Amplitude module
+        amplitude = new p5.Amplitude();
+    } catch (e) {
+        console.log(e)
+        //If not, then the error is logged and the app restarts
+        if(document.getElementById('opt-menu2').style.display === 'block') localStorage.setItem('PlMenuOpened', true)
+        else localStorage.setItem('PlMenuOpened', false)
+        localStorage.setItem('emptyreload', true)
+        window.location.reload()
+    }
+    //If all the required modules are loaded, then Keyboard support is set to true
+    if(amplitude) noError = true
 }
 
 class DustParticles{
@@ -313,7 +313,7 @@ refreshbuttons.forEach((refresh) => {
                 if(!trackinplaylist){
                     console.log('not in playlist')
                     plpos = 0
-                    if(audio.isLoaded()) ;
+                    if(audio.isLoaded()) audio.stop();
                     audio = loadSound(playlist[plpos].url, loaded)
                     let interval2 = setInterval(() => {
                         if(audio.isLoaded()){
@@ -538,7 +538,6 @@ next = document.getElementById('next')
 prev = document.getElementById('back')
 
 next.addEventListener('click',  () => {
-    console.log('next')
     if(!holdPL){
     if(started){
     switch(PlayBackMode){
@@ -550,26 +549,20 @@ next.addEventListener('click',  () => {
                 if(!audio.isPlaying()) state = 'paused'
                 else state = 'playing'
                 audio.stop()
-                setTimeout(() => {
-                    audio.disconnect(eq)
-                    audio.disconnect()
-                    delete audio
-
-                    started = false
-                    ready = false
-                    audio = NextSong(playlist, plpos, state, () => {
-                        started = true
-                        ready = true
-                        manageAudioData()
-                        audio.play()
-                        if(state === 'paused') audio.pause()
-                    })
-                    const timeout = setTimeout(() => {
-                        document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
-                        PrevSpeed = BGspeed
-                    }, 1000)
-                    clearTimeout(timeout)
-                }, 100)
+                started = false
+                ready = false
+                audio = NextSong(playlist, plpos, state, () => {
+                    started = true
+                    ready = true
+                    manageAudioData()
+                    audio.play()
+                    if(state === 'paused') audio.pause()
+                })
+                const timeout = setTimeout(() => {
+                    document.getElementById('Blob-Reactor-Obj').style.transition = `all ${BGspeed}s ease-out`
+                    PrevSpeed = BGspeed
+                }, 1000)
+                clearTimeout(timeout)
             }
         }break;
 
@@ -622,7 +615,7 @@ next.addEventListener('click',  () => {
                 started = true
                 ready = true
                 manageAudioData()
-                console.log(state)
+                //console.log(state)
                 if(state === 'paused') audio.pause()
                 else audio.play()
             })
@@ -630,7 +623,6 @@ next.addEventListener('click',  () => {
         }break;
     }}}
     else{
-        console.log('true')
         corrupt = true
         started = true
         holdPL = false
@@ -682,7 +674,7 @@ document.getElementById('timeslide').addEventListener('change', () => {
                 clearInterval(interval)
             }
         }, 10)} else{
-            console.log('not released')
+            //console.log('not released')
         }
 })
 
@@ -709,8 +701,6 @@ window.addEventListener('keydown', (event) => {
         else{
             key = event.key
         }
-
-        console.log(key)
 
     if(completesplash){
         switch(key){
@@ -931,7 +921,7 @@ function draw(){
                             beginShape()
                             for(var i = 0; i < 180; i += 0.2){
                                 var index = floor(map(i, 0, 300, 0, wave.length - 1))
-                                console.log(document.getElementById('stroke').style.width)
+                                //console.log(document.getElementById('stroke').style.width)
                                 var r = map(wave[index] * 3, -1, 1, document.getElementById('stroke').style.width, window.innerWidth/9.5)
                                 var x = r * cos(i)
                                 var y = r * sin(i) * t
@@ -944,7 +934,7 @@ function draw(){
                         particlesArray.push(p)
                         amp = amplitude.getLevel() * 20
                         if(!audio.isPlaying()){amp = 0} 
-                        console.log(document.getElementById('imgReact').style.transform)
+                        //console.log(document.getElementById('imgReact').style.transform)
                         if(document.getElementById('imgReact').style.transition !== 'transform 1s ease-out'){
                         document.getElementById('Audio-Visulizer').style.transition = 'transform 1s ease-out'}
                         document.getElementById('Audio-Visulizer').style.transform = 'scale(' + (amp/5 + 1) + ')'
@@ -962,10 +952,10 @@ function draw(){
 
                         if(amp > 3.85){
                             if(amp > 5){
-                                console.log('lvl2')
+                                //console.log('lvl2')
                                 document.getElementById('stroke').style.animation = 'shakelvl2 0.1s infinite running'
                             } else {
-                                console.log('lvl1'); 
+                                //console.log('lvl1'); 
                                 document.getElementById('stroke').style.animation = 'shake 0.2s infinite running'}
                         }
                         else{

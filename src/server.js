@@ -21,18 +21,18 @@ app.use(cors())
 server = app.listen(PORT, () => {
     console.log('Server is listening on port', PORT)
     const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Server is listening on port: ' + PORT + '\n\n')
+    fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Server is listening on port: ' + PORT + '\n\n')
 }).addListener('error', (e) => {
     console.error('there was an error', e)
-    var logfile = fs.readFileSync(__dirname + '\\log.txt')
+    var logfile = fs.readFileSync(__dirname + '/log.txt')
     logfile += '\n' + 'There was an error' + JSON.stringify(e)
     const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+    fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
 
     if(e.code === 'EADDRINUSE'){
         console.log('port in use')
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + `PORT ${PORT} was already in use. \nAborting app Execution...` + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + `PORT ${PORT} was already in use. \nAborting app Execution...` + '\n\n')
         PORT++
         server.closeAllConnections()
         server.listen(PORT)
@@ -47,7 +47,7 @@ server = app.listen(PORT, () => {
             ws.on('message', (mes) => {
                 console.log('received response from frontend', mes)
                 const CurrentTime = new Date().toUTCString()
-                fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Received response from frontend: ' + mes + '\n\n')
+                fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Received response from frontend: ' + mes + '\n\n')
             })
         })
         
@@ -62,7 +62,7 @@ app.get('/getThumbnail', (req, res, next) => {
     } catch (e) {
         console.log(e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         res.sendStatus(206)
         return ''
     }
@@ -81,7 +81,7 @@ app.get('/getThumbnail', (req, res, next) => {
         })
         .catch((e) => {
             console.log(e)
-            fs.appendFileSync('\\log.txt', JSON.stringify(e) + '\n\n')
+            fs.appendFileSync('/log.txt', JSON.stringify(e) + '\n\n')
         })
     } else{
         res.sendStatus(206)
@@ -93,12 +93,12 @@ app.get('/getThumbnail', (req, res, next) => {
 app.get('/follow', (req, res, next) => {
     var playlist
     try {
-        playlist = res.json(JSON.parse(fs.readFileSync(__dirname + '\\saved_paths.json')).meta.links)
+        playlist = res.json(JSON.parse(fs.readFileSync(__dirname + '/saved_paths.json')).meta.links)
     } catch (e) {
         res.json('Could not fetch data')
         console.error('Could not fetch data', e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + JSON.stringify(e))
+        fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + JSON.stringify(e))
     }
 })
 
@@ -110,7 +110,7 @@ app.get('/addPL', (req, res, next) => {
     } catch (e) {
         console.error('Could not fetch data', e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
+        fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
         
     } 
     try {
@@ -118,7 +118,7 @@ app.get('/addPL', (req, res, next) => {
     } catch (e) {
         console.error('Error while parsing', e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
+        fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
     }
 
     //console.log(PlaylistURL, object.meta.links)
@@ -143,12 +143,12 @@ app.get('/addPL', (req, res, next) => {
                     res.sendStatus(207)
                     console.log('already exists')
                     const CurrentTime = new Date().toUTCString()
-                    fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + `Directory \'${PlaylistURL}\' is a duplicate \nRequest Ignored \n\n`)
+                    fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + `Directory \'${PlaylistURL}\' is a duplicate \nRequest Ignored \n\n`)
 
                     return undefined
                 }
                 const CurrentTime = new Date().toUTCString()
-                fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + `Linked directory \'${path.resolve(PlaylistURL)}\' Succesfully \n\n`)        
+                fs.appendFileSync(__dirname + '/log.txt',  '[' + CurrentTime + '] => ' + `Linked directory \'${path.resolve(PlaylistURL)}\' Succesfully \n\n`)        
                 //console.log(object)
             } else{
                 object.meta = {
@@ -157,14 +157,14 @@ app.get('/addPL', (req, res, next) => {
                         path.resolve(PlaylistURL)]
                 }
                 const CurrentTime = new Date().toUTCString()
-                fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + `Linked directories \'${path.resolve('../Media')}\' \n\'${path.resolve(PlaylistURL)}\' Succesfully \n\n`)        
+                fs.appendFileSync(__dirname + '/log.txt',  '[' + CurrentTime + '] => ' + `Linked directories \'${path.resolve('../Media')}\' \n\'${path.resolve(PlaylistURL)}\' Succesfully \n\n`)        
                 //console.log(object)
             }
             res.sendStatus(204)
         } else{
             console.log('invalid uri')
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Invalid Provided Directory \n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Invalid Provided Directory \n\n')
             res.sendStatus(206)
             return undefined
         }
@@ -175,11 +175,11 @@ app.get('/addPL', (req, res, next) => {
     }
 
     try {
-        fs.writeFileSync(__dirname + '\\saved_paths.json', JSON.stringify(object, null, 2))
+        fs.writeFileSync(__dirname + '/saved_paths.json', JSON.stringify(object, null, 2))
     } catch (e) {
         console.error('Could not fetch data', e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
+        fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
     }
     //console.log(object)
 
@@ -189,7 +189,7 @@ app.get('/delPath', (req, res, next) => {
     try {
         const targetpath = req.query.link
         
-        const json = fs.readFileSync(__dirname + '\\saved_paths.json')
+        const json = fs.readFileSync(__dirname + '/saved_paths.json')
         var object = JSON.parse(json)
         //console.log(object)
         const linkarray = object.meta.links
@@ -200,24 +200,24 @@ app.get('/delPath', (req, res, next) => {
         }
         object.meta.links = linkarray
         try {
-            fs.writeFileSync(__dirname + '\\saved_paths.json', JSON.stringify(object, null, 2))
+            fs.writeFileSync(__dirname + '/saved_paths.json', JSON.stringify(object, null, 2))
         } catch (e) {
             console.log(e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
+            fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + '\n' + JSON.stringify(e))
         }
         const CurrentTime = new Date().toUTCString()
         if(linkarray.length > 0){
-            fs.appendFileSync(__dirname + '\\log.txt',  '\n[' + CurrentTime + '] => ' + `Delinked directory \'${targetpath}\' Succesfully \n\n`)        
+            fs.appendFileSync(__dirname + '/log.txt',  '\n[' + CurrentTime + '] => ' + `Delinked directory \'${targetpath}\' Succesfully \n\n`)        
             res.sendStatus(201)}
         else{
-            fs.appendFileSync(__dirname + '\\log.txt',  '\n[' + CurrentTime + '] => ' + `Delinked directory \'${targetpath}\' Succesfully \nNo Directories left \n\n`)        
+            fs.appendFileSync(__dirname + '/log.txt',  '\n[' + CurrentTime + '] => ' + `Delinked directory \'${targetpath}\' Succesfully \nNo Directories left \n\n`)        
             res.sendStatus(205)
         }
     } catch (e) {
         console.log(e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', + '[' + CurrentTime + '] => ' + + JSON.stringify(e))
+        fs.appendFileSync(__dirname + '/log.txt', + '[' + CurrentTime + '] => ' + + JSON.stringify(e))
         res.sendStatus(206)
     }
 })
@@ -228,11 +228,11 @@ app.get('/ParseLinks', (req, res, next) => {
 
     var jsonPL, savedPL
     try {
-        jsonPL = fs.readFileSync(__dirname + '\\saved_paths.json')
+        jsonPL = fs.readFileSync(__dirname + '/saved_paths.json')
         savedPL = JSON.parse(jsonPL)   
     } catch (e) {
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         process.exit(1)
     }
     var mediaarr = []
@@ -242,7 +242,7 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.error('Could not fetch data', e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         }
     } else{
         try {
@@ -252,8 +252,8 @@ app.get('/ParseLinks', (req, res, next) => {
                 //console.log('no links')
                 prevNoPLFlag = true
                 const CurrentTime = new Date().toUTCString()
-                fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
-                fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No playlist detected' + '\n\n')
+                fs.appendFileSync(__dirname + '/log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
+                fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'No playlist detected' + '\n\n')
             }
             else{
                 savedPL.meta.links.forEach((elem) => {
@@ -264,12 +264,12 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.error('Could not fetch data', e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         }
         //console.log(mediaarr)
     }
 
-    //console.log(mediaarr)
+    console.log(mediaarr)
     //console.log(savedPL.meta.links.length)
     if(savedPL.meta.links.length > 0){
     var combinedArray = []
@@ -281,7 +281,7 @@ app.get('/ParseLinks', (req, res, next) => {
 
     mediaarr = mediaarr[1]
     
-    //console.log(mediaarr)
+    console.log(mediaarr)
 
 
     var finalArray = []
@@ -304,7 +304,7 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.log(e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
             finalArray.push({
                 "url": elem,
                 "title": undefined,
@@ -327,7 +327,7 @@ app.get('/ParseLinks', (req, res, next) => {
         } catch (e) {
             console.log(e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
             finalArray.push({
                 "url": combinedArray[0],
                 "title": undefined,
@@ -343,8 +343,8 @@ app.get('/ParseLinks', (req, res, next) => {
     completeArray.push(savedPL.meta.links)
    // console.log(completeArray)
    const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
-   fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Parsed links \n')
+    fs.appendFileSync(__dirname + '/log.txt',  '[' + CurrentTime + '] => ' + 'Received call \n')
+   fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Parsed links \n')
    prevNoPLFlag = false
     }
     res.json(completeArray)
@@ -352,7 +352,7 @@ app.get('/ParseLinks', (req, res, next) => {
 
 app.get('/AutoUpdater', (req, res, next) => {
     const CurrentTime = new Date().toUTCString()
-    fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Received Auto Update Request \n')
+    fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + 'Received Auto Update Request \n')
     const config = {
         repository: 'https://github.com/Nickeldon/OverStudio',
         fromReleases: true,
@@ -367,7 +367,7 @@ app.get('/AutoUpdater', (req, res, next) => {
         updater.autoUpdate();    
     } catch (e) {
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Something Wrong Happened during the Autoupdate \n' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + 'Something Wrong Happened during the Autoupdate \n' + JSON.stringify(e) + '\n\n')
     }
 })
 
@@ -375,16 +375,16 @@ app.get('/getBackgrounds', (req, res, next) => {
     var data = []
 
     try {
-        var Path = path.resolve(__dirname + '\\..\\Media\\CustomBackgrounds')
-    fs.readdirSync(__dirname + '\\..\\Media\\CustomBackgrounds').forEach((elem) => {
-        if(!fs.statSync(__dirname + `\\..\\Media\\CustomBackgrounds\\${elem}`).isDirectory()){
+        var Path = path.resolve(__dirname + '/../Media/CustomBackgrounds')
+    fs.readdirSync(__dirname + '/../Media/CustomBackgrounds').forEach((elem) => {
+        if(!fs.statSync(__dirname + `/../Media/CustomBackgrounds/${elem}`).isDirectory()){
             var cont = true
                     for(let i = elem.length; i > 0 && cont; i--){
                         if(elem[i] === '.'){
                             elem = elem.split('.')
                             elem[1] = elem[1].toLowerCase()
                             if(elem[1] === 'webp' || elem[1] === 'png' || elem[1] === 'jpg' || elem[1] === 'jpeg' || elem[1] === 'gif'){
-                            data.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
+                            data.push(`${Path}/${elem[0] + '.' + elem[1]}`)}
                             cont = false
                         }
                     }
@@ -393,36 +393,36 @@ app.get('/getBackgrounds', (req, res, next) => {
     } catch (e) {
         console.error(e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
     }
 
     if(data){
         if(data.length > 0){
         try {
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
             data.forEach((elem) => {
-                fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Background found: ' + elem + '\n')
+                fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Background found: ' + elem + '\n')
             })
             prevNoBGFlag = false
             res.json(data)
         } catch (e) {
             console.error(e)
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'Something is wrong =>\n' + JSON.stringify(e) + '\n\n')
         }}else{
             res.json([])
             if(!prevNoBGFlag){
             const CurrentTime = new Date().toUTCString()
-            fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
-            fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + 'No Backgrounds found \n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n')
+            fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + 'No Backgrounds found \n\n')
             prevNoBGFlag = true}
         }
     }else{
         res.json([])
         if(!prevNoBGFlag){
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n' + 'No Backgrounds found \n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '\n[' + CurrentTime + '] => ' + 'Requested Local Backgrounds Fetch from end to end \nFetching...\n\n' + 'No Backgrounds found \n\n')
         prevNoBGFlag = true}
     }
 })
@@ -434,7 +434,7 @@ function verifyURIIntegrity(URI){
     } catch (e) {
         console.error(e)
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         return false
     }
 }
@@ -481,7 +481,7 @@ function getMediaMeta(Path){
         //console.log(':(', error.type, error.info);        
         const CurrentTime = new Date().toUTCString()
         if(error.info !== 'No suitable tag reader found'){
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(error) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(error) + '\n\n')
     }
     }
     });
@@ -490,8 +490,8 @@ function getMediaMeta(Path){
             //console.log('true no title')
             var cont = true
             for(let i = Path.length; i > 0 && cont; i--){
-                if(Path[i] === '\\'){
-                    title = Path.split('\\')[Path.split('\\').length - 1]
+                if(Path[i] === '/'){
+                    title = Path.split('/')[Path.split('/').length - 1]
                     var tempcont = true
                     for(let k = title.length; k > 0 && tempcont; k--){
                         if(title[k] === '.'){
@@ -513,14 +513,16 @@ function getMediaArray(Path){
     try {
         if(fs.existsSync(Path)){
             fs.readdirSync(Path).forEach((elem) => {
-                if(!fs.statSync(`${Path}\\${elem}`).isDirectory()){
+                if(!fs.statSync(`${Path}/${elem}`).isDirectory()){
                     var cont = true
+                    Path = Path.replace(/\\/g, '/')
+                    elem = elem.replace(/\\/g, '/')
                     for(let i = elem.length; i > 0 && cont; i--){
                         if(elem[i] === '.'){
                             elem = elem.split('.')
                             elem[1] = elem[1].toLowerCase()
                             if(elem[1] === 'mp3' || elem[1] === 'flac' || elem[1] === 'wav' || elem[1] === 'aac' || elem[1] === 'opus'){
-                            resultArray.push(`${Path}\\${elem[0] + '.' + elem[1]}`)}
+                            resultArray.push(`${Path}/${elem[0] + '.' + elem[1]}`)}
                             //console.log('resultArray')
                             cont = false
                         }
@@ -530,7 +532,7 @@ function getMediaArray(Path){
         }   
     } catch (e) {
         const CurrentTime = new Date().toUTCString()
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
  
     }
 
@@ -548,7 +550,7 @@ function verifIfExist(base, input){
     } catch (e) {
         const CurrentTime = new Date().toUTCString()
 
-        fs.appendFileSync(__dirname + '\\log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
+        fs.appendFileSync(__dirname + '/log.txt', '[' + CurrentTime + '] => ' + JSON.stringify(e) + '\n\n')
         return true
     }
 }

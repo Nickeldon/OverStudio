@@ -12,7 +12,7 @@ ws.addEventListener('message', (response) => {
 var paths = []
 var finalArray = []
 var reversed = false
-console.log(localStorage.getItem('reversed'))
+//console.log(localStorage.getItem('reversed'))
 var reversed = (/true/).test(localStorage.getItem('reversed')) || false
 localStorage.setItem('reversed', reversed)
 var ready = false
@@ -94,7 +94,7 @@ try {
                     try {
                         var filtered = FilterArray(document.getElementById('current-track').childNodes);    
                         //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
-                        console.log(selectorfiltered)
+                        //console.log(selectorfiltered)
                         document.getElementById('current-track').childNodes.forEach((elem) => {
                             elem.style.transition = 'opacity 0s ease-out'
                             if(elem.id === 'child-track'){
@@ -164,8 +164,8 @@ try {
     console.log(e)
 }
 document.getElementById('div-inp').value = null
-        console.log(response)
-        return response
+//console.log(response)
+return response
 }
 
 async function deletePLCache(){
@@ -228,7 +228,7 @@ function FilterArray(array){
 }
 
 function deldiv(nbr, link){
-    console.log(nbr, document.getElementById(`child-div-${nbr}`).childNodes)
+    //console.log(nbr, document.getElementById(`child-div-${nbr}`).childNodes)
     //console.log(document.getElementById('div-selector').childNodes)
     //console.log(document.getElementById(`child-div-${nbr}`))
     fetch(`http://localhost:${PORT}/delPath?link=${link}`, {
@@ -242,7 +242,7 @@ function deldiv(nbr, link){
             case 201:{
                 document.getElementById(`child-div-${nbr}`).style.opacity = '0%'
                 setTimeout(() => {
-                    console.log(document.getElementById(`child-div-${nbr}`))
+                    //console.log(document.getElementById(`child-div-${nbr}`))
                     document.getElementById(`child-div-${nbr}`).remove()
                     document.getElementById('Refresh').click()
 
@@ -327,7 +327,7 @@ function getFullDataNode(raw){
 }
 
 function ManageData(data){
-    console.log(data)
+    //console.log(data)
     //console.log(data[0])
     //console.log(data)
     if(data[1].length > 0){
@@ -363,7 +363,7 @@ function ManageData(data){
             const delicon = document.createElement('img')
             delicon.src = './Addons/icons/delete.png'
             const tempcount = iter
-            console.log(tempcount)
+            //console.log(tempcount)
             delicon.onclick = () => {deldiv(tempcount, tempPath)}
             delicon.style.height = '30px'
 
