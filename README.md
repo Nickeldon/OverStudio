@@ -1,7 +1,7 @@
 <img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img>
 # OverStudio
 
-Listen to music in a more fashioned way 
+Listen to music with style
 
 
 

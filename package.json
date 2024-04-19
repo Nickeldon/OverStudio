@@ -15,7 +15,6 @@
     "auto-git-update": "^2.1.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "http": "^0.0.1-security",
     "jsmediatags": "^3.9.7",
     "url": "^0.11.3",
     "ws": "^8.16.0",
