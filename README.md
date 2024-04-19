@@ -1,4 +1,4 @@
-<img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img>
+<i align="center"><img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img></i>
 # OverStudio
 
 Listen to music with style
