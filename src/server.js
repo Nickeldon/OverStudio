@@ -202,8 +202,18 @@ app.get("/addPL", (req, res, next) => {
         );
         //console.log(object)
       } else {
+        let fontarray;
+        try {
+          fontarray = JSON.parse(object.meta.fonts);
+        } catch (e) {
+          fontarray = [];
+        }
         object.meta = {
-          links: [path.resolve("../Media"), path.resolve(PlaylistURL)],
+          links: [
+            path.resolve("../Media").replace(/\\/g, "/"),
+            path.resolve(PlaylistURL).replace(/\\/g, "/"),
+          ],
+          fonts: [...fontarray],
         };
         const CurrentTime = new Date().toUTCString();
         fs.appendFileSync(
@@ -247,7 +257,6 @@ app.get("/addPL", (req, res, next) => {
       +"[" + CurrentTime + "] => " + "\n" + JSON.stringify(e)
     );
   }
-  //console.log(object)
 });
 
 app.get("/delPath", (req, res, next) => {
@@ -256,7 +265,6 @@ app.get("/delPath", (req, res, next) => {
 
     const json = fs.readFileSync(__dirname + "/saved_paths.json");
     var object = JSON.parse(json);
-    //console.log(object)
     const linkarray = object.meta.links;
     if (linkarray.indexOf(targetpath) !== 0) {
       linkarray.splice(linkarray.indexOf(targetpath), 1);
@@ -309,7 +317,6 @@ app.get("/delPath", (req, res, next) => {
 });
 
 app.get("/ParseLinks", (req, res, next) => {
-  //console.log('received call')
 
   var jsonPL, savedPL;
   try {
@@ -326,7 +333,7 @@ app.get("/ParseLinks", (req, res, next) => {
   var mediaarr = [];
   if (!savedPL) {
     try {
-      mediaarr = getMediaArray(path.resolve("../Media"));
+      mediaarr = getMediaArray(path.resolve("../Media").replace(/\\/g, "/"));
     } catch (e) {
       console.error("Could not fetch data", e);
       const CurrentTime = new Date().toUTCString();
@@ -337,10 +344,7 @@ app.get("/ParseLinks", (req, res, next) => {
     }
   } else {
     try {
-      //console.log('passed')
-      //console.log(savedPL.meta)
       if (savedPL.meta.links.length === 0 && !prevNoPLFlag) {
-        //console.log('no links')
         prevNoPLFlag = true;
         const CurrentTime = new Date().toUTCString();
         fs.appendFileSync(
@@ -353,7 +357,6 @@ app.get("/ParseLinks", (req, res, next) => {
         );
       } else {
         savedPL.meta.links.forEach((elem) => {
-          //console.log(getMediaArray(elem))
           if (getMediaArray(elem).length > 0) {
             mediaarr.push(getMediaArray(elem));
           }
@@ -383,12 +386,8 @@ app.get("/ParseLinks", (req, res, next) => {
 
     var finalArray = [];
     var completeArray = [];
-    //console.log(mediaarr.length)
-    //console.log(mediaarr)
     if (combinedArray.length > 1) {
-      //console.log('YES')
       combinedArray.forEach((elem) => {
-        //console.log(elem + '\n\n')
         try {
           finalArray.push({
             url: elem,

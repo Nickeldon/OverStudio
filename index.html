@@ -2,6 +2,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
   <title>Document</title>
   <style>
     @font-face {
@@ -21,9 +23,9 @@
       src: url("./Addons/Blocky.TTF");
     }
   </style>
-  <script src="./Addons/Packages/Soundhandler/howler.min.js"></script>
-  <script src="./Addons/Packages/SoundListener/p5.min.js"></script>
-  <script src="./Addons/Packages/SoundListener/p5.sound.min.js"></script>
+  <script src="./Addons/Packages/Soundhandler/p5/p5.js"></script>
+<script src="./Addons/Packages/Soundhandler/p5/addons/p5.sound.js"></script>
+<script src="./Addons/Packages/Soundhandler/howler.min.js"></script>
   <script src="./Addons/Packages/JQuery 3.1.1/jquery-3.1.1.min.js"></script>
   <script src="scripts/bridge.js"></script>
 </head>
@@ -35,7 +37,7 @@
 <body style="border-radius: 20px">
   <audio src="./Addons/SF/startup.mp3" style="visibility: hidden"></audio>
 
-  <!--<iframe src="./SoundFrame" id="SoundFrame" frameborder="0" style="display: block; pointer-events:none; user-select:none; visibility:hidden; z-index:1; width: 1777px; height:1000px; position:relative; background-color:transparent;">
+  <!--<iframe id="SoundFrame" frameborder="0" style="display: none; pointer-events:none; user-select:none; visibility:hidden; z-index:1; width: 1777px; height:1000px; position:relative; background-color:transparent;">
     </iframe>-->
 
   <div
@@ -762,6 +764,73 @@
         </div>
       </div>
 
+      <!--<div
+          id="font-menu"
+          class="font-menu"
+          style="
+            width: 500px;
+            height: 600px;
+            display: block;
+            transition: all 1s ease-in-out;
+            opacity: 100%;
+            position: absolute;
+            top: 250px;
+            right: 0;
+            border-radius:20px;
+            border-top-right-radius: 0px;
+            background-image: linear-gradient(
+            to left,
+            rgba(63, 62, 62, 1),
+            rgba(63, 62, 62, 0)
+          );
+          "
+        >
+
+        <div
+          class="font-select"
+          style="
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 85%;
+          "
+        >
+          <a
+            id="font-presets-btn"
+            class="font-presets-btn"
+            onclick="
+                if(document.getElementById('font-pres-ch').style.height !== '80%'){
+                    document.getElementById('font-pres-ch').style.height = '80%';
+                } else {
+                    document.getElementById('font-pres-ch').style.height = '0%';
+                }
+                "
+          >
+            Choose a font
+          </a>
+
+          <div class="font-choices" id="font-pres-ch">
+            <a id="font-PS">Pixelify Sans</a>
+            <a id="font-CS">Comics Sans</a>
+            <a id="font-muffledbass">Test 1</a>
+            <a id="font-treble">Treble</a>
+            <a id="font-vocal">Vocal</a>
+            <a id="font-rock">Rock</a>
+            <a id="font-pop">Pop</a>
+            <a id="font-jazz">Jazz</a>
+            <a id="font-classical">Classical</a>
+            <a id="font-metal">Metal</a>
+            <a id="font-custom1">Custom 1</a>
+            <a id="font-custom2">Custom 2</a>
+            <a id="font-custom3">Custom 3</a>
+          </div>
+        </div>
+          
+        </div>-->
+          
+
       <div
         id="options"
         class="options"
@@ -1258,20 +1327,23 @@
               style="opacity: 0%; top: 260px; width: 450px"
               onclick="
                 var txt = document.getElementById('anim-txt0');
-                txt.innerText = txt.innerText === 'Animations speed: 1x' ? 'Animations speed: 2x' : 'Animations speed: 1x';
-                var state = txt.innerText === 'Animations speed: 1x' ? true : false;
-
-                if(!state){
-                    chosenSpeed = 'fast'
-                    animationSpeeds(speeds['fast'])
-                } else {
-                    chosenSpeed = 'baseSpeed'
-                    animationSpeeds(speeds['baseSpeed'])
+                if(txt.innerText === 'normal'){
+                  chosenSpeed = 'fast'
+                  animationSpeeds(speeds['fast'])
+                  txt.innerText = 'fast'
+                } else if(txt.innerText === 'fast'){
+                  chosenSpeed = 'FroxceyFast'
+                  animationSpeeds(speeds['FroxceyFast'])
+                  txt.innerText = 'FroxceyFast'
+                } else if(txt.innerText === 'FroxceyFast'){
+                  chosenSpeed = 'normal'
+                  animationSpeeds(speeds['normal'])
+                  txt.innerText = 'normal'
                 }
                 localStorage.setItem('animations', (chosenSpeed))
                 "
             >
-              <a style="left: 70px" id="anim-txt0"> Animations speed: 1x </a>
+              <a style="left: 70px"> Animations speed:<br><span id="anim-txt0">normal</span></a>
             </div>
 
             <div
@@ -1461,6 +1533,7 @@
             left: 20px;
           "
         ></div>
+
       </div>
 
       <div
@@ -1480,7 +1553,7 @@
         <i
           class="menu-icns"
           onclick="
-             if(document.getElementById('options').style.left === '-380px') openMENU(); 
+             if(document.getElementById('options').style.left === '-380px') openMENU(true); 
              options(1)"
           id="menu-folder"
         >
@@ -1513,7 +1586,7 @@
         <i
           class="menu-icns"
           onclick="
-             if(document.getElementById('options').style.left === '-380px') openMENU(); 
+             if(document.getElementById('options').style.left === '-380px') openMENU(true); 
              options(2)"
           id="menu-add"
         >
@@ -1586,7 +1659,7 @@
         >
           <img
             onclick="
-                    openMENU()
+                    openMENU(false)
                     document.getElementById('side').style.pointerEvents = 'none'
                     setTimeout(() => {
                         document.getElementById('side').style.pointerEvents = 'all'
@@ -1853,6 +1926,7 @@
       </div>
     </div>
   </div>
+  </div>
 </body>
 
 <style>
@@ -2004,6 +2078,54 @@
     background-position: center;
     filter: blur(0.05em) saturate(0.7) contrast(1.5) brightness(1.2)
       opacity(60%);
+  }
+
+  .font-presets-btn{
+    position: absolute;
+    top: 100px;
+    right: 0;
+    height: 50px;
+    width: 400px;
+    font-family: PS, sans-serif;
+    font-size: 25px;
+    color: white;
+    text-align: center;
+  }
+
+  .font-choices{
+    position: absolute;
+    top: 50px;
+    right: 0;
+    height: 0%;
+    width: 400px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: height 1s ease-in-out;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    a{
+      font-family: PS, sans-serif;
+      font-size: 20px;
+      text-align: center;
+      display: block;
+      padding-bottom: 5px;
+      padding-top: 15px;
+      border-bottom-width: 1px;
+      border-right-width: 0px;
+      border-left-width: 0px;
+      color: white;
+      border-top-width: 1px;
+      border-style: solid;
+      border-color: #000;
+      width: 100%;
+      height: 50px;
+      transition: all 1s ease-in-out;
+    }
+
+    a:hover{
+      cursor: pointer;
+      background-color: rgba(139, 139, 139, 0.686);
+      color: black;
+    }
   }
 
   .eq-presets {

@@ -1,3 +1,6 @@
+var RFreq = 1;
+//document.getElementById('SoundFrame').src = `./SoundFrame.html?random=${(new Date()).getTime() + Math.floor(Math.random() * 1000000)}`
+
 var EffectChangeTimeout = true;
 var completesplash = false;
 var corrupt = false;
@@ -7,7 +10,7 @@ var cooldownBGState = true;
 var prevBlurred = false;
 var prevEQBlurred = false;
 
-var MenuTimeout = [0, 0, 0, 0, 0, 0];
+var MenuTimeout = [0, 0, 0, 0, 0, 0, 0];
 
 var BackgroundData = [];
 var BGready = false;
@@ -35,19 +38,17 @@ localStorage.setItem("Reactor-Speed", BGspeed);
 document.getElementById("amp-speed-txt0").innerText = BGspeed;
 
 const speeds = {
-  baseSpeed: [1, 1, 1, 1, 1, 1000],
+  normal: [1, 1, 1, 1, 1, 1000],
   fast: [0.5, 0.5, 0.5, 0.5, 0.5, 600],
+  FroxceyFast: [0.3, 0.3, 0.3, 0.3, 0.3, 400],
 };
 
-var chosenSpeed = localStorage.getItem("animations") || "baseSpeed";
+var chosenSpeed = localStorage.getItem("animations") || "normal";
 localStorage.setItem("animations", chosenSpeed);
 animationSpeeds(speeds[chosenSpeed]);
 
-if (chosenSpeed === "fast") {
-  document.getElementById("anim-txt0").innerHTML = "Animations speed: 2x";
-} else {
-  document.getElementById("anim-txt0").innerHTML = "Animations speed: 1x";
-}
+document.getElementById("anim-txt0").innerHTML = chosenSpeed;
+
 
 var bootsoundbool = localStorage.getItem("Sound_boot") || "true";
 if (bootsoundbool == "false") bootsoundbool = false;
@@ -144,6 +145,7 @@ function SwitchBackgrounds(choice) {
     document.getElementById("Blob-Reactor-Obj").style.display = "none";
     cooldownBGState = false;
     if (choice === "BlobReactor") {
+      changeOptionState(document.getElementById("blob-speed-opt"), true);
       changeOptionState(document.getElementById("blob-speed-opt"), true);
       changeOptionState(document.getElementById("blob-react-parent"), true);
       changeOptionState(document.getElementById("Custom-BG-speed"), false);
@@ -563,11 +565,9 @@ function changeState() {
     document.getElementById("min-app").style.transition = "all .5s ease-out";
     document.getElementById("min-app").style.pointerEvents = "none";
     document.getElementById("min-app").style.opacity = "0%";
-    setTimeout(() => {
-      document.getElementById("filter").style.opacity = "0%";
-      document.getElementById("cont-bar").style.borderColor = "transparent";
-      document.getElementById("UI-scr1").style.opacity = "0";
-    }, 10);
+    document.getElementById("filter").style.opacity = "0%";
+    document.getElementById("cont-bar").style.borderColor = "transparent";
+    document.getElementById("UI-scr1").style.opacity = "0";
 
     rotdeg = 0;
     normscale = 1;
@@ -617,7 +617,7 @@ function changeState() {
   }
 }
 
-function openMENU() {
+function openMENU(Bypass_menu_disp) {
   clearTimeout(MenuTimeout[0]);
   clearTimeout(MenuTimeout[1]);
   clearTimeout(MenuTimeout[2]);
@@ -633,6 +633,8 @@ function openMENU() {
   document.getElementById("opt-menu4").style.opacity = "0%";
   document.getElementById("opt-menu5").style.opacity = "0%";
   document.getElementById("opt-menu6").style.opacity = "0%";
+  if (Bypass_menu_disp)
+    document.getElementById("opt-menu1").style.opacity = "0%";
   optprev.style.display = "block";
   let deletespeed = parseInt(speeds[chosenSpeed][5]) - 200;
   MenuTimeout[0] = setTimeout(() => {
@@ -641,6 +643,9 @@ function openMENU() {
     document.getElementById("opt-menu4").style.display = "none";
     document.getElementById("opt-menu5").style.display = "none";
     document.getElementById("opt-menu6").style.display = "none";
+    if (Bypass_menu_disp)
+      document.getElementById("opt-menu1").style.display = "none";
+    else document.getElementById("opt-menu1").style.display = "block";
   }, deletespeed);
 
   document.getElementsByClassName("opt-txt").forEach((elem) => {
@@ -656,12 +661,15 @@ function openMENU() {
     MenuTimeout[1] = setTimeout(() => {
       document.getElementById("eq-menu").style.display = "none";
     }, 1000);
-    document.getElementById("opt-menu2").style.opacity = "0%";
-    document.getElementById("opt-menu3").style.opacity = "0%";
-    document.getElementById("opt-menu4").style.opacity = "0%";
-    document.getElementById("opt-menu5").style.opacity = "0%";
-    document.getElementById("opt-menu6").style.opacity = "0%";
-    document.getElementById("opt-menu1").style.opacity = "100%";
+
+    if (!Bypass_menu_disp){
+      let prevTransition = document.getElementById("opt-menu1").style.transition;
+      document.getElementById("opt-menu1").style.transition = `${speeds[chosenSpeed][2]}s opacity ease-out`
+      document.getElementById("opt-menu1").style.opacity = "100%";
+      setTimeout(() => {
+        document.getElementById("opt-menu1").style.transition = prevTransition;
+      }, speeds[chosenSpeed][2]);}
+
     document.getElementById("Audio-react").style.filter =
       "blur(5px) brightness(60%)";
     document.getElementById("current-track").style.filter =
@@ -699,10 +707,11 @@ function openMENU() {
 function options(choice) {
   clearTimeout(MenuTimeout[5]);
   clearTimeout(MenuTimeout[6]);
+  clearTimeout(MenuTimeout[7]);
   document.getElementById("side").style.pointerEvents = "none";
   document.getElementsByClassName("menu-icns").forEach((elem) => {
     elem.style.pointerEvents = "none";
-    setTimeout(() => {
+    MenuTimeout[7] = setTimeout(() => {
       elem.style.pointerEvents = "all";
     }, parseInt(speeds[chosenSpeed][5]) + 400);
   });
@@ -737,11 +746,15 @@ function options(choice) {
             setTimeout(() => {
               setTimeout(() => {
                 document.getElementById("opt-preview").style.display = "none";
-                //document.getElementById('menu-folder').style.pointerEvents = 'all'
               }, 200);
 
               document.getElementById("options").style.left = "0%";
+              let prevTransition = document.getElementById("opt-menu2").style.transition;
+              document.getElementById("opt-menu2").style.transition = `opacity ${speeds[chosenSpeed][1]}s ease-out`
               document.getElementById("opt-menu2").style.opacity = "100%";
+              setTimeout(() => {
+                document.getElementById("opt-menu2").style.transition = prevTransition;
+              }, speeds[chosenSpeed][1]);
             }, 10);
           }, parseInt(speeds[chosenSpeed][5]));
         }
@@ -760,8 +773,11 @@ function options(choice) {
                 document.getElementById("opt-preview").style.display = "none";
                 //document.getElementById('opt-menu3').style.pointerEvents = 'all'
               }, 200);
-
               document.getElementById("options").style.left = "0%";
+              console.log(speeds[chosenSpeed][5]);
+              document.getElementById("opt-menu3").style.transition = `${
+                document.getElementById("opt-menu3").style.transition
+              }, opacity ${speeds[chosenSpeed[1]]} ease-out`;
               document.getElementById("opt-menu3").style.opacity = "100%";
             }, 10);
           }, parseInt(speeds[chosenSpeed][5]));
@@ -920,13 +936,12 @@ function NextSong(playlist, position, state, promise) {
   }
   if (playlist[position] !== undefined) {
     try {
-      return loadSound(
+      return new p5.SoundFile(
         playlist[position].url,
         promise ? promise : () => {},
         () => {
           corrupt = true;
-        }
-      );
+        })
     } catch (e) {
       console.log("there was an error");
       console.log(e);
@@ -967,14 +982,12 @@ function PrevSong(playlist, position, state, promise) {
     });
   }
   if (position > -1) {
-    return loadSound(
-      playlist[position].url,
+    return new p5.SoundFile(playlist[position].url,
       promise ? promise : () => {},
       () => {
         corrupt = true;
         goback = true;
-      }
-    );
+      })
   } else {
     console.log("did not passed", position, playlist.length - 1);
     return undefined;
@@ -1085,13 +1098,11 @@ function PlayShuffleSong(playlist, position, initialPos, difference, promise) {
     }
   }
   if (playlist[position] !== undefined) {
-    return loadSound(
-      playlist[position].url,
+    return new p5.SoundFile(playlist[position].url,
       promise ? promise : () => {},
       () => {
         corrupt = true;
-      }
-    );
+      })
   } else {
     console.log("did not passed", position, playlist.length - 1, playlist);
     return undefined;

@@ -2,6 +2,8 @@ let PORT = 8000;
 const ws = new WebSocket(`ws://localhost:${PORT}`);
 var data;
 
+document.visibilityState = 'visible'
+
 ws.addEventListener("message", (response) => {
   data = JSON.parse(response.data);
   PORT = data.PORT;
@@ -77,7 +79,6 @@ async function addPlaylist() {
   //console.log(document.getElementById('div-inp').files[0])
   try {
     var path = document.getElementById("div-inp").files[0].path;
-    console.log(path);
     path = path.replace(/\\/g, "/").split("/");
     path = path.filter((el) => el !== path[path.length - 1]);
     var link = "";
@@ -103,15 +104,19 @@ async function addPlaylist() {
               var filtered = FilterArray(
                 document.getElementById("current-track").childNodes
               );
-              //var selectorfiltered = FilterArray(document.getElementById('div-selector').childNodes);
-              //console.log(selectorfiltered)
               console.log(document.getElementById("current-track").childNodes);
               document
                 .getElementById("current-track")
                 .childNodes.forEach((elem) => {
                   if (elem.id === "child-track") {
-                    elem.style.transition = "opacity 0s ease-out";
-                    document.getElementById("current-track").removeChild(elem);
+                    elem.style.transition = "opacity .5s ease-out";
+                    setTimeout(() => {
+                      elem.style.opacity = "0%";
+                      elem.style.display = "none";
+                      document.getElementById("current-track").removeChild(elem);
+                      elem.remove()
+                      //document.getElementById("current-track").remove(elem)
+                    }, 500)
                   }
                 });
 
@@ -131,27 +136,10 @@ async function addPlaylist() {
                       document.getElementById("div-selector").removeChild(elem);
                     }, 100);
                   }
-
-                  /*setTimeout(() => {
-                                selectorfiltered.forEach((elem) => {
-                                    document.getElementById('div-selector').appendChild(elem)})
-                            }, 100)*/
                 });
             } catch (e) {
               console.error("could not filter array", e);
             }
-            /*fetchPlaylist().then((data) => {
-                        console.log(data)
-                        if(data === 'nothing'){
-                            console.log('Nothing')
-                        }
-                        else{
-                        try{
-                            ManageData(data)
-                            return data}
-                        catch(e){console.error(e)}}
-                    })
-                    .catch((e) => console.error(e))*/
             console.log("err2");
             document.getElementById("div-selector").style.opacity = "80%";
             document.getElementById("no-div-err").style.opacity = "0%";
@@ -193,41 +181,36 @@ async function deletePLCache() {
     PLnodes.forEach((elem) => {
       if (elem.nodeName !== "#text") {
         try {
+          elem.style.transition = 'opacity 0.2s'
           elem.style.opacity = "0%";
           setTimeout(() => {
+            elem.style.display = 'none'
             try {
               document.getElementById("div-selector").removeChild(elem);
             } catch (e) {
               console.log(e);
             }
-          }, 500);
+          }, 200);
         } catch (e) {
           console.log(e);
         }
       }
     });
   }
-  if (document.getElementById("current-track").childNodes.length > 1) {
-    var listnodes = document.getElementById("current-track").childNodes;
+    var listnodes = document.getElementById("current-track");
+    console.log('PREVIOUS LENGTH: ', listnodes.childNodes.length)
 
-    listnodes.forEach((elem) => {
-      if (elem.id === "child-track") {
-        try {
-          elem.style.opacity = "0%";
-          setTimeout(() => {
-            try {
-              document.getElementById("current-track").removeChild(elem);
-            } catch (e) {
-              console.log(e);
-            }
-          }, 500);
-        } catch (e) {
-          console.log(e);
-        }
+    /*let prevTransition = document.getElementById('current-track').style.transition
+    document.getElementById('current-track').style.transition = `opacity 0.2s ease-out`
+    document.getElementById('current-track').style.opacity = '0%'*/
+    //setTimeout(() => {
+      while(listnodes.lastElementChild){
+        document.getElementById("current-track").removeChild(listnodes.lastElementChild);
       }
-    });
-  }
-  //console.log(document.getElementById('div-selector').childNodes)
+      console.log('NEW LENGTH: ', listnodes.childNodes.length)
+      /*document.getElementById('current-track').style.opacity = '100%'
+      document.getElementById('current-track').style.transition = prevTransition*/
+    //}, 200)
 }
 
 function FilterArray(array) {
@@ -243,9 +226,6 @@ function FilterArray(array) {
 }
 
 function deldiv(nbr, link) {
-  //console.log(nbr, document.getElementById(`child-div-${nbr}`).childNodes)
-  //console.log(document.getElementById('div-selector').childNodes)
-  //console.log(document.getElementById(`child-div-${nbr}`))
   fetch(`http://localhost:${PORT}/delPath?link=${link}`, {
     method: "GET",
     headers: {
@@ -258,7 +238,6 @@ function deldiv(nbr, link) {
           {
             document.getElementById(`child-div-${nbr}`).style.opacity = "0%";
             setTimeout(() => {
-              //console.log(document.getElementById(`child-div-${nbr}`))
               document.getElementById(`child-div-${nbr}`).remove();
               document.getElementById("Refresh").click();
 
@@ -423,13 +402,26 @@ function getFullDataNode(raw) {
 function ManageData(data) {
   //console.log(data)
   //console.log(data[0])
-  //console.log(data)
-  if (data[1].length > 0) {
-    //console.log('err0')
+
+  var paths_count = 0
+  if(data[0].length == 0){
+    document.getElementById('div-selector').childNodes.forEach((elem) => {
+        if(elem.id.includes('child-div')){
+            paths_count++
+        }
+    })
+  }
+
+  if(paths_count > 0){
+    console.log('higher')
+  }
+
+  console.log(paths_count, data[1].length)
+  if (data[0].length > 0 || data[1].length > paths_count) {
     var iter = 0;
     data[1].forEach((link) => {
       iter++;
-      var Path = link.split("/");
+      var Path = link.replace(/\\/g, "/").split("/");
       const tempPath = link;
 
       const choicetxt = document.createElement("h2");
@@ -457,7 +449,6 @@ function ManageData(data) {
       const delicon = document.createElement("img");
       delicon.src = "./Addons/icons/delete.png";
       const tempcount = iter;
-      //console.log(tempcount)
       delicon.onclick = () => {
         deldiv(tempcount, tempPath);
       };
@@ -478,7 +469,6 @@ function ManageData(data) {
       div.appendChild(choicebtn);
 
       document.getElementById("div-selector").appendChild(div);
-      //console.log(document.getElementById('div-selector').childNodes)
     });
     var altiter = 0;
     data[0].forEach((elem) => {
@@ -497,10 +487,11 @@ function ManageData(data) {
       }, 100);
     });
   } else {
+    if(data[1].length == 0){
     // console.log('err1')
     document.getElementById("no-div-err").style.opacity = "80%";
     document.getElementById("div-set-filter").style.opacity = "0%";
-    document.getElementById("div-selector").style.opacity = "0%";
+    document.getElementById("div-selector").style.opacity = "0%";}
   }
 }
 
