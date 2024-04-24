@@ -1,7 +1,8 @@
-<img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img>
-# OverStudio
+<p align="center" width="300" style="margin-bottom:0"><img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img></p>
 
-Listen to music with style
+# <p align="center">OverStudio</p>
+
+<p align="center">Listen to music with style</p>
 
 
 
