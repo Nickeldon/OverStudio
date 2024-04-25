@@ -632,7 +632,8 @@ function openMENU(Bypass_menu_disp) {
   document.getElementById("opt-menu4").style.opacity = "0%";
   document.getElementById("opt-menu5").style.opacity = "0%";
   document.getElementById("opt-menu6").style.opacity = "0%";
-  document.getElementById("opt-menu6-child-container").style.willChange = "unset";
+  document.getElementById("opt-menu6-child-container").style.willChange =
+    "unset";
   document.getElementById("div-selector").style.willChange = "unset";
   if (Bypass_menu_disp)
     document.getElementById("opt-menu1").style.opacity = "0%";
@@ -748,7 +749,8 @@ function options(choice) {
           document.getElementById("opt-preview").style.opacity = "0%";
           setTimeout(() => {
             document.getElementById("opt-menu2").style.display = "block";
-            document.getElementById("div-selector").style.willChange = "scroll-position";
+            document.getElementById("div-selector").style.willChange =
+              "scroll-position";
             setTimeout(() => {
               setTimeout(() => {
                 document.getElementById("opt-preview").style.display = "none";
@@ -873,7 +875,9 @@ function options(choice) {
           document.getElementById("opt-preview").style.opacity = "0%";
           setTimeout(() => {
             document.getElementById("opt-menu6").style.display = "block";
-            document.getElementById("opt-menu6-child-container").style.willChange = "scroll-position";
+            document.getElementById(
+              "opt-menu6-child-container"
+            ).style.willChange = "scroll-position";
             setTimeout(() => {
               setTimeout(() => {
                 document.getElementById("opt-preview").style.display = "none";
