@@ -218,7 +218,7 @@ app.get("/addPL", (req, res, next) => {
             path.resolve(PlaylistURL).replace(/\\/g, "/"),
           ],
           fonts: [...fontarray],
-          settings: {...MasterSettings}
+          MasterSettings: {...MasterSettings}
         };
         const CurrentTime = new Date().toUTCString();
         fs.appendFileSync(

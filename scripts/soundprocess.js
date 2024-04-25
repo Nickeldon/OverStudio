@@ -816,8 +816,6 @@ document.getElementById("timeslide").addEventListener("change", () => {
 var endedTimeout
 
 function createEndedListener() {
-  clearTimeout(endedTimeout)
-  endedTimeout = setTimeout(() => {
     document.getElementById("timeslide").value = 0;
     if (!audio._paused) {
       if (plpos >= playlist.length - 1) {
@@ -859,7 +857,6 @@ function createEndedListener() {
         clearTimeout(timeout);
       }
     }
-  }, 200)
 }
 
 function loaded() {
