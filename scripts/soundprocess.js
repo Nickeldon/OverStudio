@@ -683,7 +683,7 @@ next.addEventListener("click", () => {
           }
           break;
 
-        case ("shuffle"):
+        case "shuffle":
           {
             if (started) {
               console.log("CLICKED NEXT SHUFFLE");
@@ -709,14 +709,14 @@ next.addEventListener("click", () => {
                     plpos = poshistory[poshistory.indexOf(plpos) + 1];
                   }
                 }
-                if(ShuffleSmartEnabled) getRandomPos();
+                if (ShuffleSmartEnabled) getRandomPos();
                 else {
-                ipos = plpos;
-                while (plpos === ipos) {
-                  plpos = Math.floor(Math.random() * playlist.length);
+                  ipos = plpos;
+                  while (plpos === ipos) {
+                    plpos = Math.floor(Math.random() * playlist.length);
+                  }
+                  poshistory = [plpos];
                 }
-                poshistory = [plpos];
-              }
               }
 
               diffpos = plpos - ipos;
@@ -796,10 +796,14 @@ prev.addEventListener("click", () => {
   if (plpos > 0 && started) {
     let ipos = plpos;
     let shuffleBack = false;
-    if(poshistory.length > 0 && poshistory[poshistory.indexOf(plpos) - 1]&& ShuffleSmartEnabled){
-      plpos = poshistory[poshistory.indexOf(plpos) - 1]
-      shuffleBack = true
-    }else plpos--
+    if (
+      poshistory.length > 0 &&
+      poshistory[poshistory.indexOf(plpos) - 1] &&
+      ShuffleSmartEnabled
+    ) {
+      plpos = poshistory[poshistory.indexOf(plpos) - 1];
+      shuffleBack = true;
+    } else plpos--;
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
     if (!audio.isPlaying()) state = "paused";
@@ -809,14 +813,22 @@ prev.addEventListener("click", () => {
     delete audio;*/
     //audio = null;
     started = false;
-    PrevSong(audio, playlist, plpos, state, () => {
-      started = true;
-      manageAudioData();
-      audio.play();
-      if (state === "paused") {
-        audio.pause();
-      }
-    }, shuffleBack, ipos);
+    PrevSong(
+      audio,
+      playlist,
+      plpos,
+      state,
+      () => {
+        started = true;
+        manageAudioData();
+        audio.play();
+        if (state === "paused") {
+          audio.pause();
+        }
+      },
+      shuffleBack,
+      ipos
+    );
     const timeout = setTimeout(() => {
       document.getElementById(
         "Blob-Reactor-Obj"

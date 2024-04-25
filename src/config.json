@@ -3,9 +3,11 @@
     "links": [],
     "fonts": [],
     "MasterSettings": {
-      "HardwareAcceleration": "true",
-      "isDev": "false",
-      "enableTray": "true"
+      "HardwareAcceleration": true,
+      "isDev": false,
+      "enableTray": true,
+      "enableAutoUpdate": true,
+      "resetLogAtStartup": true
     }
   }
 }

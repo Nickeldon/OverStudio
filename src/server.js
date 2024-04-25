@@ -5,7 +5,6 @@ const cors = require("cors");
 const app = express();
 let PORT = 8000;
 const path = require("path");
-const Updater = require("auto-git-update");
 var server;
 var PlaylistURL;
 const YoutubeParser = require("youtube-sr");
@@ -166,7 +165,12 @@ app.get("/addPL", (req, res, next) => {
       var linkarray = [];
       if (object.meta.links && object.meta.links.length > 0) {
         //console.log(object.meta.links, path.resolve(PlaylistURL))
-        if (!verifIfExist(object.meta.links, path.resolve(PlaylistURL).replace(/\\/g, "/"))) {
+        if (
+          !verifIfExist(
+            object.meta.links,
+            path.resolve(PlaylistURL).replace(/\\/g, "/")
+          )
+        ) {
           object.meta.links.forEach((elem) => {
             if (path.resolve(elem) !== path.resolve(PlaylistURL)) {
               linkarray.push(elem.replace(/\\/g, "/"));
@@ -200,16 +204,18 @@ app.get("/addPL", (req, res, next) => {
         //console.log(object)
       } else {
         let fontarray;
-        let MasterSettings
+        let MasterSettings;
         try {
           fontarray = JSON.parse(object.meta.fonts);
           settingsarray = JSON.parse(object.meta.settings);
         } catch (e) {
           fontarray = [];
           MasterSettings = {
-            "HardwareAcceleration": "true",
-            "isDev": "false",
-            "enableTray": "true"
+            HardwareAcceleration: true,
+            isDev: false,
+            enableTray: true,
+            enableAutoUpdate: true,
+            resetLogAtStartup: false
           };
         }
         object.meta = {
@@ -218,7 +224,7 @@ app.get("/addPL", (req, res, next) => {
             path.resolve(PlaylistURL).replace(/\\/g, "/"),
           ],
           fonts: [...fontarray],
-          MasterSettings: {...MasterSettings}
+          MasterSettings: { ...MasterSettings },
         };
         const CurrentTime = new Date().toUTCString();
         fs.appendFileSync(
@@ -322,7 +328,6 @@ app.get("/delPath", (req, res, next) => {
 });
 
 app.get("/ParseLinks", (req, res, next) => {
-
   var jsonPL, savedPL;
   try {
     jsonPL = fs.readFileSync(__dirname + "/config.json");
@@ -464,35 +469,7 @@ app.get("/ParseLinks", (req, res, next) => {
 });
 
 app.get("/AutoUpdater", (req, res, next) => {
-  const CurrentTime = new Date().toUTCString();
-  fs.appendFileSync(
-    __dirname + "/log.txt",
-    "\n[" + CurrentTime + "] => " + "Received Auto Update Request \n"
-  );
-  const config = {
-    repository: "https://github.com/Nickeldon/OverStudio",
-    fromReleases: true,
-    tempLocation: __dirname + "../temp",
-    ignoreFiles: [__dirname + "../electron.js"],
-    //executeOnComplete: __dirname  + '../scripts/Reboot.bat',
-    exitOnComplete: true,
-  };
-
-  try {
-    const updater = new Updater(config);
-    updater.autoUpdate();
-  } catch (e) {
-    const CurrentTime = new Date().toUTCString();
-    fs.appendFileSync(
-      __dirname + "/log.txt",
-      "\n[" +
-        CurrentTime +
-        "] => " +
-        "Something Wrong Happened during the Autoupdate \n" +
-        JSON.stringify(e) +
-        "\n\n"
-    );
-  }
+  require("./update").gitUpdate();
 });
 
 app.get("/getBackgrounds", (req, res, next) => {

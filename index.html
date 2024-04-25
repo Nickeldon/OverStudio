@@ -452,19 +452,21 @@
         <h1
           style="
             text-align: left;
-            font-size: 55px;
-            margin-left: 100px;
-            margin-top: 100px;
+            font-size: 300px;
+            margin-left: -40px;
+            margin-top: -100px;
             font-family: PS, sans-serif;
             color: black;
             width: 70%;
+            height:70%;
+            opacity:50%;
             filter: invert(50%);
-            text-shadow: rgb(255, 55, 0) 1px 0 10px;
+            text-shadow: rgb(255, 55, 0) 20px -20px 90px;
             pointer-events: none;
             user-select: none;
           "
         >
-          Equalizer
+          EQ
         </h1>
 
         <div
@@ -737,7 +739,9 @@
                 if(document.getElementById('eq-pres-ch').style.height !== '80%'){
                     document.getElementById('eq-pres-ch').style.height = '80%';
                     document.getElementById('draggable').style.display = 'none';
+                    document.getElementById('eq-pres-ch').style.willChange = 'scroll-position';
                 } else {
+                    document.getElementById('eq-pres-ch').style.willChange = 'unset';
                     document.getElementById('eq-pres-ch').style.height = '0%';
                     document.getElementById('draggable').style.display = 'block';
                 }

@@ -49,7 +49,6 @@ animationSpeeds(speeds[chosenSpeed]);
 
 document.getElementById("anim-txt0").innerHTML = chosenSpeed;
 
-
 var bootsoundbool = localStorage.getItem("Sound_boot") || "true";
 if (bootsoundbool == "false") bootsoundbool = false;
 else bootsoundbool = true;
@@ -388,7 +387,7 @@ if (!emptyreload) {
       setTimeout(() => {
         document.getElementById("splash-scr").style.display = "none";
         completesplash = true;
-      }, 300);
+      }, 500);
     }, 1000);
   };
 } else {
@@ -633,6 +632,8 @@ function openMENU(Bypass_menu_disp) {
   document.getElementById("opt-menu4").style.opacity = "0%";
   document.getElementById("opt-menu5").style.opacity = "0%";
   document.getElementById("opt-menu6").style.opacity = "0%";
+  document.getElementById("opt-menu6-child-container").style.willChange = "unset";
+  document.getElementById("div-selector").style.willChange = "unset";
   if (Bypass_menu_disp)
     document.getElementById("opt-menu1").style.opacity = "0%";
   optprev.style.display = "block";
@@ -662,13 +663,17 @@ function openMENU(Bypass_menu_disp) {
       document.getElementById("eq-menu").style.display = "none";
     }, 1000);
 
-    if (!Bypass_menu_disp){
-      let prevTransition = document.getElementById("opt-menu1").style.transition;
-      document.getElementById("opt-menu1").style.transition = `${speeds[chosenSpeed][2]}s opacity ease-out`
+    if (!Bypass_menu_disp) {
+      let prevTransition =
+        document.getElementById("opt-menu1").style.transition;
+      document.getElementById(
+        "opt-menu1"
+      ).style.transition = `${speeds[chosenSpeed][2]}s opacity ease-out`;
       document.getElementById("opt-menu1").style.opacity = "100%";
       setTimeout(() => {
         document.getElementById("opt-menu1").style.transition = prevTransition;
-      }, speeds[chosenSpeed][2]);}
+      }, speeds[chosenSpeed][2]);
+    }
 
     document.getElementById("Audio-react").style.filter =
       "blur(5px) brightness(60%)";
@@ -743,17 +748,22 @@ function options(choice) {
           document.getElementById("opt-preview").style.opacity = "0%";
           setTimeout(() => {
             document.getElementById("opt-menu2").style.display = "block";
+            document.getElementById("div-selector").style.willChange = "scroll-position";
             setTimeout(() => {
               setTimeout(() => {
                 document.getElementById("opt-preview").style.display = "none";
               }, 200);
 
               document.getElementById("options").style.left = "0%";
-              let prevTransition = document.getElementById("opt-menu2").style.transition;
-              document.getElementById("opt-menu2").style.transition = `opacity ${speeds[chosenSpeed][1]}s ease-out`
+              let prevTransition =
+                document.getElementById("opt-menu2").style.transition;
+              document.getElementById(
+                "opt-menu2"
+              ).style.transition = `opacity ${speeds[chosenSpeed][1]}s ease-out`;
               document.getElementById("opt-menu2").style.opacity = "100%";
               setTimeout(() => {
-                document.getElementById("opt-menu2").style.transition = prevTransition;
+                document.getElementById("opt-menu2").style.transition =
+                  prevTransition;
               }, speeds[chosenSpeed][1]);
             }, 10);
           }, parseInt(speeds[chosenSpeed][5]));
@@ -863,6 +873,7 @@ function options(choice) {
           document.getElementById("opt-preview").style.opacity = "0%";
           setTimeout(() => {
             document.getElementById("opt-menu6").style.display = "block";
+            document.getElementById("opt-menu6-child-container").style.willChange = "scroll-position";
             setTimeout(() => {
               setTimeout(() => {
                 document.getElementById("opt-preview").style.display = "none";
@@ -942,7 +953,13 @@ function NextSong(audio, playlist, position, state, promise) {
         () => {
           corrupt = true;
         })*/
-        audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true});
+      audio.setPath(
+        playlist[position].url,
+        promise ? promise : () => {},
+        () => {
+          corrupt = true;
+        }
+      );
     } catch (e) {
       console.log("there was an error");
       console.log(e);
@@ -956,7 +973,7 @@ function NextSong(audio, playlist, position, state, promise) {
 
 function PrevSong(audio, playlist, position, state, promise, goback, initial) {
   let difference = position - initial;
-  if(!goback){
+  if (!goback) {
     if (!reversed) {
       let bottompos =
         document.getElementById("current-track").childNodes[3].style.top;
@@ -984,30 +1001,35 @@ function PrevSong(audio, playlist, position, state, promise, goback, initial) {
         }
       });
     }
-  } else{
-    if(!reversed){
-      document.getElementById('current-track').childNodes.forEach((elem) => {
-        if(elem.id === 'child-track'){
-        let ipos = elem.style.top 
-        let fpos = parseInt(ipos.replace('px', '')) + (150*(difference))
-        elem.style.top = `${fpos}px`}
-      })}
-      else{
-        try {
-          document.getElementById('current-track').childNodes.forEach((elem) => {
-          if(elem.id === 'child-track'){
-          let ipos = elem.style.top 
-          let fpos = parseInt(ipos.replace('px', '')) - (150*(difference))
-          elem.style.top = `${fpos}px`}
-        }) 
-        } catch (e) {
-          console.log(e)
+  } else {
+    if (!reversed) {
+      document.getElementById("current-track").childNodes.forEach((elem) => {
+        if (elem.id === "child-track") {
+          let ipos = elem.style.top;
+          let fpos = parseInt(ipos.replace("px", "")) + 150 * difference;
+          elem.style.top = `${fpos}px`;
         }
+      });
+    } else {
+      try {
+        document.getElementById("current-track").childNodes.forEach((elem) => {
+          if (elem.id === "child-track") {
+            let ipos = elem.style.top;
+            let fpos = parseInt(ipos.replace("px", "")) - 150 * difference;
+            elem.style.top = `${fpos}px`;
+          }
+        });
+      } catch (e) {
+        console.log(e);
       }
+    }
   }
-  
+
   if (position > -1) {
-    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true; goback = true});
+    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {
+      corrupt = true;
+      goback = true;
+    });
   } else {
     console.log("did not passed", position, playlist.length - 1);
     return undefined;
@@ -1094,7 +1116,14 @@ function MoveToCurrent(url, playlist) {
   }
 }
 
-function PlayShuffleSong(audio, playlist, position, initialPos, difference, promise) {
+function PlayShuffleSong(
+  audio,
+  playlist,
+  position,
+  initialPos,
+  difference,
+  promise
+) {
   if (!reversed) {
     document.getElementById("current-track").childNodes.forEach((elem) => {
       if (elem.id === "child-track") {
@@ -1122,7 +1151,9 @@ function PlayShuffleSong(audio, playlist, position, initialPos, difference, prom
       () => {
         corrupt = true;
       })*/
-    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true});
+    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {
+      corrupt = true;
+    });
   } else {
     console.log("did not passed", position, playlist.length - 1, playlist);
     return undefined;

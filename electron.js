@@ -23,6 +23,13 @@ function GenerateSpaces(num) {
   }
   return spaces;
 }
+function GenerateBars(num) {
+  let bars = "-";
+  for (let i = 0; i < num; i++) {
+    bars += "-";
+  }
+  return bars;
+}
 
 try {
   config = fs.readFileSync(__dirname + "/src/config.json");
@@ -34,10 +41,17 @@ try {
 try {
   require(__dirname + "/src/server");
   var date = new Date().toUTCString();
-  fs.writeFileSync(
-    __dirname + "/src/log.txt",
-    "[" + date + "] => " + "Back-End started \n\n"
-  );
+  if (config.meta.MasterSettings.resetLogAtStartup == true)
+    fs.writeFileSync(
+      __dirname + "/src/log.txt",
+      "[" + date + "] => " + "Back-End started \n\n"
+    );
+  else {
+    fs.appendFileSync(
+      __dirname + "/src/log.txt",
+      `\n\n${GenerateBars(76)}\n\n[` + date + "] => " + "Back-End started \n\n"
+    );
+  }
 } catch (e) {
   if (e.code == "MODULE_NOT_FOUND") {
     let reqModule = e.message.split("'")[1];
@@ -88,9 +102,9 @@ if (!instancelimit) {
     windowObj.loadFile(url.format(path.join(__dirname, "/index.html")));
 
     if (config) {
-      if (config.meta.MasterSettings.isDev == "true") {
+      if (config.meta.MasterSettings.isDev == true) {
         try {
-          if (config.meta.MasterSettings.isDev == "true") {
+          if (config.meta.MasterSettings.isDev == true) {
             windowObj.webContents.openDevTools();
           }
         } catch (e) {
@@ -135,8 +149,9 @@ if (!instancelimit) {
       return setTimeout(readyListener, 250);
     };
 
-    if(config.meta.MasterSettings.enableTray == "true"){
-      readyListener();}
+    if (config.meta.MasterSettings.enableTray == true) {
+      readyListener();
+    }
 
     function createTray() {
       if (process.platform === "win32") {
@@ -215,10 +230,10 @@ if (!instancelimit) {
     }
     if (config) {
       try {
-        if (config.meta.MasterSettings.HardwareAcceleration == "true") {
+        if (config.meta.MasterSettings.HardwareAcceleration == true) {
           app.disableHardwareAcceleration = false;
         } else if (config.meta.MasterSettings.HardwareAcceleration == "false") {
-          console.log("Hardware Acceleration Disabled")
+          console.log("Hardware Acceleration Disabled");
           app.disableHardwareAcceleration = true;
         }
       } catch (e) {
