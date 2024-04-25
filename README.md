@@ -16,7 +16,7 @@
 
 How to run OverStudio
 
-- Install the [latest release](https://github.com/Nickeldon/OverStudio/releases/tag/v3.6.0)
+- Install the [latest release](https://github.com/Nickeldon/OverStudio/releases/latest)
 
 - Extract the zip file
 
