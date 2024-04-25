@@ -26,9 +26,7 @@ var SETBypassBGScan = false;
 var PrevSpeed = BGspeed;
 var plpos = 0;
 
-let channels = {
-  ch1: null,
-};
+let audio = null
 
 let next, prev;
 let trackinplaylist;
@@ -156,7 +154,7 @@ function setup() {
   if (started) {
     try {
       if (playlist[plpos]) {
-        channels.ch1 = new p5.SoundFile(playlist[plpos].url, loaded, () => {
+        audio = new p5.SoundFile(playlist[plpos].url, loaded, () => {
           console.log("error", e);
         });
       }
@@ -234,10 +232,10 @@ volumeSlider.addEventListener("input", () => {
   } else {
     document.getElementById("vol-btn").src = "./Addons/icons/SVG/volume.svg";
   }
-  if (channels.ch1) {
-    if (channels.ch1.isLoaded()) {
+  if (audio) {
+    if (audio.isLoaded()) {
       if (release) {
-        channels.ch1.setVolume(volumeSlider.value / 20, 0.06, 0);
+        audio.setVolume(volumeSlider.value / 20, 0.06, 0);
       }
     }
   }
@@ -309,7 +307,7 @@ refreshbuttons.forEach((refresh) => {
       prevnul = false;
       //console.log(playlist)
       try {
-        channels.ch1 = loadSound(playlist[plpos].url, loaded);
+        audio = loadSound(playlist[plpos].url, loaded);
       } catch (e) {
         if (
           e.message !== "Cannot read properties of undefined (reading 'url')" &&
@@ -352,37 +350,37 @@ refreshbuttons.forEach((refresh) => {
         }
       }, 500);
     }
-    if (channels.ch1) {
+    if (audio) {
       let interval = setInterval(() => {
         if (playlist) {
           trackinplaylist = false;
-          if (playlist.length > 0 && channels.ch1) {
+          if (playlist.length > 0 && audio) {
             playlist.forEach((song) => {
-              if (song.url === channels.ch1.url) {
+              if (song.url === audio.url) {
                 trackinplaylist = true;
               }
             });
             if (!trackinplaylist) {
               console.log("not in playlist");
               plpos = 0;
-              if (channels.ch1.isLoaded()) channels.ch1.stop();
-              channels.ch1 = loadSound(playlist[plpos].url, loaded);
+              if (audio.isLoaded()) audio.stop();
+              audio = loadSound(playlist[plpos].url, loaded);
               let interval2 = setInterval(() => {
-                if (channels.ch1.isLoaded()) {
+                if (audio.isLoaded()) {
                   document.getElementById("refr-alt").click();
                   clearInterval(interval2);
                   manageAudioData();
-                  channels.ch1.play();
+                  audio.play();
                 }
               }, 10);
             }
           }
           //console.log(playlist)
           started = true;
-          if (channels.ch1.isLoaded()) {
+          if (audio.isLoaded()) {
             let verifyifload = setInterval(() => {
               if (ready) {
-                plpos = MoveToCurrent(channels.ch1.url, playlist);
+                plpos = MoveToCurrent(audio.url, playlist);
                 //console.log('playlist fetched')
                 clearInterval(verifyifload);
                 ready = false;
@@ -581,11 +579,12 @@ volbtn.addEventListener("click", () => {
 
 playpausebtn = document.getElementById("play-pause");
 playpausebtn.addEventListener("click", () => {
-  if (channels.ch1) {
+  if (audio) {
     if (Date.now() - timeoutplaypause > 50) {
       timeoutplaypause = Date.now();
-      PlayPause(channels.ch1);
-      //console.log(channels.ch1)
+      //console.log('CLICKED PLAYPAUSE BUTTON')
+      PlayPause(audio);
+      //console.log(audio)
     }
   }
 });
@@ -617,9 +616,9 @@ document.getElementById("shuffle").addEventListener("click", () => {
 
 navigator.mediaDevices.addEventListener("devicechange", () => {
   navigator.mediaDevices.enumerateDevices().then((devices) => {
-    if (channels.ch1) {
-      if (channels.ch1.isPlaying()) {
-        PlayPause(channels.ch1);
+    if (audio) {
+      if (audio.isPlaying()) {
+        PlayPause(audio);
         devices.forEach((device) => {
           if (device.kind === "audiooutput") console.log(device);
         });
@@ -641,20 +640,20 @@ next.addEventListener("click", () => {
               plpos++;
               document.getElementById("play-pause").style.opacity = "0%";
               document.getElementById("loading").style.opacity = "100%";
-              if (!channels.ch1.isPlaying()) state = "paused";
+              if (!audio.isPlaying()) state = "paused";
               else state = "playing";
-              channels.ch1.stop();
-              channels.ch1.dispose();
-              delete channels.ch1;
-              channels.ch1 = null;
+              audio.stop();
+              /*audio.dispose();
+              delete audio;
+              audio = null;*/
               started = false;
               ready = false;
-              channels.ch1 = NextSong(playlist, plpos, state, () => {
+              NextSong(audio, playlist, plpos, state, () => {
                 started = true;
                 ready = true;
                 manageAudioData();
-                channels.ch1.play();
-                if (state === "paused") channels.ch1.pause();
+                audio.play();
+                if (state === "paused") audio.pause();
               });
               const timeout = setTimeout(() => {
                 document.getElementById(
@@ -685,15 +684,16 @@ next.addEventListener("click", () => {
               diffpos = plpos - ipos;
               document.getElementById("play-pause").style.opacity = "0%";
               document.getElementById("loading").style.opacity = "100%";
-              if (!channels.ch1.isPlaying()) state = "paused";
+              if (!audio.isPlaying()) state = "paused";
               else state = "playing";
-              channels.ch1.stop();
-              channels.ch1.dispose();
-              delete channels.ch1;
-              channels.ch1 = null;
+              audio.stop();
+              //audio.dispose();
+              //delete audio;
+              //audio = null;
               started = false;
               ready = false;
-              channels.ch1 = PlayShuffleSong(
+              PlayShuffleSong(
+                audio,
                 playlist,
                 plpos,
                 ipos,
@@ -701,8 +701,8 @@ next.addEventListener("click", () => {
                 () => {
                   started = true;
                   manageAudioData();
-                  channels.ch1.play();
-                  if (state === "paused") channels.ch1.pause();
+                  audio.play();
+                  if (state === "paused") audio.pause();
                 }
               );
               const timeout = setTimeout(() => {
@@ -722,21 +722,27 @@ next.addEventListener("click", () => {
               pos = plpos;
               started = false;
               //ready = false
-              if (!channels.ch1.isPlaying()) state = "paused";
+              if (!audio.isPlaying()) state = "paused";
               else state = "playing";
               document.getElementById("play-pause").style.opacity = "0%";
               document.getElementById("loading").style.opacity = "100%";
-              channels.ch1.stop();
-              channels.ch1.dispose();
-              delete channels.ch1;
-              channels.ch1 = null;
-              channels.ch1 = loadSound(playlist[pos].url, () => {
+              audio.stop();
+              //audio.dispose();
+              //delete audio;
+              //audio = null;
+              audio.setPath(playlist[pos].url, () => {
                 started = true;
                 ready = true;
                 manageAudioData();
-                if (state === "paused") channels.ch1.pause();
-                elsetracks.channels.ch1.play();
-              });
+                audio.play();
+                if (state === "paused") audio.pause();})
+               /*audio = loadSound(playlist[pos].url, () => {
+                started = true;
+                ready = true;
+                manageAudioData();
+                if (state === "paused") audio.pause();
+                else tracks.audio.play();
+              });*/
             }
           }
           break;
@@ -748,6 +754,7 @@ next.addEventListener("click", () => {
     holdPL = false;
     let previousmode = PlayBackMode;
     PlayBackMode = "shuffle";
+    console.log('CLICKED NEXT SHUFFLE')
     next.click();
     PlayBackMode = previousmode;
   }
@@ -758,19 +765,19 @@ prev.addEventListener("click", () => {
     plpos--;
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
-    if (!channels.ch1.isPlaying()) state = "paused";
+    if (!audio.isPlaying()) state = "paused";
     else state = "playing";
-    channels.ch1.stop();
-    channels.ch1.dispose();
-    delete channels.ch1;
-    channels.ch1 = null;
+    audio.stop();
+    /*audio.dispose();
+    delete audio;*/
+    //audio = null;
     started = false;
-    channels.ch1 = PrevSong(playlist, plpos, state, () => {
+    PrevSong(audio, playlist, plpos, state, () => {
       started = true;
       manageAudioData();
-      channels.ch1.play();
+      audio.play();
       if (state === "paused") {
-        channels.ch1.pause();
+        audio.pause();
       }
     });
     const timeout = setTimeout(() => {
@@ -788,13 +795,13 @@ document.getElementById("timeslide").addEventListener("input", () => {
 });
 
 document.getElementById("timeslide").addEventListener("change", () => {
-  if (channels.ch1.isLoaded() && release) {
+  if (audio.isLoaded() && release) {
     release = false;
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
-    channels.ch1.jump(document.getElementById("timeslide").value);
+    audio.jump(document.getElementById("timeslide").value);
     let interval = setInterval(() => {
-      if (channels.ch1.isLoaded()) {
+      if (audio.isLoaded()) {
         follow = true;
         release = true;
         started = true;
@@ -806,58 +813,63 @@ document.getElementById("timeslide").addEventListener("change", () => {
   }
 });
 
+var endedTimeout
+
 function createEndedListener() {
-  document.getElementById("timeslide").value = 0;
-  if (!channels.ch1._paused) {
-    if (plpos >= playlist.length - 1) {
-      document.getElementById("Blob-Reactor-Obj").style.transition =
-        "all 1s ease-out";
-      document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
-
-      const timeout = setTimeout(() => {
-        document.getElementById(
-          "Blob-Reactor-Obj"
-        ).style.transition = `all ${BGspeed}s ease-out`;
-        PrevSpeed = BGspeed;
-      }, 1000);
-
-      clearTimeout(timeout);
-
-    } else {
-      console.log('NEXT ', started,
-      channels.ch1.isLoaded(),
-      !channels.ch1._paused,
-      release)
-      if (
-        started &&
-        channels.ch1.isLoaded() &&
-        !channels.ch1._paused &&
-        release
-      ) next.click();
-      
-      document.getElementById("Blob-Reactor-Obj").style.transition =
-        "all 1s ease-out";
-      document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
-
-      const timeout = setTimeout(() => {
-        document.getElementById(
-          "Blob-Reactor-Obj"
-        ).style.transition = `all ${BGspeed}s ease-out`;
-        PrevSpeed = BGspeed;
-      }, 1000);
-      clearTimeout(timeout);
+  clearTimeout(endedTimeout)
+  endedTimeout = setTimeout(() => {
+    document.getElementById("timeslide").value = 0;
+    if (!audio._paused) {
+      if (plpos >= playlist.length - 1) {
+        document.getElementById("Blob-Reactor-Obj").style.transition =
+          "all 1s ease-out";
+        document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
+  
+        const timeout = setTimeout(() => {
+          document.getElementById(
+            "Blob-Reactor-Obj"
+          ).style.transition = `all ${BGspeed}s ease-out`;
+          PrevSpeed = BGspeed;
+        }, 1000);
+  
+        clearTimeout(timeout);
+  
+      } else {
+        console.log('NEXT ', started,
+        audio.isLoaded(),
+        !audio._paused,
+        release, holdPL)
+        if (
+          started &&
+          audio.isLoaded() &&
+          !audio._paused &&
+          release
+        ) next.click();
+        
+        document.getElementById("Blob-Reactor-Obj").style.transition =
+          "all 1s ease-out";
+        document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
+  
+        const timeout = setTimeout(() => {
+          document.getElementById(
+            "Blob-Reactor-Obj"
+          ).style.transition = `all ${BGspeed}s ease-out`;
+          PrevSpeed = BGspeed;
+        }, 1000);
+        clearTimeout(timeout);
+      }
     }
-  }
+  }, 200)
 }
 
 function loaded() {
   try {
     if (started) {
       manageAudioData();
-      channels.ch1.setVolume(volumeSlider.value / 20);
-      channels.ch1.play();
-      channels.ch1.connect(eq);
-      if (state === "paused") channels.ch1.pause();
+      audio.setVolume(volumeSlider.value / 20);
+      audio.play();
+      audio.connect(eq);
+      if (state === "paused") audio.pause();
     }
   } catch (e) {
     console.log("not loaded");
@@ -865,7 +877,7 @@ function loaded() {
   }
 }
 
-window.addEventListener("keydown", (event) => {
+function keydownEvent(event) {
   let key;
   if (event.key.length === 1) {
     key = event.key.toLowerCase();
@@ -877,8 +889,8 @@ window.addEventListener("keydown", (event) => {
     switch (key) {
       case ".":
         {
-          if (channels.ch1) {
-            if (channels.ch1.isLoaded()) {
+          if (audio) {
+            if (audio.isLoaded()) {
               document.getElementById("timeslide").value =
                 parseInt(document.getElementById("timeslide").value) + 10;
               document
@@ -891,8 +903,8 @@ window.addEventListener("keydown", (event) => {
 
       case ",":
         {
-          if (channels.ch1) {
-            if (channels.ch1.isLoaded()) {
+          if (audio) {
+            if (audio.isLoaded()) {
               document.getElementById("timeslide").value =
                 document.getElementById("timeslide").value - 10;
               document
@@ -913,12 +925,14 @@ window.addEventListener("keydown", (event) => {
       case " ":
         {
           if (!holdPL) {
-            if (channels.ch1) {
-              if (channels.ch1.isLoaded()) {
+            if (audio) {
+              if (audio.isLoaded()) {
+                //console.log('CLICKED PLAYPAUSE SPACE')
                 playpausebtn.click();
               }
             }
           } else {
+            console.log('CLICKED PLAYPAUSE SPACE')
             next.click();
           }
         }
@@ -927,9 +941,10 @@ window.addEventListener("keydown", (event) => {
       case "ArrowDown":
         {
           resetIdleTimer();
-          if (channels.ch1) {
-            if (channels.ch1.isLoaded()) {
+          if (audio) {
+            if (audio.isLoaded()) {
               if (reversed) {
+                console.log('CLICKED PREV ARROW DOWN')
                 next.click();
               } else {
                 prev.click();
@@ -943,16 +958,18 @@ window.addEventListener("keydown", (event) => {
         {
           resetIdleTimer();
           if (!holdPL) {
-            if (channels.ch1) {
-              if (channels.ch1.isLoaded()) {
+            if (audio) {
+              if (audio.isLoaded()) {
                 if (reversed) {
                   prev.click();
                 } else {
+                  console.log('CLICKED NEXT ARROW UP')
                   next.click();
                 }
               }
             }
           } else {
+            console.log('CLICKED NEXT ARROW UP')
             next.click();
           }
         }
@@ -996,7 +1013,9 @@ window.addEventListener("keydown", (event) => {
         break;
     }
   }
-});
+}
+
+window.addEventListener("keydown", (event) => {keydownEvent(event)});
 
 function resetIdleTimer() {
   idle = 0;
@@ -1011,9 +1030,9 @@ document.getElementById(
 ).style.transition = `all ${BGspeed}s ease-out`;
 PrevSpeed = BGspeed;
 var trackinterval = setInterval(() => {
-  if (channels.ch1) {
+  if (audio) {
     try {
-      if (channels.ch1.isLoaded()) {
+      if (audio.isLoaded()) {
         clearInterval(trackinterval);
       }
     } catch (e) {
@@ -1025,17 +1044,18 @@ var trackinterval = setInterval(() => {
 let temptime, totalseconds, totaltime;
 
 function manageAudioData() {
-  if (channels.ch1) {
-    if (channels.ch1.isLoaded()) {
-      let duration = channels.ch1.duration();
-      temptime = Math.max(Math.floor(duration % 60), 0);
+  clearTimeout(endedTimeout)
+  if (audio) {
+    if (audio.isLoaded()) {
+      let duration = {value: audio.duration()};
+      temptime = Math.max(Math.floor(duration.value % 60), 0);
       totalseconds = temptime < 10 ? "0" + temptime : temptime.toString();
-      totaltime = Math.max(Math.floor(duration / 60), 0) + ":" + totalseconds;
+      totaltime = Math.max(Math.floor(duration.value / 60), 0) + ":" + totalseconds;
       document.getElementById("total-time").innerHTML = totaltime;
-      //channels.ch1.output.channelCount = 8
-      channels.ch1.setVolume(volumeSlider.value / 20);
-      channels.ch1.connect(eq);
-      //console.log(channels.ch1)
+      //audio.output.channelCount = 8
+      audio.setVolume(volumeSlider.value / 20);
+      audio.connect(eq);
+      //console.log(audio)
       try {
         document.getElementById("track-artist").innerHTML =
           playlist[plpos].artist || "Unknown";
@@ -1046,18 +1066,23 @@ function manageAudioData() {
         document.getElementById("track-artist").innerHTML = "Unknown";
         document.getElementById("track-name").innerHTML = "Unknown";
       }
-      //eq.process(channels.ch1)
+      //eq.process(audio)
 
-      channels.ch1.onended(createEndedListener);
+      endedTimeout = setTimeout(() => {
+        if (audio.isLoaded()) {
+          audio.onended(createEndedListener);
+        }
+      }, 200)
 
-      delete duration;
+      duration.value = null
+      delete duration.value;
     }
   }
 }
 
 function draw() {
   try {
-    if (channels.ch1) {
+    if (audio) {
       if (started && !holdPL) {
         let time,
           seconds,
@@ -1068,9 +1093,9 @@ function draw() {
           strokelem;
         vol = amplitude.getLevel();
 
-        if (channels.ch1.isLoaded()) {
-          let currentT = channels.ch1.currentTime();
-          let durationT = channels.ch1.duration();
+        if (audio.isLoaded()) {
+          let currentT = audio.currentTime();
+          let durationT = audio.duration();
           startloaddate = Date.now();
           document.getElementById("play-pause").style.opacity = "100%";
           document.getElementById("loading").style.opacity = "0%";
@@ -1078,16 +1103,14 @@ function draw() {
           seconds = time < 10 ? "0" + time : time.toString();
           if (timemode === "normal") {
             document.getElementById("current-time").innerHTML =
-              Math.max(Math.floor(currentT / 60), 0) + ":" + seconds;
+            Math.max(Math.floor(currentT / 60), 0) + ":" + seconds;
           } else {
             RemainingtimeSec = durationT - currentT;
             rmin = Math.floor(RemainingtimeSec / 60);
             rsec = Math.floor(RemainingtimeSec % 60);
             Remainingtime = "-" + rmin + ":" + (rsec < 10 ? "0" : "") + rsec;
 
-            if (Remainingtime === "-0:00") {
-              Remainingtime = "0:00";
-            }
+            if (Remainingtime == "-0:00") Remainingtime = "0:00";
 
             document.getElementById("current-time").innerHTML = Remainingtime;
           }
@@ -1121,7 +1144,7 @@ function draw() {
               ).style.transform = `scale(${vol * 10})`;
             }
           }
-          if (VisualMode == "ActiveReactor") {
+          /*if (VisualMode == "ActiveReactor") {
             if (
               document.getElementById("Blob-Reactor-Obj").style.display !==
                 "none" ||
@@ -1205,7 +1228,7 @@ function draw() {
             var p = new DustParticles(createVector(0, 0));
             particlesArray.push(p);
             amp = amplitude.getLevel() * 20;
-            if (!channels.ch1.isPlaying()) {
+            if (!audio.isPlaying()) {
               amp = 0;
             }
             //console.log(document.getElementById('imgReact').style.transform)
@@ -1247,8 +1270,6 @@ function draw() {
               document.getElementById("stroke").style.animation = "none";
             }
 
-            //console.log(particlesArray.length)
-
             for (var i = 0; i < particlesArray.length; i++) {
               if (!particlesArray[i].edges()) {
                 particlesArray[i].update(Math.ceil(amp * 2));
@@ -1258,7 +1279,7 @@ function draw() {
                 particlesArray.splice(i, 1);
               }
             }
-          }
+          }*/
           delete currentT;
           delete durationT;
           delete time;
@@ -1270,13 +1291,14 @@ function draw() {
         }
       } else {
         if (corrupt) {
-          if (channels.ch1.buffer === null || channels.ch1.duration() === 0) {
+          if (audio.buffer === null || audio.duration() === 0) {
             if (corrupt) {
-              //console.log(channels.ch1)
+              //console.log(audio)
               started = true;
               displayERR("corupted-file");
               if (!goback) {
                 if (plpos < playlist.length - 1) {
+                  console.log('CLICKED NEXT CORRUPT')
                   next.click();
                 } else {
                   if (playlist.length > 0) {
@@ -1312,15 +1334,16 @@ function draw() {
         }
         //console.log('not loaded')
       }
+    }else{
     }
   } catch (e) {
     console.log(e);
   }
 }
 
-let difference;
+let BGScanInterval = setInterval(() => {
+  let difference;
 
-setInterval(() => {
   if (!playlist) {
     SETBypassBGScan = true;
     difference = Date.now() - startloaddate;
@@ -1347,6 +1370,7 @@ setInterval(() => {
       SETBypassBGScan = false;
     }
   }
+  clearInterval(BGScanInterval)
 }, 1000);
 
 function ChangeBG() {

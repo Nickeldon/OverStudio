@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "links": [
+    ],
+    "fonts": [],
+    "MasterSettings": {
+      "HardwareAcceleration": "true",
+      "isDev": "false",
+      "enableTray": "true"
+    }
+  }
+}

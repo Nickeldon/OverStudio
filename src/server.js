@@ -123,7 +123,7 @@ app.get("/follow", (req, res, next) => {
   var playlist;
   try {
     playlist = res.json(
-      JSON.parse(fs.readFileSync(__dirname + "/saved_paths.json")).meta.links
+      JSON.parse(fs.readFileSync(__dirname + "/config.json")).meta.links
     );
   } catch (e) {
     res.json("Could not fetch data");
@@ -140,7 +140,7 @@ app.get("/addPL", (req, res, next) => {
   console.log("received call");
   var jsonPL;
   try {
-    jsonPL = fs.readFileSync(__dirname + "/saved_paths.json");
+    jsonPL = fs.readFileSync(__dirname + "/config.json");
     var object = JSON.parse(jsonPL);
   } catch (e) {
     console.error("Could not fetch data", e);
@@ -151,7 +151,7 @@ app.get("/addPL", (req, res, next) => {
     );
   }
   try {
-    PlaylistURL = JSON.parse(req.query.METADATA);
+    PlaylistURL = JSON.parse(req.query.METADATA).replace(/\\/g, "/");
   } catch (e) {
     console.error("Error while parsing", e);
     const CurrentTime = new Date().toUTCString();
@@ -161,22 +161,19 @@ app.get("/addPL", (req, res, next) => {
     );
   }
 
-  console.log(PlaylistURL, object.meta.links);
-
   if (PlaylistURL) {
-    console.log(PlaylistURL);
     if (verifyURIIntegrity(PlaylistURL)) {
       var linkarray = [];
       if (object.meta.links && object.meta.links.length > 0) {
         //console.log(object.meta.links, path.resolve(PlaylistURL))
-        if (!verifIfExist(object.meta.links, path.resolve(PlaylistURL))) {
+        if (!verifIfExist(object.meta.links, path.resolve(PlaylistURL).replace(/\\/g, "/"))) {
           object.meta.links.forEach((elem) => {
             if (path.resolve(elem) !== path.resolve(PlaylistURL)) {
-              linkarray.push(elem);
+              linkarray.push(elem.replace(/\\/g, "/"));
             }
           });
-          console.log(linkarray);
-          linkarray.push(path.resolve(PlaylistURL));
+          //console.log(linkarray);
+          linkarray.push(path.resolve(PlaylistURL).replace(/\\/g, "/"));
           object.meta.links = linkarray;
         } else {
           res.sendStatus(207);
@@ -203,10 +200,17 @@ app.get("/addPL", (req, res, next) => {
         //console.log(object)
       } else {
         let fontarray;
+        let MasterSettings
         try {
           fontarray = JSON.parse(object.meta.fonts);
+          settingsarray = JSON.parse(object.meta.settings);
         } catch (e) {
           fontarray = [];
+          MasterSettings = {
+            "HardwareAcceleration": "true",
+            "isDev": "false",
+            "enableTray": "true"
+          };
         }
         object.meta = {
           links: [
@@ -214,6 +218,7 @@ app.get("/addPL", (req, res, next) => {
             path.resolve(PlaylistURL).replace(/\\/g, "/"),
           ],
           fonts: [...fontarray],
+          settings: {...MasterSettings}
         };
         const CurrentTime = new Date().toUTCString();
         fs.appendFileSync(
@@ -246,7 +251,7 @@ app.get("/addPL", (req, res, next) => {
 
   try {
     fs.writeFileSync(
-      __dirname + "/saved_paths.json",
+      __dirname + "/config.json",
       JSON.stringify(object, null, 2)
     );
   } catch (e) {
@@ -263,7 +268,7 @@ app.get("/delPath", (req, res, next) => {
   try {
     const targetpath = req.query.link;
 
-    const json = fs.readFileSync(__dirname + "/saved_paths.json");
+    const json = fs.readFileSync(__dirname + "/config.json");
     var object = JSON.parse(json);
     const linkarray = object.meta.links;
     if (linkarray.indexOf(targetpath) !== 0) {
@@ -274,7 +279,7 @@ app.get("/delPath", (req, res, next) => {
     object.meta.links = linkarray;
     try {
       fs.writeFileSync(
-        __dirname + "/saved_paths.json",
+        __dirname + "/config.json",
         JSON.stringify(object, null, 2)
       );
     } catch (e) {
@@ -320,7 +325,7 @@ app.get("/ParseLinks", (req, res, next) => {
 
   var jsonPL, savedPL;
   try {
-    jsonPL = fs.readFileSync(__dirname + "/saved_paths.json");
+    jsonPL = fs.readFileSync(__dirname + "/config.json");
     savedPL = JSON.parse(jsonPL);
   } catch (e) {
     const CurrentTime = new Date().toUTCString();

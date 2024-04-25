@@ -1,5 +1,6 @@
 const electron = require("electron");
-const { app, BrowserWindow, contextBridge, Tray, Menu, nativeImage } = electron;
+const { app, BrowserWindow, contextBridge, Tray, Menu, nativeImage, dialog } =
+  electron;
 const url = require("url");
 const path = require("path");
 const electronIpcMain = require("electron").ipcMain;
@@ -8,7 +9,27 @@ const fs = require("fs");
 var size;
 var tempsize;
 var date;
+let config = null;
+let throwModuleError = {
+  status: false,
+  module: null,
+};
 //app.disableHardwareAcceleration = true
+
+function GenerateSpaces(num) {
+  let spaces = " ";
+  for (let i = 0; i < num; i++) {
+    spaces += " ";
+  }
+  return spaces;
+}
+
+try {
+  config = fs.readFileSync(__dirname + "/src/config.json");
+  config = JSON.parse(config);
+} catch (e) {
+  console.log(e);
+}
 
 try {
   require(__dirname + "/src/server");
@@ -18,6 +39,11 @@ try {
     "[" + date + "] => " + "Back-End started \n\n"
   );
 } catch (e) {
+  if (e.code == "MODULE_NOT_FOUND") {
+    let reqModule = e.message.split("'")[1];
+    throwModuleError.module = reqModule;
+    throwModuleError.status = true;
+  }
   console.log(e);
   //fs.writeFileSync(__dirname + '/src/error.log', '\n' + e)
 }
@@ -60,15 +86,23 @@ if (!instancelimit) {
       },
     });
     windowObj.loadFile(url.format(path.join(__dirname, "/index.html")));
-    try {
-      windowObj.webContents.openDevTools();
-    } catch (e) {
-      var date = new Date().toUTCString();
-      fs.writeFileSync(
-        __dirname + "/src/log.txt",
-        "[" + date + "] => " + JSON.stringify(e) + "\n\n"
-      );
+
+    if (config) {
+      if (config.meta.MasterSettings.isDev == "true") {
+        try {
+          if (config.meta.MasterSettings.isDev == "true") {
+            windowObj.webContents.openDevTools();
+          }
+        } catch (e) {
+          var date = new Date().toUTCString();
+          fs.writeFileSync(
+            __dirname + "/src/log.txt",
+            "[" + date + "] => " + JSON.stringify(e) + "\n\n"
+          );
+        }
+      }
     }
+
     windowObj.on("closed", () => {
       windowObj = null;
     });
@@ -101,7 +135,8 @@ if (!instancelimit) {
       return setTimeout(readyListener, 250);
     };
 
-    readyListener();
+    if(config.meta.MasterSettings.enableTray == "true"){
+      readyListener();}
 
     function createTray() {
       if (process.platform === "win32") {
@@ -163,7 +198,35 @@ if (!instancelimit) {
     if (process.platform !== "darwin") app.quit();
   });
 
-  app.on("ready", createWindow);
+  app.on("ready", () => {
+    if (throwModuleError.status) {
+      dialog.showMessageBoxSync({
+        type: "error",
+        title: "OverStudio Compile Error",
+        message: `Whoops!\nThe module '${throwModuleError.module}' is missing.`,
+        detail: `\nPlease install it by running 'npm i ${
+          throwModuleError.module
+        }' in the terminal.${GenerateSpaces(10)}\n\n`,
+        textWidth: 300,
+        icon: path.join(__dirname, "/Addons/logo/logowin.png"),
+        buttons: ["OK"],
+      });
+      process.exit(1);
+    }
+    if (config) {
+      try {
+        if (config.meta.MasterSettings.HardwareAcceleration == "true") {
+          app.disableHardwareAcceleration = false;
+        } else if (config.meta.MasterSettings.HardwareAcceleration == "false") {
+          console.log("Hardware Acceleration Disabled")
+          app.disableHardwareAcceleration = true;
+        }
+      } catch (e) {
+        app.disableHardwareAcceleration = false;
+      }
+    }
+    createWindow();
+  });
 
   electronIpcMain.on("window:minimize", () => {
     console.log("received request");

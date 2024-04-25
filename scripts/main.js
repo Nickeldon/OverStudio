@@ -898,7 +898,7 @@ function options(choice) {
   }, 10);
 }
 
-function NextSong(playlist, position, state, promise) {
+function NextSong(audio, playlist, position, state, promise) {
   if (!reversed) {
     document.getElementById("current-track").childNodes.forEach((elem) => {
       let toppos =
@@ -936,12 +936,13 @@ function NextSong(playlist, position, state, promise) {
   }
   if (playlist[position] !== undefined) {
     try {
-      return new p5.SoundFile(
+      /*return new p5.SoundFile(
         playlist[position].url,
         promise ? promise : () => {},
         () => {
           corrupt = true;
-        })
+        })*/
+        audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true});
     } catch (e) {
       console.log("there was an error");
       console.log(e);
@@ -953,7 +954,7 @@ function NextSong(playlist, position, state, promise) {
   }
 }
 
-function PrevSong(playlist, position, state, promise) {
+function PrevSong(audio, playlist, position, state, promise) {
   if (!reversed) {
     let bottompos =
       document.getElementById("current-track").childNodes[3].style.top;
@@ -982,12 +983,13 @@ function PrevSong(playlist, position, state, promise) {
     });
   }
   if (position > -1) {
-    return new p5.SoundFile(playlist[position].url,
+    /*return new p5.SoundFile(playlist[position].url,
       promise ? promise : () => {},
       () => {
         corrupt = true;
         goback = true;
-      })
+      })*/
+    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true; goback = true});
   } else {
     console.log("did not passed", position, playlist.length - 1);
     return undefined;
@@ -997,6 +999,7 @@ function PrevSong(playlist, position, state, promise) {
 function PlayPause(audio, state) {
   let btn = document.getElementById("play-pause");
   if (audio) {
+    console.log(audio.isPlaying());
     if (!audio.isPlaying()) {
       document.getElementById("state-track").innerHTML = "Now Playing";
       document.getElementById("disk").style.animationPlayState = "running";
@@ -1075,7 +1078,7 @@ function MoveToCurrent(url, playlist) {
   }
 }
 
-function PlayShuffleSong(playlist, position, initialPos, difference, promise) {
+function PlayShuffleSong(audio, playlist, position, initialPos, difference, promise) {
   if (!reversed) {
     document.getElementById("current-track").childNodes.forEach((elem) => {
       if (elem.id === "child-track") {
@@ -1098,11 +1101,12 @@ function PlayShuffleSong(playlist, position, initialPos, difference, promise) {
     }
   }
   if (playlist[position] !== undefined) {
-    return new p5.SoundFile(playlist[position].url,
+    /*return new p5.SoundFile(playlist[position].url,
       promise ? promise : () => {},
       () => {
         corrupt = true;
-      })
+      })*/
+    audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true});
   } else {
     console.log("did not passed", position, playlist.length - 1, playlist);
     return undefined;

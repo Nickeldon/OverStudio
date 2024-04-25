@@ -14,11 +14,11 @@
   "dependencies": {
     "auto-git-update": "^2.1.2",
     "cors": "^2.8.5",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "jsmediatags": "^3.9.7",
     "url": "^0.11.3",
     "ws": "^8.16.0",
-    "youtube-sr": "^4.3.10"
+    "youtube-sr": "^4.3.11"
   },
   "devDependencies": {
     "electron": "^30.0.0"

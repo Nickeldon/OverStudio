@@ -2,7 +2,7 @@ let PORT = 8000;
 const ws = new WebSocket(`ws://localhost:${PORT}`);
 var data;
 
-document.visibilityState = 'visible'
+document.visibilityState = "visible";
 
 ws.addEventListener("message", (response) => {
   data = JSON.parse(response.data);
@@ -13,7 +13,6 @@ ws.addEventListener("message", (response) => {
 var paths = [];
 var finalArray = [];
 var reversed = false;
-//console.log(localStorage.getItem('reversed'))
 var reversed = /true/.test(localStorage.getItem("reversed")) || false;
 localStorage.setItem("reversed", reversed);
 var ready = false;
@@ -76,7 +75,6 @@ function shuffleArray(array) {
 
 async function addPlaylist() {
   var response = "ok";
-  //console.log(document.getElementById('div-inp').files[0])
   try {
     var path = document.getElementById("div-inp").files[0].path;
     path = path.replace(/\\/g, "/").split("/");
@@ -85,7 +83,6 @@ async function addPlaylist() {
     path.forEach((segm) => {
       link += segm + "/";
     });
-    console.log(link);
     try {
       const res = await fetch(
         `http://localhost:${PORT}/addPL?METADATA=${JSON.stringify(link)}`,
@@ -113,10 +110,11 @@ async function addPlaylist() {
                     setTimeout(() => {
                       elem.style.opacity = "0%";
                       elem.style.display = "none";
-                      document.getElementById("current-track").removeChild(elem);
-                      elem.remove()
-                      //document.getElementById("current-track").remove(elem)
-                    }, 500)
+                      document
+                        .getElementById("current-track")
+                        .removeChild(elem);
+                      elem.remove();
+                    }, 500);
                   }
                 });
 
@@ -144,7 +142,6 @@ async function addPlaylist() {
             document.getElementById("div-selector").style.opacity = "80%";
             document.getElementById("no-div-err").style.opacity = "0%";
             document.getElementById("div-set-filter").style.opacity = "30%";
-            //paths.push(path)
           }
           break;
 
@@ -170,7 +167,6 @@ async function addPlaylist() {
     console.log(e);
   }
   document.getElementById("div-inp").value = null;
-  //console.log(response)
   return response;
 }
 
@@ -181,10 +177,10 @@ async function deletePLCache() {
     PLnodes.forEach((elem) => {
       if (elem.nodeName !== "#text") {
         try {
-          elem.style.transition = 'opacity 0.2s'
+          elem.style.transition = "opacity 0.2s";
           elem.style.opacity = "0%";
           setTimeout(() => {
-            elem.style.display = 'none'
+            elem.style.display = "none";
             try {
               document.getElementById("div-selector").removeChild(elem);
             } catch (e) {
@@ -197,20 +193,12 @@ async function deletePLCache() {
       }
     });
   }
-    var listnodes = document.getElementById("current-track");
-    console.log('PREVIOUS LENGTH: ', listnodes.childNodes.length)
-
-    /*let prevTransition = document.getElementById('current-track').style.transition
-    document.getElementById('current-track').style.transition = `opacity 0.2s ease-out`
-    document.getElementById('current-track').style.opacity = '0%'*/
-    //setTimeout(() => {
-      while(listnodes.lastElementChild){
-        document.getElementById("current-track").removeChild(listnodes.lastElementChild);
-      }
-      console.log('NEW LENGTH: ', listnodes.childNodes.length)
-      /*document.getElementById('current-track').style.opacity = '100%'
-      document.getElementById('current-track').style.transition = prevTransition*/
-    //}, 200)
+  var listnodes = document.getElementById("current-track");
+  while (listnodes.lastElementChild) {
+    document
+      .getElementById("current-track")
+      .removeChild(listnodes.lastElementChild);
+  }
 }
 
 function FilterArray(array) {
@@ -310,7 +298,6 @@ function deldiv(nbr, link) {
 }
 
 function getFullDataNode(raw) {
-  //console.log(raw)
   const FileFormat = raw.File_format;
   const main = document.createElement("div");
   main.className = "child-track";
@@ -403,20 +390,20 @@ function ManageData(data) {
   //console.log(data)
   //console.log(data[0])
 
-  var paths_count = 0
-  if(data[0].length == 0){
-    document.getElementById('div-selector').childNodes.forEach((elem) => {
-        if(elem.id.includes('child-div')){
-            paths_count++
-        }
-    })
+  var paths_count = 0;
+  if (data[0].length == 0) {
+    document.getElementById("div-selector").childNodes.forEach((elem) => {
+      if (elem.id.includes("child-div")) {
+        paths_count++;
+      }
+    });
   }
 
-  if(paths_count > 0){
-    console.log('higher')
+  if (paths_count > 0) {
+    console.log("higher");
   }
 
-  console.log(paths_count, data[1].length)
+  console.log(paths_count, data[1].length);
   if (data[0].length > 0 || data[1].length > paths_count) {
     var iter = 0;
     data[1].forEach((link) => {
@@ -487,11 +474,12 @@ function ManageData(data) {
       }, 100);
     });
   } else {
-    if(data[1].length == 0){
-    // console.log('err1')
-    document.getElementById("no-div-err").style.opacity = "80%";
-    document.getElementById("div-set-filter").style.opacity = "0%";
-    document.getElementById("div-selector").style.opacity = "0%";}
+    if (data[1].length == 0) {
+      // console.log('err1')
+      document.getElementById("no-div-err").style.opacity = "80%";
+      document.getElementById("div-set-filter").style.opacity = "0%";
+      document.getElementById("div-selector").style.opacity = "0%";
+    }
   }
 }
 
