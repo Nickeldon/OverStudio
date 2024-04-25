@@ -92,7 +92,7 @@ How to run OverStudio
 ### Recommended Requirements
 - Intel 7th gen or sooner or AMD Ryzen series processors
 
-- At least 8GB ram
+- At least 4GB ram
 
 - At least 200MB of storage
 
