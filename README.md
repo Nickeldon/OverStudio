@@ -68,6 +68,17 @@ How to run OverStudio
 
 - Press the option to switch between your desired Reactor speed
 
+</br>
+<b>Disable Hardware Acceleration / Enable Devlopper mode / Disable Tray Icon</b>
+
+- Go inside the application file and navigate into ``ressouces\app\src``
+  
+- Open the `config.json` file
+  
+- In the `MasterSettings` section change the parameter values to the desired ones
+
+- If OverStudio was already running, restart the application
+
 
 ## Notes
 
