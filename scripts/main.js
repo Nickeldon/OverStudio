@@ -954,41 +954,59 @@ function NextSong(audio, playlist, position, state, promise) {
   }
 }
 
-function PrevSong(audio, playlist, position, state, promise) {
-  if (!reversed) {
-    let bottompos =
-      document.getElementById("current-track").childNodes[3].style.top;
-    document.getElementById("current-track").childNodes.forEach((elem) => {
-      if (
-        elem.id === "child-track" &&
-        parseInt(bottompos.replace("px", "")) > 280
-      ) {
-        let ipos = elem.style.top;
-        let fpos = parseInt(ipos.replace("px", "")) - 150;
-        elem.style.top = `${fpos}px`;
+function PrevSong(audio, playlist, position, state, promise, goback, initial) {
+  let difference = position - initial;
+  if(!goback){
+    if (!reversed) {
+      let bottompos =
+        document.getElementById("current-track").childNodes[3].style.top;
+      document.getElementById("current-track").childNodes.forEach((elem) => {
+        if (
+          elem.id === "child-track" &&
+          parseInt(bottompos.replace("px", "")) > 280
+        ) {
+          let ipos = elem.style.top;
+          let fpos = parseInt(ipos.replace("px", "")) - 150;
+          elem.style.top = `${fpos}px`;
+        }
+      });
+    } else {
+      let toppos =
+        document.getElementById("current-track").childNodes[3].style.top;
+      document.getElementById("current-track").childNodes.forEach((elem) => {
+        if (
+          elem.id === "child-track" &&
+          parseInt(toppos.replace("px", "")) < 280
+        ) {
+          let ipos = elem.style.top;
+          let fpos = parseInt(ipos.replace("px", "")) + 150;
+          elem.style.top = `${fpos}px`;
+        }
+      });
+    }
+  } else{
+    if(!reversed){
+      document.getElementById('current-track').childNodes.forEach((elem) => {
+        if(elem.id === 'child-track'){
+        let ipos = elem.style.top 
+        let fpos = parseInt(ipos.replace('px', '')) + (150*(difference))
+        elem.style.top = `${fpos}px`}
+      })}
+      else{
+        try {
+          document.getElementById('current-track').childNodes.forEach((elem) => {
+          if(elem.id === 'child-track'){
+          let ipos = elem.style.top 
+          let fpos = parseInt(ipos.replace('px', '')) - (150*(difference))
+          elem.style.top = `${fpos}px`}
+        }) 
+        } catch (e) {
+          console.log(e)
+        }
       }
-    });
-  } else {
-    let toppos =
-      document.getElementById("current-track").childNodes[3].style.top;
-    document.getElementById("current-track").childNodes.forEach((elem) => {
-      if (
-        elem.id === "child-track" &&
-        parseInt(toppos.replace("px", "")) < 280
-      ) {
-        let ipos = elem.style.top;
-        let fpos = parseInt(ipos.replace("px", "")) + 150;
-        elem.style.top = `${fpos}px`;
-      }
-    });
   }
+  
   if (position > -1) {
-    /*return new p5.SoundFile(playlist[position].url,
-      promise ? promise : () => {},
-      () => {
-        corrupt = true;
-        goback = true;
-      })*/
     audio.setPath(playlist[position].url, promise ? promise : () => {}, () => {corrupt = true; goback = true});
   } else {
     console.log("did not passed", position, playlist.length - 1);
@@ -1064,8 +1082,6 @@ function MoveToCurrent(url, playlist) {
         childarray.push(elem);
       }
     });
-    //console.log(position)
-    //console.log('passed')
     array.forEach((elem) => {
       if (elem.id === "child-track") {
         let ipos = elem.style.top;

@@ -26,11 +26,13 @@ var SETBypassBGScan = false;
 var PrevSpeed = BGspeed;
 var plpos = 0;
 
-let audio = null
+let audio = null;
 
 let next, prev;
 let trackinplaylist;
 var amplitude;
+let poshistory = [];
+let ShuffleSmartEnabled = false;
 
 // p5.js AudioVisualizer global variables
 var fft;
@@ -332,6 +334,7 @@ refreshbuttons.forEach((refresh) => {
           //console.log('refreshed')
           ManageData(data);
           playlist = data[0];
+          poshistory = [];
         }
       });
     });
@@ -363,8 +366,11 @@ refreshbuttons.forEach((refresh) => {
             if (!trackinplaylist) {
               console.log("not in playlist");
               plpos = 0;
-              if (audio.isLoaded()) audio.stop();
-              audio = loadSound(playlist[plpos].url, loaded);
+              if (audio.isLoaded()) {
+                audio.stop();
+                audio.dispose();
+              }
+              audio = new p5.SoundFile(playlist[plpos].url, loaded);
               let interval2 = setInterval(() => {
                 if (audio.isLoaded()) {
                   document.getElementById("refr-alt").click();
@@ -381,6 +387,7 @@ refreshbuttons.forEach((refresh) => {
             let verifyifload = setInterval(() => {
               if (ready) {
                 plpos = MoveToCurrent(audio.url, playlist);
+                poshistory = [];
                 //console.log('playlist fetched')
                 clearInterval(verifyifload);
                 ready = false;
@@ -590,13 +597,22 @@ playpausebtn.addEventListener("click", () => {
 });
 
 document.getElementById("shuffle").addEventListener("click", () => {
+  poshistory = [];
   if (PlayBackMode === "linear") {
     PlayBackMode = "shuffle";
     document.getElementById("shuffle").style.transition = "transform 0s";
     document.getElementById("shuffle").style.transform = "rotate(0deg)";
     document.getElementById("shuffle").src = "./Addons/icons/SVG/shuffle.svg";
-  } else if (PlayBackMode === "shuffle") {
+  } else if (PlayBackMode === "shuffle" && !ShuffleSmartEnabled) {
+    PlayBackMode = "shuffle";
+    ShuffleSmartEnabled = true;
+    document.getElementById("shuffle").style.transition = "transform 0s";
+    document.getElementById("shuffle").style.transform = "rotate(0deg)";
+    document.getElementById("shuffle").src =
+      "./Addons/icons/SVG/shuffleSmart.svg";
+  } else if (PlayBackMode === "shuffle" && ShuffleSmartEnabled) {
     PlayBackMode = "loop";
+    ShuffleSmartEnabled = false;
     document.getElementById("shuffle").style.transition = "transform 0s";
     document.getElementById("shuffle").style.transform = "rotate(0deg)";
     document.getElementById("shuffle").src = "./Addons/icons/SVG/loop.svg";
@@ -636,6 +652,7 @@ next.addEventListener("click", () => {
       switch (PlayBackMode) {
         case "linear":
           {
+            poshistory = [];
             if (playlist[plpos + 1] && started) {
               plpos++;
               document.getElementById("play-pause").style.opacity = "0%";
@@ -666,19 +683,40 @@ next.addEventListener("click", () => {
           }
           break;
 
-        case "shuffle":
+        case ("shuffle"):
           {
             if (started) {
+              console.log("CLICKED NEXT SHUFFLE");
               let ipos;
               if (corrupt) {
                 corrupt = false;
                 ipos = plpos;
                 plpos = 0;
+                poshistory = [plpos];
               } else {
+                function getRandomPos() {
+                  ipos = plpos;
+                  if (!poshistory[poshistory.indexOf(plpos) + 1]) {
+                    while (plpos === ipos) {
+                      plpos = Math.floor(Math.random() * playlist.length);
+                    }
+                    if (poshistory.includes(plpos)) {
+                      getRandomPos();
+                    } else {
+                      poshistory.push(plpos);
+                    }
+                  } else {
+                    plpos = poshistory[poshistory.indexOf(plpos) + 1];
+                  }
+                }
+                if(ShuffleSmartEnabled) getRandomPos();
+                else {
                 ipos = plpos;
                 while (plpos === ipos) {
                   plpos = Math.floor(Math.random() * playlist.length);
                 }
+                poshistory = [plpos];
+              }
               }
 
               diffpos = plpos - ipos;
@@ -692,19 +730,12 @@ next.addEventListener("click", () => {
               //audio = null;
               started = false;
               ready = false;
-              PlayShuffleSong(
-                audio,
-                playlist,
-                plpos,
-                ipos,
-                diffpos,
-                () => {
-                  started = true;
-                  manageAudioData();
-                  audio.play();
-                  if (state === "paused") audio.pause();
-                }
-              );
+              PlayShuffleSong(audio, playlist, plpos, ipos, diffpos, () => {
+                started = true;
+                manageAudioData();
+                audio.play();
+                if (state === "paused") audio.pause();
+              });
               const timeout = setTimeout(() => {
                 document.getElementById(
                   "Blob-Reactor-Obj"
@@ -735,8 +766,9 @@ next.addEventListener("click", () => {
                 ready = true;
                 manageAudioData();
                 audio.play();
-                if (state === "paused") audio.pause();})
-               /*audio = loadSound(playlist[pos].url, () => {
+                if (state === "paused") audio.pause();
+              });
+              /*audio = loadSound(playlist[pos].url, () => {
                 started = true;
                 ready = true;
                 manageAudioData();
@@ -754,7 +786,7 @@ next.addEventListener("click", () => {
     holdPL = false;
     let previousmode = PlayBackMode;
     PlayBackMode = "shuffle";
-    console.log('CLICKED NEXT SHUFFLE')
+    console.log("CLICKED NEXT SHUFFLE");
     next.click();
     PlayBackMode = previousmode;
   }
@@ -762,7 +794,12 @@ next.addEventListener("click", () => {
 
 prev.addEventListener("click", () => {
   if (plpos > 0 && started) {
-    plpos--;
+    let ipos = plpos;
+    let shuffleBack = false;
+    if(poshistory.length > 0 && poshistory[poshistory.indexOf(plpos) - 1]&& ShuffleSmartEnabled){
+      plpos = poshistory[poshistory.indexOf(plpos) - 1]
+      shuffleBack = true
+    }else plpos--
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
     if (!audio.isPlaying()) state = "paused";
@@ -779,7 +816,7 @@ prev.addEventListener("click", () => {
       if (state === "paused") {
         audio.pause();
       }
-    });
+    }, shuffleBack, ipos);
     const timeout = setTimeout(() => {
       document.getElementById(
         "Blob-Reactor-Obj"
@@ -813,50 +850,49 @@ document.getElementById("timeslide").addEventListener("change", () => {
   }
 });
 
-var endedTimeout
+var endedTimeout;
 
 function createEndedListener() {
-    document.getElementById("timeslide").value = 0;
-    if (!audio._paused) {
-      if (plpos >= playlist.length - 1) {
-        document.getElementById("Blob-Reactor-Obj").style.transition =
-          "all 1s ease-out";
-        document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
-  
-        const timeout = setTimeout(() => {
-          document.getElementById(
-            "Blob-Reactor-Obj"
-          ).style.transition = `all ${BGspeed}s ease-out`;
-          PrevSpeed = BGspeed;
-        }, 1000);
-  
-        clearTimeout(timeout);
-  
-      } else {
-        console.log('NEXT ', started,
+  document.getElementById("timeslide").value = 0;
+  if (!audio._paused) {
+    if (plpos >= playlist.length - 1) {
+      document.getElementById("Blob-Reactor-Obj").style.transition =
+        "all 1s ease-out";
+      document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
+
+      const timeout = setTimeout(() => {
+        document.getElementById(
+          "Blob-Reactor-Obj"
+        ).style.transition = `all ${BGspeed}s ease-out`;
+        PrevSpeed = BGspeed;
+      }, 1000);
+
+      clearTimeout(timeout);
+    } else {
+      console.log(
+        "NEXT ",
+        started,
         audio.isLoaded(),
         !audio._paused,
-        release, holdPL)
-        if (
-          started &&
-          audio.isLoaded() &&
-          !audio._paused &&
-          release
-        ) next.click();
-        
-        document.getElementById("Blob-Reactor-Obj").style.transition =
-          "all 1s ease-out";
-        document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
-  
-        const timeout = setTimeout(() => {
-          document.getElementById(
-            "Blob-Reactor-Obj"
-          ).style.transition = `all ${BGspeed}s ease-out`;
-          PrevSpeed = BGspeed;
-        }, 1000);
-        clearTimeout(timeout);
-      }
+        release,
+        holdPL
+      );
+      if (started && audio.isLoaded() && !audio._paused && release)
+        next.click();
+
+      document.getElementById("Blob-Reactor-Obj").style.transition =
+        "all 1s ease-out";
+      document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
+
+      const timeout = setTimeout(() => {
+        document.getElementById(
+          "Blob-Reactor-Obj"
+        ).style.transition = `all ${BGspeed}s ease-out`;
+        PrevSpeed = BGspeed;
+      }, 1000);
+      clearTimeout(timeout);
     }
+  }
 }
 
 function loaded() {
@@ -929,7 +965,7 @@ function keydownEvent(event) {
               }
             }
           } else {
-            console.log('CLICKED PLAYPAUSE SPACE')
+            console.log("CLICKED PLAYPAUSE SPACE");
             next.click();
           }
         }
@@ -941,7 +977,7 @@ function keydownEvent(event) {
           if (audio) {
             if (audio.isLoaded()) {
               if (reversed) {
-                console.log('CLICKED PREV ARROW DOWN')
+                console.log("CLICKED PREV ARROW DOWN");
                 next.click();
               } else {
                 prev.click();
@@ -960,13 +996,13 @@ function keydownEvent(event) {
                 if (reversed) {
                   prev.click();
                 } else {
-                  console.log('CLICKED NEXT ARROW UP')
+                  console.log("CLICKED NEXT ARROW UP");
                   next.click();
                 }
               }
             }
           } else {
-            console.log('CLICKED NEXT ARROW UP')
+            console.log("CLICKED NEXT ARROW UP");
             next.click();
           }
         }
@@ -1012,7 +1048,9 @@ function keydownEvent(event) {
   }
 }
 
-window.addEventListener("keydown", (event) => {keydownEvent(event)});
+window.addEventListener("keydown", (event) => {
+  keydownEvent(event);
+});
 
 function resetIdleTimer() {
   idle = 0;
@@ -1041,13 +1079,14 @@ var trackinterval = setInterval(() => {
 let temptime, totalseconds, totaltime;
 
 function manageAudioData() {
-  clearTimeout(endedTimeout)
+  clearTimeout(endedTimeout);
   if (audio) {
     if (audio.isLoaded()) {
-      let duration = {value: audio.duration()};
+      let duration = { value: audio.duration() };
       temptime = Math.max(Math.floor(duration.value % 60), 0);
       totalseconds = temptime < 10 ? "0" + temptime : temptime.toString();
-      totaltime = Math.max(Math.floor(duration.value / 60), 0) + ":" + totalseconds;
+      totaltime =
+        Math.max(Math.floor(duration.value / 60), 0) + ":" + totalseconds;
       document.getElementById("total-time").innerHTML = totaltime;
       //audio.output.channelCount = 8
       audio.setVolume(volumeSlider.value / 20);
@@ -1069,9 +1108,9 @@ function manageAudioData() {
         if (audio.isLoaded()) {
           audio.onended(createEndedListener);
         }
-      }, 200)
+      }, 200);
 
-      duration.value = null
+      duration.value = null;
       delete duration.value;
     }
   }
@@ -1100,7 +1139,7 @@ function draw() {
           seconds = time < 10 ? "0" + time : time.toString();
           if (timemode === "normal") {
             document.getElementById("current-time").innerHTML =
-            Math.max(Math.floor(currentT / 60), 0) + ":" + seconds;
+              Math.max(Math.floor(currentT / 60), 0) + ":" + seconds;
           } else {
             RemainingtimeSec = durationT - currentT;
             rmin = Math.floor(RemainingtimeSec / 60);
@@ -1295,7 +1334,7 @@ function draw() {
               displayERR("corupted-file");
               if (!goback) {
                 if (plpos < playlist.length - 1) {
-                  console.log('CLICKED NEXT CORRUPT')
+                  console.log("CLICKED NEXT CORRUPT");
                   next.click();
                 } else {
                   if (playlist.length > 0) {
@@ -1331,7 +1370,7 @@ function draw() {
         }
         //console.log('not loaded')
       }
-    }else{
+    } else {
     }
   } catch (e) {
     console.log(e);
@@ -1367,7 +1406,7 @@ let BGScanInterval = setInterval(() => {
       SETBypassBGScan = false;
     }
   }
-  clearInterval(BGScanInterval)
+  clearInterval(BGScanInterval);
 }, 1000);
 
 function ChangeBG() {
