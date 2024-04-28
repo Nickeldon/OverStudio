@@ -12,7 +12,6 @@ let volumeSlider,
   value;
 var unlockkey = false;
 var prevnul,
-  rand,
   started = false;
 let isPlaying,
   release = true;
@@ -33,12 +32,15 @@ let trackinplaylist;
 var amplitude;
 let poshistory = [];
 let ShuffleSmartEnabled = false;
+let enableMediaSessionListener = false;
+let enableVolumeButtons = false
 
 // p5.js AudioVisualizer global variables
 var fft;
 var particlesArray = [];
 var themecolor = "#3773ff";
 var prevwidth, prevheight;
+
 
 // p5.js Equalizer global variables
 var customBands = JSON.parse(localStorage.getItem("customBands")) || {
@@ -622,12 +624,6 @@ document.getElementById("shuffle").addEventListener("click", () => {
     document.getElementById("shuffle").style.transform = "rotate(-90deg)";
     document.getElementById("shuffle").src = "./Addons/icons/SVG/linear.svg";
   }
-
-  if (rand) {
-    rand = false;
-  } else {
-    rand = true;
-  }
 });
 
 navigator.mediaDevices.addEventListener("devicechange", () => {
@@ -638,6 +634,7 @@ navigator.mediaDevices.addEventListener("devicechange", () => {
         devices.forEach((device) => {
           if (device.kind === "audiooutput") console.log(device);
         });
+        displayERR("Device-changed")
       }
     }
   });
@@ -660,9 +657,6 @@ next.addEventListener("click", () => {
               if (!audio.isPlaying()) state = "paused";
               else state = "playing";
               audio.stop();
-              /*audio.dispose();
-              delete audio;
-              audio = null;*/
               started = false;
               ready = false;
               NextSong(audio, playlist, plpos, state, () => {
@@ -686,7 +680,6 @@ next.addEventListener("click", () => {
         case "shuffle":
           {
             if (started) {
-              console.log("CLICKED NEXT SHUFFLE");
               let ipos;
               if (corrupt) {
                 corrupt = false;
@@ -702,6 +695,7 @@ next.addEventListener("click", () => {
                     }
                     if (poshistory.includes(plpos)) {
                       getRandomPos();
+                      return 0
                     } else {
                       poshistory.push(plpos);
                     }
@@ -725,9 +719,6 @@ next.addEventListener("click", () => {
               if (!audio.isPlaying()) state = "paused";
               else state = "playing";
               audio.stop();
-              //audio.dispose();
-              //delete audio;
-              //audio = null;
               started = false;
               ready = false;
               PlayShuffleSong(audio, playlist, plpos, ipos, diffpos, () => {
@@ -758,9 +749,6 @@ next.addEventListener("click", () => {
               document.getElementById("play-pause").style.opacity = "0%";
               document.getElementById("loading").style.opacity = "100%";
               audio.stop();
-              //audio.dispose();
-              //delete audio;
-              //audio = null;
               audio.setPath(playlist[pos].url, () => {
                 started = true;
                 ready = true;
@@ -768,13 +756,6 @@ next.addEventListener("click", () => {
                 audio.play();
                 if (state === "paused") audio.pause();
               });
-              /*audio = loadSound(playlist[pos].url, () => {
-                started = true;
-                ready = true;
-                manageAudioData();
-                if (state === "paused") audio.pause();
-                else tracks.audio.play();
-              });*/
             }
           }
           break;
@@ -786,7 +767,6 @@ next.addEventListener("click", () => {
     holdPL = false;
     let previousmode = PlayBackMode;
     PlayBackMode = "shuffle";
-    console.log("CLICKED NEXT SHUFFLE");
     next.click();
     PlayBackMode = previousmode;
   }
@@ -804,14 +784,12 @@ prev.addEventListener("click", () => {
       plpos = poshistory[poshistory.indexOf(plpos) - 1];
       shuffleBack = true;
     } else plpos--;
+    
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
     if (!audio.isPlaying()) state = "paused";
     else state = "playing";
-    audio.stop();
-    /*audio.dispose();
-    delete audio;*/
-    //audio = null;
+    audio.stop()
     started = false;
     PrevSong(
       audio,
@@ -857,8 +835,6 @@ document.getElementById("timeslide").addEventListener("change", () => {
         clearInterval(interval);
       }
     }, 10);
-  } else {
-    //console.log('not released')
   }
 });
 
@@ -881,14 +857,6 @@ function createEndedListener() {
 
       clearTimeout(timeout);
     } else {
-      console.log(
-        "NEXT ",
-        started,
-        audio.isLoaded(),
-        !audio._paused,
-        release,
-        holdPL
-      );
       if (started && audio.isLoaded() && !audio._paused && release)
         next.click();
 
@@ -911,9 +879,7 @@ function loaded() {
   try {
     if (started) {
       manageAudioData();
-      audio.setVolume(volumeSlider.value / 20);
       audio.play();
-      audio.connect(eq);
       if (state === "paused") audio.pause();
     }
   } catch (e) {
@@ -922,7 +888,7 @@ function loaded() {
   }
 }
 
-function keydownEvent(event) {
+function KeydownEvent(event) {
   let key;
   if (event.key.length === 1) {
     key = event.key.toLowerCase();
@@ -932,6 +898,31 @@ function keydownEvent(event) {
 
   if (completesplash) {
     switch (key) {
+      case "AudioVolumeUp":{
+        if(enableVolumeButtons){
+        volumeSlider.value =
+        Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
+        volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));}
+      }break;
+
+      case "AudioVolumeDown":{
+        if(enableVolumeButtons){
+        volumeSlider.value = volumeSlider.value - volumeSlider.step;
+        volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));}
+      }break;
+
+      case "MediaPlayPause":{
+        if (!holdPL) {
+          if (audio) {
+            if (audio.isLoaded()) {
+              playpausebtn.click();
+            }
+          }
+        } else {
+          next.click();
+        }
+      }break;
+
       case ".":
         {
           if (audio) {
@@ -972,12 +963,10 @@ function keydownEvent(event) {
           if (!holdPL) {
             if (audio) {
               if (audio.isLoaded()) {
-                //console.log('CLICKED PLAYPAUSE SPACE')
                 playpausebtn.click();
               }
             }
           } else {
-            console.log("CLICKED PLAYPAUSE SPACE");
             next.click();
           }
         }
@@ -989,7 +978,6 @@ function keydownEvent(event) {
           if (audio) {
             if (audio.isLoaded()) {
               if (reversed) {
-                console.log("CLICKED PREV ARROW DOWN");
                 next.click();
               } else {
                 prev.click();
@@ -1008,13 +996,11 @@ function keydownEvent(event) {
                 if (reversed) {
                   prev.click();
                 } else {
-                  console.log("CLICKED NEXT ARROW UP");
                   next.click();
                 }
               }
             }
           } else {
-            console.log("CLICKED NEXT ARROW UP");
             next.click();
           }
         }
@@ -1061,7 +1047,7 @@ function keydownEvent(event) {
 }
 
 window.addEventListener("keydown", (event) => {
-  keydownEvent(event);
+  KeydownEvent(event);
 });
 
 function resetIdleTimer() {
@@ -1088,22 +1074,23 @@ var trackinterval = setInterval(() => {
   }
 }, 100);
 
-let temptime, totalseconds, totaltime;
-
 function manageAudioData() {
   clearTimeout(endedTimeout);
   if (audio) {
     if (audio.isLoaded()) {
+
+      let temptime, totalseconds, totaltime;
+      document.getElementById("timeslide").value = 0;
       let duration = { value: audio.duration() };
       temptime = Math.max(Math.floor(duration.value % 60), 0);
       totalseconds = temptime < 10 ? "0" + temptime : temptime.toString();
       totaltime =
         Math.max(Math.floor(duration.value / 60), 0) + ":" + totalseconds;
       document.getElementById("total-time").innerHTML = totaltime;
-      //audio.output.channelCount = 8
+
       audio.setVolume(volumeSlider.value / 20);
       audio.connect(eq);
-      //console.log(audio)
+
       try {
         document.getElementById("track-artist").innerHTML =
           playlist[plpos].artist || "Unknown";
@@ -1114,7 +1101,6 @@ function manageAudioData() {
         document.getElementById("track-artist").innerHTML = "Unknown";
         document.getElementById("track-name").innerHTML = "Unknown";
       }
-      //eq.process(audio)
 
       endedTimeout = setTimeout(() => {
         if (audio.isLoaded()) {
@@ -1380,7 +1366,6 @@ function draw() {
           document.getElementById("play-pause").style.opacity = "0%";
           document.getElementById("loading").style.opacity = "100%";
         }
-        //console.log('not loaded')
       }
     } else {
     }
@@ -1397,23 +1382,19 @@ let BGScanInterval = setInterval(() => {
     difference = Date.now() - startloaddate;
     if (difference > 2000) {
       startloaddate = Date.now();
-      //console.log('refreshed')
       document.getElementById("refr-alt").click();
     }
     prevnul = true;
-    //console.log('not started')
   } else {
     if (playlist.length === 0) {
       SETBypassBGScan = true;
       difference = Date.now() - startloaddate;
       if (difference > 2000) {
         startloaddate = Date.now();
-        //console.log('refreshed')
 
         document.getElementById("refr-alt").click();
       }
       prevnul = true;
-      //console.log('not started')
     } else {
       SETBypassBGScan = false;
     }
@@ -1471,7 +1452,6 @@ function ChangeBG() {
         }
       }
     } else {
-      //console.log(parent.BGready, BGpos, document.getElementById('BG-choice-txt0').innerText)
       clearTimeout(interval);
       ChangeBG();
     }
@@ -1481,10 +1461,9 @@ function ChangeBG() {
 ChangeBG();
 
 setInterval(() => {
-  //console.log(SETBypassBGScan)
   if (BackgroundData) {
     if (BackgroundData.length == 0) {
-      //console.log('Trying to fetch backgrounds')
+      console.log('Trying to fetch backgrounds')
       try {
         BackgroundData = FetchBackgrounds(
           document.getElementById("BG-choice-txt0").innerText,
@@ -1502,3 +1481,25 @@ setInterval(() => {
     }
   }
 }, 2000);
+
+navigator.mediaSession.setActionHandler("play", () => {
+
+});
+navigator.mediaSession.setActionHandler("pause", () => {
+
+});
+navigator.mediaSession.setActionHandler("stop", () => {
+  
+});
+navigator.mediaSession.setActionHandler("seekbackward", () => {
+
+});
+navigator.mediaSession.setActionHandler("seekforward", () => {
+
+});
+navigator.mediaSession.setActionHandler("previoustrack", () => {
+
+});
+navigator.mediaSession.setActionHandler("nexttrack", () => {
+
+});

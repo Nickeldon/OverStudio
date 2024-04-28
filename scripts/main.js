@@ -1,6 +1,8 @@
 var RFreq = 1;
 //document.getElementById('SoundFrame').src = `./SoundFrame.html?random=${(new Date()).getTime() + Math.floor(Math.random() * 1000000)}`
 
+var localStorageData = localStorage;
+
 var EffectChangeTimeout = true;
 var completesplash = false;
 var corrupt = false;
@@ -15,7 +17,7 @@ var MenuTimeout = [0, 0, 0, 0, 0, 0, 0];
 var BackgroundData = [];
 var BGready = false;
 
-var BGrefresh = localStorage.getItem("Background-Cooldown") || 10000;
+var BGrefresh = localStorageData["Background-Cooldown"] || 10000;
 localStorage.setItem("Background-Cooldown", BGrefresh);
 if (BGrefresh < 60000) {
   document.getElementById("BG-cooldown-txt0").innerText = `${
@@ -29,13 +31,29 @@ if (BGrefresh < 60000) {
 
 var BGpos = 0;
 
-var VisualMode = localStorage.getItem("Background-Type") || "BlobReactor";
+var VisualMode = localStorageData["Background-Type"] || "BlobReactor";
 localStorage.setItem("Background-Type", VisualMode);
 document.getElementById("BG-choice-txt0").innerText = VisualMode;
 
-var BGspeed = localStorage.getItem("Reactor-Speed") || ".2";
+var BGspeed = localStorageData["Reactor-Speed"] || ".2";
 localStorage.setItem("Reactor-Speed", BGspeed);
 document.getElementById("amp-speed-txt0").innerText = BGspeed;
+
+var trackScrollSmoothing = localStorageData["smoothTrack"] || "true";
+trackScrollSmoothing == "true"
+  ? () => {
+      document.getElementById("current-track").style.scrollBehavior = "smooth";
+      document.getElementById("current-track").style.willChange =
+        "scroll-position";
+      document.getElementById("smooth-track-txt0").innerText = "Disable";
+    }
+  : () => {
+      document.getElementById("current-track").style.scrollBehavior = "auto";
+      document.getElementById("current-track").style.willChange = "auto";
+      document.getElementById("smooth-track-txt0").innerText = "Enable";
+    };
+
+localStorage.setItem("smoothTrack", trackScrollSmoothing);
 
 const speeds = {
   normal: [1, 1, 1, 1, 1, 1000],
@@ -43,13 +61,13 @@ const speeds = {
   FroxceyFast: [0.3, 0.3, 0.3, 0.3, 0.3, 400],
 };
 
-var chosenSpeed = localStorage.getItem("animations") || "normal";
+var chosenSpeed = localStorageData["animations"] || "normal";
 localStorage.setItem("animations", chosenSpeed);
 animationSpeeds(speeds[chosenSpeed]);
 
 document.getElementById("anim-txt0").innerHTML = chosenSpeed;
 
-var bootsoundbool = localStorage.getItem("Sound_boot") || "true";
+var bootsoundbool = localStorageData["Sound_boot"] || "true";
 if (bootsoundbool == "false") bootsoundbool = false;
 else bootsoundbool = true;
 localStorage.setItem("Sound_boot", bootsoundbool);
@@ -59,7 +77,7 @@ if (bootsoundbool) {
   document.getElementById("boot-snd-txt0").innerText = "Enable Sound at boot";
 }
 
-effectsArray = JSON.parse(localStorage.getItem("effectsState")) || {
+effectsArray = JSON.parse(localStorageData["effectsState"]) || {
   dust: "true",
   amplitude: "true",
 };
@@ -85,7 +103,7 @@ if (!enAmpl) {
 localStorage.setItem("effectsState", JSON.stringify(effectsArray));
 
 var idle = 0;
-var idletimeout = parseInt(localStorage.getItem("idletimeout")) || 25;
+var idletimeout = parseInt(localStorageData["idletimeout"]) || 25;
 localStorage.setItem("idletimeout", idletimeout);
 
 if (idletimeout == 25) {
@@ -95,6 +113,20 @@ if (idletimeout == 25) {
 } else {
   document.getElementById("idle-txt0").innerText = `${idletimeout / 60} min`;
 }
+
+document
+  .getElementById("draggable")
+  .addEventListener("click", () =>
+    console.log("dragging")
+  ); /*.onmousedown = () => {
+  console.log('dragging')
+  window.ipcRender.send('window:dragged');
+}*/
+
+document.getElementById("draggable").onmouseup = () => {
+  console.log("not dragging");
+  window.ipcRender.send("window:undragged");
+};
 
 $(document).ready(() => {
   setInterval(() => {
@@ -119,7 +151,7 @@ $(document).ready(() => {
   });
 });
 
-var fadeBool = localStorage.getItem("fadeAtClose") || "true";
+var fadeBool = localStorageData["fadeAtClose"] || "true";
 
 document.getElementById("fade-txt0").innerText = fadeBool;
 localStorage.setItem("fadeAtClose", fadeBool);
@@ -370,8 +402,8 @@ var opentab = new Howl({
   stereo: true,
 });
 document.getElementById("eq-menu").style.top = "0px";
-var emptyreload = /true/.test(localStorage.getItem("emptyreload")) || false;
-var PlMenuOpened = /true/.test(localStorage.getItem("PlMenuOpened")) || false;
+var emptyreload = /true/.test(localStorageData["emptyreload"]) || false;
+var PlMenuOpened = /true/.test(localStorageData["PlMenuOpened"]) || false;
 
 if (!emptyreload) {
   window.onload = () => {
@@ -482,6 +514,10 @@ function displayERR(type) {
     var icparent = document.getElementById("Reboot-cond-icon-parent");
     var ic = document.getElementById("Reboot-cond-icon");
     var err = document.getElementById("Reboot-condition");
+  } else if (type === "Device-changed") {
+    var icparent = document.getElementById("deviceSwap-icon-parent");
+    var ic = document.getElementById("deviceSwap-icon");
+    var err = document.getElementById("deviceSwap-message");
   } else {
     return undefined;
   }

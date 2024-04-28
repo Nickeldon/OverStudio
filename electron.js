@@ -6,15 +6,13 @@ const path = require("path");
 const electronIpcMain = require("electron").ipcMain;
 const instancelimit = app.requestSingleInstanceLock();
 const fs = require("fs");
-var size;
-var tempsize;
-var date;
+var size, tempsize, date;
 let config = null;
 let throwModuleError = {
   status: false,
   module: null,
 };
-//app.disableHardwareAcceleration = true
+let dragged = false;
 
 function GenerateSpaces(num) {
   let spaces = " ";
@@ -58,19 +56,24 @@ try {
     throwModuleError.module = reqModule;
     throwModuleError.status = true;
   }
-  console.log(e);
-  //fs.writeFileSync(__dirname + '/src/error.log', '\n' + e)
+  const CurrentTime = new Date().toUTCString();
+  fs.appendFileSync(
+    __dirname + "/src/log.txt",
+    "ERROR: [" + CurrentTime + "] => " + "\n" + e + "\n\n"
+  );
 }
 
-//require('electron-reload')(__dirname,{electron: path.join(__dirname, 'node_modules', '.bin', 'electron')})
+/*if (config.meta.MasterSettings.isDev)
+  require("electron-reload")(__dirname, {
+    ignored: [path.join("/src/config.json"), path.join("/src/log.txt"), /node_modules|[/\\]\./],
+  });*/
 
 let windowObj = null;
 let tray = null;
 if (!instancelimit) {
   app.quit();
 } else {
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
+  app.on("second-instance", () => {
     if (windowObj) {
       if (windowObj.isMinimized()) windowObj.restore();
       windowObj.focus();
@@ -133,13 +136,15 @@ if (!instancelimit) {
     windowObj.setSize(w, h);
 
     windowObj.on("resize", function () {
-      setTimeout(() => {
-        size = windowObj.getSize();
-        if (tempsize != Math.floor(parseInt(size[0]))) {
-          windowObj.setSize(size[0], parseInt((size[0] * 10) / 9));
-          tempsize = Math.floor(parseInt(size[0]));
-        }
-      });
+      if (!dragged) {
+        setTimeout(() => {
+          size = windowObj.getSize();
+          if (tempsize != Math.floor(parseInt(size[0]))) {
+            windowObj.setSize(size[0], parseInt((size[0] * 10) / 9));
+            tempsize = Math.floor(parseInt(size[0]));
+          }
+        });
+      }
     });
 
     const readyListener = () => {
@@ -151,6 +156,10 @@ if (!instancelimit) {
 
     if (config.meta.MasterSettings.enableTray == true) {
       readyListener();
+    }
+
+    if (config.meta.MasterSettings.IgnoreCertificates == true) {
+      app.commandLine.appendSwitch("ignore-certificate-errors");
     }
 
     function createTray() {
@@ -241,6 +250,16 @@ if (!instancelimit) {
       }
     }
     createWindow();
+  });
+
+  electronIpcMain.on("window:dragged", () => {
+    console.log("window dragged");
+    dragged = true;
+  });
+
+  electronIpcMain.on("window:undragged", () => {
+    console.log("window not dragged");
+    dragged = false;
   });
 
   electronIpcMain.on("window:minimize", () => {

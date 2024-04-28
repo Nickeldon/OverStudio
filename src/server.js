@@ -216,6 +216,7 @@ app.get("/addPL", (req, res, next) => {
             enableTray: true,
             enableAutoUpdate: true,
             resetLogAtStartup: false,
+            IgnoreCerificates: true
           };
         }
         object.meta = {

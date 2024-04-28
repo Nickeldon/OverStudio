@@ -5,7 +5,7 @@ var prevVolState = 0;
 
 const ipc = {
   render: {
-    send: ["window:minimize", "window:restore"],
+    send: ["window:minimize", "window:restore", "window:dragged", "window:undragged"],
 
     receive: ["Play", "Pause", "Next", "Previous"],
   },
