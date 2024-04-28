@@ -2,8 +2,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+  <meta http-equiv="PRAGMA" content="NO-CACHE" />
   <title>Document</title>
   <style>
     @font-face {
@@ -24,8 +24,8 @@
     }
   </style>
   <script src="./Addons/Packages/Soundhandler/p5/p5.js"></script>
-<script src="./Addons/Packages/Soundhandler/p5/addons/p5.sound.js"></script>
-<script src="./Addons/Packages/Soundhandler/howler.min.js"></script>
+  <script src="./Addons/Packages/Soundhandler/p5/addons/p5.sound.js"></script>
+  <script src="./Addons/Packages/Soundhandler/howler.min.js"></script>
   <script src="./Addons/Packages/JQuery 3.1.1/jquery-3.1.1.min.js"></script>
   <script src="scripts/bridge.js"></script>
 </head>
@@ -53,6 +53,7 @@
       left: 0;
       z-index: 99;
       background-color: black;
+      border-radius: 20px;
     "
   >
     <object
@@ -121,8 +122,8 @@
         background-color: transparent;
         position: absolute;
         top: 0;
-        right: 10%;
-        width: 70%;
+        right: 20%;
+        width: 60%;
         height: 130px;
       "
     ></div>
@@ -298,41 +299,41 @@
       </div>
 
       <div
-      class="deviceSwap-message"
-      id="deviceSwap-message"
-      style="
-        position: absolute;
-        top: 0;
-        right: -400px;
-        width: 400px;
-        height: 120px;
-        background-color: #5b5b5b;
-        opacity: 60%;
-        border-radius: 20px;
-        border-top-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-        opacity: 0%;
-        color: white;
-        transition: all.5s ease-out;
-      "
-    >
-      <i
-        style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
-        id="deviceSwap-icon-parent"
+        class="deviceSwap-message"
+        id="deviceSwap-message"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #5b5b5b;
+          opacity: 60%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
       >
-        <img
-          src="./Addons/icons/SVG/headphones.svg"
-          style="height: 70px"
-          id="deviceSwap-icon"
-        />
-      </i>
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="deviceSwap-icon-parent"
+        >
+          <img
+            src="./Addons/icons/SVG/headphones.svg"
+            style="height: 70px"
+            id="deviceSwap-icon"
+          />
+        </i>
 
-      <div style="position: absolute; top: 20%; right: 10%">
-        <h3 style="width: 200px; font-size: 23px">
-          Audio Output device has been changed
-        </h3>
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px">
+            Audio Output device has been changed
+          </h3>
+        </div>
       </div>
-    </div>
 
       <div
         class="No-BG-message"
@@ -495,8 +496,8 @@
             font-family: PS, sans-serif;
             color: black;
             width: 70%;
-            height:70%;
-            opacity:50%;
+            height: 70%;
+            opacity: 50%;
             filter: invert(50%);
             text-shadow: rgb(255, 55, 0) 20px -20px 90px;
             pointer-events: none;
@@ -870,7 +871,6 @@
         </div>
           
         </div>-->
-          
 
       <div
         id="options"
@@ -1384,7 +1384,9 @@
                 localStorage.setItem('animations', (chosenSpeed))
                 "
             >
-              <a style="left: 70px"> Animations speed:<br><span id="anim-txt0">normal</span></a>
+              <a style="left: 70px">
+                Animations speed:<br /><span id="anim-txt0">normal</span></a
+              >
             </div>
 
             <div
@@ -1550,7 +1552,9 @@
                     localStorage.setItem('smoothTrack', trackScrollSmoothing)
                 "
             >
-              <a style="left: 70px"><span id="smooth-track-txt0">Enable</span> smooth list<br>scrolling </a>
+              <a style="left: 70px"
+                ><span id="smooth-track-txt0">Enable</span> smooth list<br />scrolling
+              </a>
             </div>
 
             <div
@@ -1579,8 +1583,7 @@
               <a style="left: 70px"> Reset all settings </a>
             </div>
           </div>
-        <!--<div class="opt-menu6-mask"></div>-->
-
+          <!--<div class="opt-menu6-mask"></div>-->
         </div>
 
         <div
@@ -1596,7 +1599,6 @@
             left: 20px;
           "
         ></div>
-
       </div>
 
       <div
@@ -1745,6 +1747,45 @@
             "
           />
         </i>
+        <div
+    id="search-query"
+    class="search-query"
+    onclick="
+      if(document.getElementById('search-query').style.width == '600px'){
+        document.getElementById('draggable').style.width = '60%';
+        document.getElementById('draggable').style.right = '20%';
+        document.getElementById('search-query').style.width = '70px';
+        //document.getElementById('search-query').classList.remove('search-query-opened')
+        document.getElementById('search-query').style.opacity = '20%';
+        document.getElementById('app-title').style.marginRight = '0px';
+        document.getElementById('draggable').style.width = '60%';
+        document.getElementById('draggable').style.right = '20%';
+        setTimeout(() => {
+          document.getElementById('search-query').style.borderRadius = '50%';
+        }, 1200);
+      } else {
+        if(document.getElementById('options').style.left !== '-380px'){
+          openMENU(true);
+        }
+        document.getElementById('app-title').style.marginRight = '670px';
+        document.getElementById('search-query').style.width = '600px';
+        document.getElementById('search-query').style.borderRadius = '15px';
+        //document.getElementById('search-query').classList.add('search-query-opened')
+        document.getElementById('search-query').style.opacity = '100%';
+        document.getElementById('draggable').style.width = '40%';
+        document.getElementById('draggable').style.right = '50%';
+      }
+    "
+  >
+    <i>
+      <img
+        id="search-icn"
+        src="./Addons/icons/SVG/search.svg"
+        ;
+        style="height: 50px; position: absolute; right: 10px; top: 8.5%;"
+      />
+    </i>
+  </div>
       </div>
     </div>
 
@@ -1989,10 +2030,30 @@
       </div>
     </div>
   </div>
-  </div>
 </body>
 
 <style>
+  .search-query-opened{
+    opacity: 100%;
+  }
+  .search-query{
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    top: 10px;
+    right: 270px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: 20%;
+    /*filter: invert(100%);*/ 
+    transition: all 1.5s ease-in-out, border-radius 0.5s ease-out;
+  }
+  .search-query:hover {
+    cursor: pointer;
+    opacity: 60%;
+    /*filter: invert(0%);*/
+  }
+
   .opt-menu6-mask {
     border-top-left-radius: 0;
     border-top-right-radius: 20px;
@@ -2002,8 +2063,12 @@
     top: 0;
     left: -50px;
     opacity: 30%;
-    background: rgba( 0, 0, 0, 0.6 );
-    background-image: linear-gradient(to bottom, rgba(73, 73, 73, 0.71) 10%, transparent 100%);
+    background: rgba(0, 0, 0, 0.6);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(73, 73, 73, 0.71) 10%,
+      transparent 100%
+    );
     backdrop-filter: blur(3000px);
     pointer-events: none;
     user-select: none;
@@ -2143,7 +2208,7 @@
       opacity(60%);
   }
 
-  .font-presets-btn{
+  .font-presets-btn {
     position: absolute;
     top: 100px;
     right: 0;
@@ -2155,7 +2220,7 @@
     text-align: center;
   }
 
-  .font-choices{
+  .font-choices {
     position: absolute;
     top: 50px;
     right: 0;
@@ -2165,7 +2230,7 @@
     transition: height 1s ease-in-out;
     overflow-y: scroll;
     overflow-x: hidden;
-    a{
+    a {
       font-family: PS, sans-serif;
       font-size: 20px;
       text-align: center;
@@ -2184,7 +2249,7 @@
       transition: all 1s ease-in-out;
     }
 
-    a:hover{
+    a:hover {
       cursor: pointer;
       background-color: rgba(139, 139, 139, 0.686);
       color: black;

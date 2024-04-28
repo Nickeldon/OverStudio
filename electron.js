@@ -89,6 +89,7 @@ if (!instancelimit) {
       maximizable: false,
       minimizable: false,
       center: true,
+      show: false,
       autoHideMenuBar: true,
       resizable: true,
       fullscreenable: false,
@@ -216,6 +217,10 @@ if (!instancelimit) {
       tray.setToolTip("OverStudio");
       tray.setContextMenu(contextMenu);
     }
+
+    windowObj.once("ready-to-show", () => {
+      windowObj.show();
+    })
   }
 
   app.on("window-all-closed", () => {

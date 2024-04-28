@@ -1,15 +1,14 @@
 {
   "meta": {
-    "links": [
-    ],
+    "links": [],
     "fonts": [],
     "MasterSettings": {
       "HardwareAcceleration": true,
-      "isDev": true,
+      "isDev": false,
       "enableTray": true,
       "enableAutoUpdate": true,
       "resetLogAtStartup": true,
-      "IgnoreCertificates": true
+      "IgnoreCerificates": true
     }
   }
 }

@@ -33,14 +33,13 @@ var amplitude;
 let poshistory = [];
 let ShuffleSmartEnabled = false;
 let enableMediaSessionListener = false;
-let enableVolumeButtons = false
+let enableVolumeButtons = false;
 
 // p5.js AudioVisualizer global variables
 var fft;
 var particlesArray = [];
 var themecolor = "#3773ff";
 var prevwidth, prevheight;
-
 
 // p5.js Equalizer global variables
 var customBands = JSON.parse(localStorage.getItem("customBands")) || {
@@ -634,7 +633,7 @@ navigator.mediaDevices.addEventListener("devicechange", () => {
         devices.forEach((device) => {
           if (device.kind === "audiooutput") console.log(device);
         });
-        displayERR("Device-changed")
+        displayERR("Device-changed");
       }
     }
   });
@@ -695,7 +694,7 @@ next.addEventListener("click", () => {
                     }
                     if (poshistory.includes(plpos)) {
                       getRandomPos();
-                      return 0
+                      return 0;
                     } else {
                       poshistory.push(plpos);
                     }
@@ -784,12 +783,12 @@ prev.addEventListener("click", () => {
       plpos = poshistory[poshistory.indexOf(plpos) - 1];
       shuffleBack = true;
     } else plpos--;
-    
+
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
     if (!audio.isPlaying()) state = "paused";
     else state = "playing";
-    audio.stop()
+    audio.stop();
     started = false;
     PrevSong(
       audio,
@@ -898,30 +897,38 @@ function KeydownEvent(event) {
 
   if (completesplash) {
     switch (key) {
-      case "AudioVolumeUp":{
-        if(enableVolumeButtons){
-        volumeSlider.value =
-        Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
-        volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));}
-      }break;
-
-      case "AudioVolumeDown":{
-        if(enableVolumeButtons){
-        volumeSlider.value = volumeSlider.value - volumeSlider.step;
-        volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));}
-      }break;
-
-      case "MediaPlayPause":{
-        if (!holdPL) {
-          if (audio) {
-            if (audio.isLoaded()) {
-              playpausebtn.click();
-            }
+      case "AudioVolumeUp":
+        {
+          if (enableVolumeButtons) {
+            volumeSlider.value =
+              Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
+            volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
           }
-        } else {
-          next.click();
         }
-      }break;
+        break;
+
+      case "AudioVolumeDown":
+        {
+          if (enableVolumeButtons) {
+            volumeSlider.value = volumeSlider.value - volumeSlider.step;
+            volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
+        break;
+
+      case "MediaPlayPause":
+        {
+          if (!holdPL) {
+            if (audio) {
+              if (audio.isLoaded()) {
+                playpausebtn.click();
+              }
+            }
+          } else {
+            next.click();
+          }
+        }
+        break;
 
       case ".":
         {
@@ -1039,6 +1046,10 @@ function KeydownEvent(event) {
               "blur(0px) brightness(60%)";
             document.getElementById("current-track").style.filter =
               "blur(0px) brightness(120%)";
+            document.getElementById("search-query").style.filter =
+              "blur(0px) brightness(100%)";
+            document.getElementById("search-query").style.pointerEvents = 
+              "all";
           }, 1000);
         }
         break;
@@ -1078,7 +1089,6 @@ function manageAudioData() {
   clearTimeout(endedTimeout);
   if (audio) {
     if (audio.isLoaded()) {
-
       let temptime, totalseconds, totaltime;
       document.getElementById("timeslide").value = 0;
       let duration = { value: audio.duration() };
@@ -1422,30 +1432,28 @@ function ChangeBG() {
             "Audio-react"
           ).style.transition = `all 1s ease-out`;
 
+          document.getElementById("Audio-react").style.opacity = "0%";
           setTimeout(() => {
-            document.getElementById("Audio-react").style.opacity = "0%";
-            const timeout = setTimeout(() => {
-              try {
-                document.getElementById("Audio-react").data =
-                  BackgroundData[BGpos];
-                const timeout2 = setTimeout(() => {
-                  document.getElementById("Audio-react").style.opacity = "100%";
-                  clearTimeout(interval);
-                  clearTimeout(timeout2);
-                  ChangeBG();
-                }, 100);
-              } catch (e) {
-                console.log(e);
-                document.getElementById("BG-choice-txt0").innerText =
-                  "BlobReactor";
-                localStorage.setItem("Background-Type", "BlobReactor");
-                setTimeout(() => {
-                  window.location.reload();
-                }, 100);
-              }
-            }, 1000);
-            clearTimeout(timeout);
-          }, 100);
+            try {
+              document.getElementById("Audio-react").data =
+                BackgroundData[BGpos];
+              const timeout2 = setTimeout(() => {
+                document.getElementById("Audio-react").style.opacity = "100%";
+                clearTimeout(interval);
+                clearTimeout(timeout2);
+                console.log("BG Changed");
+                ChangeBG();
+              }, 100);
+            } catch (e) {
+              console.log(e);
+              document.getElementById("BG-choice-txt0").innerText =
+                "BlobReactor";
+              localStorage.setItem("Background-Type", "BlobReactor");
+              setTimeout(() => {
+                window.location.reload();
+              }, 100);
+            }
+          }, 1000);
         } else {
           clearTimeout(interval);
           ChangeBG();
@@ -1463,7 +1471,7 @@ ChangeBG();
 setInterval(() => {
   if (BackgroundData) {
     if (BackgroundData.length == 0) {
-      console.log('Trying to fetch backgrounds')
+      console.log("Trying to fetch backgrounds");
       try {
         BackgroundData = FetchBackgrounds(
           document.getElementById("BG-choice-txt0").innerText,
@@ -1482,24 +1490,10 @@ setInterval(() => {
   }
 }, 2000);
 
-navigator.mediaSession.setActionHandler("play", () => {
-
-});
-navigator.mediaSession.setActionHandler("pause", () => {
-
-});
-navigator.mediaSession.setActionHandler("stop", () => {
-  
-});
-navigator.mediaSession.setActionHandler("seekbackward", () => {
-
-});
-navigator.mediaSession.setActionHandler("seekforward", () => {
-
-});
-navigator.mediaSession.setActionHandler("previoustrack", () => {
-
-});
-navigator.mediaSession.setActionHandler("nexttrack", () => {
-
-});
+navigator.mediaSession.setActionHandler("play", () => {});
+navigator.mediaSession.setActionHandler("pause", () => {});
+navigator.mediaSession.setActionHandler("stop", () => {});
+navigator.mediaSession.setActionHandler("seekbackward", () => {});
+navigator.mediaSession.setActionHandler("seekforward", () => {});
+navigator.mediaSession.setActionHandler("previoustrack", () => {});
+navigator.mediaSession.setActionHandler("nexttrack", () => {});

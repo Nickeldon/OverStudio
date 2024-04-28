@@ -40,18 +40,15 @@ localStorage.setItem("Reactor-Speed", BGspeed);
 document.getElementById("amp-speed-txt0").innerText = BGspeed;
 
 var trackScrollSmoothing = localStorageData["smoothTrack"] || "true";
-trackScrollSmoothing == "true"
-  ? () => {
-      document.getElementById("current-track").style.scrollBehavior = "smooth";
-      document.getElementById("current-track").style.willChange =
-        "scroll-position";
-      document.getElementById("smooth-track-txt0").innerText = "Disable";
-    }
-  : () => {
-      document.getElementById("current-track").style.scrollBehavior = "auto";
-      document.getElementById("current-track").style.willChange = "auto";
-      document.getElementById("smooth-track-txt0").innerText = "Enable";
-    };
+if (trackScrollSmoothing == "true") {
+  document.getElementById("current-track").style.scrollBehavior = "smooth";
+  document.getElementById("current-track").style.willChange = "scroll-position";
+  document.getElementById("smooth-track-txt0").innerText = "Disable";
+} else {
+  document.getElementById("current-track").style.scrollBehavior = "auto";
+  document.getElementById("current-track").style.willChange = "auto";
+  document.getElementById("smooth-track-txt0").innerText = "Enable";
+}
 
 localStorage.setItem("smoothTrack", trackScrollSmoothing);
 
@@ -77,10 +74,18 @@ if (bootsoundbool) {
   document.getElementById("boot-snd-txt0").innerText = "Enable Sound at boot";
 }
 
-effectsArray = JSON.parse(localStorageData["effectsState"]) || {
-  dust: "true",
-  amplitude: "true",
-};
+try {
+  effectsArray = JSON.parse(localStorageData["effectsState"]) || {
+    dust: "true",
+    amplitude: "true",
+  };
+} catch (e) {
+  effectsArray = {
+    dust: "true",
+    amplitude: "true",
+  };
+}
+
 var goback = false;
 var enDust = /true/.test(effectsArray["dust"]) || false;
 var enAmpl = /true/.test(effectsArray["amplitude"]) || false;
@@ -660,6 +665,10 @@ function openMENU(Bypass_menu_disp) {
   clearTimeout(MenuTimeout[4]);
 
   opentab.play();
+
+  if (document.getElementById("search-query").style.width == "600px")
+    document.getElementById("search-query").click();
+
   var opt = document.getElementById("options");
   var optprev = document.getElementById("opt-preview");
   var optprevicns = document.getElementsByClassName("menu-icns");
@@ -693,6 +702,8 @@ function openMENU(Bypass_menu_disp) {
 
   if (opt.style.left === "-380px") {
     document.getElementById("app-title").style.filter =
+      "blur(0px) brightness(100%)";
+    document.getElementById("search-query").style.filter =
       "blur(0px) brightness(100%)";
     document.getElementById("eq-menu").style.top = "-500px";
     document.getElementById("eq-menu").style.opacity = "0%";
@@ -876,6 +887,10 @@ function options(choice) {
         {
           if (document.getElementById("eq-menu").style.top === "-500px") {
             openMENU();
+            document.getElementById("search-query").style.filter =
+              "blur(5px) brightness(40%)";
+            document.getElementById("search-query").style.pointerEvents =
+              "none";
             document.getElementById("Audio-react").style.filter =
               "blur(5px) brightness(40%)";
             document.getElementById("current-track").style.filter =

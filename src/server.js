@@ -201,13 +201,12 @@ app.get("/addPL", (req, res, next) => {
             "] => " +
             `Linked directory \'${path.resolve(PlaylistURL)}\' Succesfully \n\n`
         );
-        //console.log(object)
       } else {
         let fontarray;
         let MasterSettings;
         try {
           fontarray = JSON.parse(object.meta.fonts);
-          settingsarray = JSON.parse(object.meta.settings);
+          MasterSettings = JSON.parse(object.meta.MasterSettings);
         } catch (e) {
           fontarray = [];
           MasterSettings = {
@@ -215,7 +214,7 @@ app.get("/addPL", (req, res, next) => {
             isDev: false,
             enableTray: true,
             enableAutoUpdate: true,
-            resetLogAtStartup: false,
+            resetLogAtStartup: true,
             IgnoreCerificates: true
           };
         }
