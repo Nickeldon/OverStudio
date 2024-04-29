@@ -20,9 +20,18 @@ How to run OverStudio
 
 - Extract the zip file
 
-- Navigate inside the extracted file and execute ``OverStudio.exe``
+- Navigate inside the extracted file and execute: </br>
+&nbsp; * ``OverStudio.exe`` for windows builds </br>
+&nbsp; * ``OverStudio.dmg`` for MacOS builds </br>
+&nbsp; * ``OverStudio`` for Linux builds
 
-- At the first boot, in order to enable the communication between the frontend and the backend, Windows will ask you if you want the backend and the frontend to communicate between each other. Accept
+</br>
+
+``Note for Linux Builds: You might need to let your OS know that OverStudio has to be opened as an executable rather than a file``
+
+</br>
+
+- `[If not using windows, ignore]` At the first boot, in order to enable the communication between the frontend and the backend, Windows will ask you if you want the backend and the frontend to communicate between each other. Accept
 
 - Open the side menu by clicking the top left button of OverStudio
 
