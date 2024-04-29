@@ -33,6 +33,8 @@ How to run OverStudio
 
 - `[If not using windows, ignore]` At the first boot, in order to enable the communication between the frontend and the backend, Windows will ask you if you want the backend and the frontend to communicate between each other. Accept
 
+<p align="center" width="400" style="margin-bottom:0"><img src="https://github.com/Nickeldon/OverStudio/blob/0470978b69543747658e3a5f9e1c0bc5d61468a9/Addons/SF/OverStudio_win-warn.jpg" alt="Logo" width="400"></img></p>
+
 - Open the side menu by clicking the top left button of OverStudio
 
 - Click 'Add Playlist' > 'Open Explorer'
