@@ -1430,7 +1430,7 @@
                     value = 10;
                 }
                 idletimeout = value
-                localStorage.setItem('Idle-Timeout', value)
+                localStorage.setItem('idletimeout', value)
                 "
             >
               <a style="left: 70px">
@@ -1748,44 +1748,52 @@
           />
         </i>
         <div
-    id="search-query"
-    class="search-query"
-    onclick="
-      if(document.getElementById('search-query').style.width == '600px'){
-        document.getElementById('draggable').style.width = '60%';
-        document.getElementById('draggable').style.right = '20%';
-        document.getElementById('search-query').style.width = '70px';
-        //document.getElementById('search-query').classList.remove('search-query-opened')
-        document.getElementById('search-query').style.opacity = '20%';
-        document.getElementById('app-title').style.marginRight = '0px';
-        document.getElementById('draggable').style.width = '60%';
-        document.getElementById('draggable').style.right = '20%';
-        setTimeout(() => {
-          document.getElementById('search-query').style.borderRadius = '50%';
-        }, 1200);
-      } else {
-        if(document.getElementById('options').style.left !== '-380px'){
-          openMENU(true);
-        }
-        document.getElementById('app-title').style.marginRight = '670px';
-        document.getElementById('search-query').style.width = '600px';
-        document.getElementById('search-query').style.borderRadius = '15px';
-        //document.getElementById('search-query').classList.add('search-query-opened')
-        document.getElementById('search-query').style.opacity = '100%';
-        document.getElementById('draggable').style.width = '40%';
-        document.getElementById('draggable').style.right = '50%';
-      }
-    "
-  >
-    <i>
-      <img
-        id="search-icn"
-        src="./Addons/icons/SVG/search.svg"
-        ;
-        style="height: 50px; position: absolute; right: 10px; top: 8.5%;"
-      />
-    </i>
-  </div>
+          id="search-query"
+          class="search-query"
+        >
+          <i style="height: 70px; width:70px; border-radius:50%" onclick="
+          if(document.getElementById('search-query').style.width == '600px'){
+            document.getElementById('search-query-txtInput').style.opacity = '0%';
+            document.getElementById('search-query-txtInput').disabled = true;
+            setTimeout(() => {
+              document.getElementById('search-query-txtInput').style.display = 'none';
+            }, 1000);
+            document.getElementById('draggable').style.width = '60%';
+            document.getElementById('draggable').style.right = '20%';
+            document.getElementById('search-query').style.width = '70px';
+            //document.getElementById('search-query').classList.remove('search-query-opened')
+            document.getElementById('search-query').style.opacity = '40%';
+            document.getElementById('app-title').style.marginRight = '0px';
+            document.getElementById('draggable').style.width = '60%';
+            document.getElementById('draggable').style.right = '20%';
+            setTimeout(() => {
+              document.getElementById('search-query').style.borderRadius = '50%';
+            }, 1200);
+          } else {
+            document.getElementById('search-query-txtInput').style.display = 'block';
+            document.getElementById('search-query-txtInput').style.opacity = '100%';
+            document.getElementById('search-query-txtInput').disabled = false;
+            if(document.getElementById('options').style.left !== '-380px'){
+              openMENU(true);
+            }
+            document.getElementById('app-title').style.marginRight = '670px';
+            document.getElementById('search-query').style.width = '600px';
+            document.getElementById('search-query').style.borderRadius = '15px';
+            //document.getElementById('search-query').classList.add('search-query-opened')
+            document.getElementById('search-query').style.opacity = '100%';
+            document.getElementById('draggable').style.width = '40%';
+            document.getElementById('draggable').style.right = '50%';
+          }
+        ">
+            <img
+              id="search-icn"
+              src="./Addons/icons/SVG/search.svg"
+              ;
+              style="height: 50px; position: absolute; right: 10px; top: 8.5%"
+            />
+          </i>
+          <input type="text" id="search-query-txtInput" disabled spellcheck="false"/>
+        </div>
       </div>
     </div>
 
@@ -2033,24 +2041,54 @@
 </body>
 
 <style>
-  .search-query-opened{
+
+  ::selection {
+    background: var(--selBGcolor);
+    color: var(--selTxtcolor);
+  }
+
+  #search-query-txtInput {
+    width: 80%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    font-family: PS, sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 15px;
+    transition: all 0.5s ease-out;
+    opacity: 0%;
+    display: none;
+  }
+
+  #search-query-txtInput:focus {
+    outline: none;
+    outline-width: 0;
+  }
+
+  .search-query-opened {
     opacity: 100%;
   }
-  .search-query{
+  .search-query {
     position: absolute;
     width: 70px;
     height: 70px;
     top: 10px;
     right: 270px;
-    background-color: white;
+    background-color: #5a5a5a;
     border-radius: 50%;
-    opacity: 20%;
-    /*filter: invert(100%);*/ 
+    opacity: 40%;
+    /*filter: invert(100%);*/
     transition: all 1.5s ease-in-out, border-radius 0.5s ease-out;
   }
   .search-query:hover {
     cursor: pointer;
-    opacity: 60%;
+    opacity: 70%;
     /*filter: invert(0%);*/
   }
 

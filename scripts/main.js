@@ -2,7 +2,7 @@ var RFreq = 1;
 //document.getElementById('SoundFrame').src = `./SoundFrame.html?random=${(new Date()).getTime() + Math.floor(Math.random() * 1000000)}`
 
 var localStorageData = localStorage;
-
+console.log(localStorageData)
 var EffectChangeTimeout = true;
 var completesplash = false;
 var corrupt = false;
@@ -667,7 +667,7 @@ function openMENU(Bypass_menu_disp) {
   opentab.play();
 
   if (document.getElementById("search-query").style.width == "600px")
-    document.getElementById("search-query").click();
+    document.querySelector(".search-query i").click();
 
   var opt = document.getElementById("options");
   var optprev = document.getElementById("opt-preview");

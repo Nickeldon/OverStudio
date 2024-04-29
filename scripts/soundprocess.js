@@ -896,163 +896,197 @@ function KeydownEvent(event) {
   }
 
   if (completesplash) {
-    switch (key) {
-      case "AudioVolumeUp":
-        {
-          if (enableVolumeButtons) {
+    if(document.getElementById("search-query").style.width !== "600px"){
+      switch (key) {
+        case "AudioVolumeUp":
+          {
+            if (enableVolumeButtons) {
+              volumeSlider.value =
+                Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
+              volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          }
+          break;
+
+        case "AudioVolumeDown":
+          {
+            if (enableVolumeButtons) {
+              volumeSlider.value = volumeSlider.value - volumeSlider.step;
+              volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          }
+          break;
+
+        case "MediaPlayPause":
+          {
+            if (!holdPL) {
+              if (audio) {
+                if (audio.isLoaded()) {
+                  playpausebtn.click();
+                }
+              }
+            } else {
+              next.click();
+            }
+          }
+          break;
+
+        case ".":
+          {
+            if (audio) {
+              if (audio.isLoaded()) {
+                document.getElementById("timeslide").value =
+                  parseInt(document.getElementById("timeslide").value) + 10;
+                document
+                  .getElementById("timeslide")
+                  .dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          }
+          break;
+
+        case ",":
+          {
+            if (audio) {
+              if (audio.isLoaded()) {
+                document.getElementById("timeslide").value =
+                  document.getElementById("timeslide").value - 10;
+                document
+                  .getElementById("timeslide")
+                  .dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          }
+          break;
+
+        case "f":
+          {
+            resetIdleTimer();
+            document.getElementById("change-state").click();
+          }
+          break;
+
+        case " ":
+          {
+            if (!holdPL) {
+              if (audio) {
+                if (audio.isLoaded()) {
+                  playpausebtn.click();
+                }
+              }
+            } else {
+              next.click();
+            }
+          }
+          break;
+
+        case "ArrowDown":
+          {
+            resetIdleTimer();
+            if (audio) {
+              if (audio.isLoaded()) {
+                if (reversed) {
+                  next.click();
+                } else {
+                  prev.click();
+                }
+              }
+            }
+          }
+          break;
+
+        case "ArrowUp":
+          {
+            resetIdleTimer();
+            if (!holdPL) {
+              if (audio) {
+                if (audio.isLoaded()) {
+                  if (reversed) {
+                    prev.click();
+                  } else {
+                    next.click();
+                  }
+                }
+              }
+            } else {
+              next.click();
+            }
+          }
+          break;
+
+        case "ArrowRight":
+          {
             volumeSlider.value =
               Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
             volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
           }
-        }
-        break;
+          break;
 
-      case "AudioVolumeDown":
-        {
-          if (enableVolumeButtons) {
+        case "ArrowLeft":
+          {
             volumeSlider.value = volumeSlider.value - volumeSlider.step;
             volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
           }
-        }
-        break;
-
-      case "MediaPlayPause":
-        {
-          if (!holdPL) {
-            if (audio) {
-              if (audio.isLoaded()) {
-                playpausebtn.click();
-              }
+          break;
+        case "Escape":
+          {
+            resetIdleTimer();
+            if (document.getElementById("options").style.left !== "-380px") {
+              openMENU();
             }
-          } else {
-            next.click();
-          }
-        }
-        break;
-
-      case ".":
-        {
-          if (audio) {
-            if (audio.isLoaded()) {
-              document.getElementById("timeslide").value =
-                parseInt(document.getElementById("timeslide").value) + 10;
-              document
-                .getElementById("timeslide")
-                .dispatchEvent(new Event("change", { bubbles: true }));
+            if (volbtn.style.width === "350px") {
+              volbtn.click();
             }
-          }
-        }
-        break;
+            if (document.getElementById("search-query").style.width == "600px")
+              document.querySelector(".search-query i").click()
 
-      case ",":
-        {
-          if (audio) {
-            if (audio.isLoaded()) {
-              document.getElementById("timeslide").value =
-                document.getElementById("timeslide").value - 10;
-              document
-                .getElementById("timeslide")
-                .dispatchEvent(new Event("change", { bubbles: true }));
-            }
+            document.getElementById("eq-menu").style.top = "-500px";
+            document.getElementById("eq-menu").style.opacity = "0%";
+            setTimeout(() => {
+              document.getElementById("eq-menu").style.display = "none";
+              document.getElementById("app-title").style.filter =
+                "blur(0px) brightness(100%)";
+              document.getElementById("Audio-react").style.filter =
+                "blur(0px) brightness(60%)";
+              document.getElementById("current-track").style.filter =
+                "blur(0px) brightness(120%)";
+              document.getElementById("search-query").style.filter =
+                "blur(0px) brightness(100%)";
+              document.getElementById("search-query").style.pointerEvents = 
+                "all";
+            }, 1000);
           }
+          break;
+      }
+    } else{
+      if(key === "Escape"){
+        
+        resetIdleTimer();
+        if (document.getElementById("options").style.left !== "-380px") {
+          openMENU();
         }
-        break;
+        if (volbtn.style.width === "350px") {
+          volbtn.click();
+        }
+        if (document.getElementById("search-query").style.width == "600px")
+          document.querySelector(".search-query i").click()
 
-      case "f":
-        {
-          resetIdleTimer();
-          document.getElementById("change-state").click();
-        }
-        break;
-
-      case " ":
-        {
-          if (!holdPL) {
-            if (audio) {
-              if (audio.isLoaded()) {
-                playpausebtn.click();
-              }
-            }
-          } else {
-            next.click();
-          }
-        }
-        break;
-
-      case "ArrowDown":
-        {
-          resetIdleTimer();
-          if (audio) {
-            if (audio.isLoaded()) {
-              if (reversed) {
-                next.click();
-              } else {
-                prev.click();
-              }
-            }
-          }
-        }
-        break;
-
-      case "ArrowUp":
-        {
-          resetIdleTimer();
-          if (!holdPL) {
-            if (audio) {
-              if (audio.isLoaded()) {
-                if (reversed) {
-                  prev.click();
-                } else {
-                  next.click();
-                }
-              }
-            }
-          } else {
-            next.click();
-          }
-        }
-        break;
-
-      case "ArrowRight":
-        {
-          volumeSlider.value =
-            Math.max((volumeSlider.value + volumeSlider.step) / 10) + 0.9;
-          volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        break;
-
-      case "ArrowLeft":
-        {
-          volumeSlider.value = volumeSlider.value - volumeSlider.step;
-          volumeSlider.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        break;
-      case "Escape":
-        {
-          resetIdleTimer();
-          if (document.getElementById("options").style.left !== "-380px") {
-            openMENU();
-          }
-          if (volbtn.style.width === "350px") {
-            volbtn.click();
-          }
-          document.getElementById("eq-menu").style.top = "-500px";
-          document.getElementById("eq-menu").style.opacity = "0%";
-          setTimeout(() => {
-            document.getElementById("eq-menu").style.display = "none";
-            document.getElementById("app-title").style.filter =
-              "blur(0px) brightness(100%)";
-            document.getElementById("Audio-react").style.filter =
-              "blur(0px) brightness(60%)";
-            document.getElementById("current-track").style.filter =
-              "blur(0px) brightness(120%)";
-            document.getElementById("search-query").style.filter =
-              "blur(0px) brightness(100%)";
-            document.getElementById("search-query").style.pointerEvents = 
-              "all";
-          }, 1000);
-        }
-        break;
+        document.getElementById("eq-menu").style.top = "-500px";
+        document.getElementById("eq-menu").style.opacity = "0%";
+        setTimeout(() => {
+          document.getElementById("eq-menu").style.display = "none";
+          document.getElementById("app-title").style.filter =
+            "blur(0px) brightness(100%)";
+          document.getElementById("Audio-react").style.filter =
+            "blur(0px) brightness(60%)";
+          document.getElementById("current-track").style.filter =
+            "blur(0px) brightness(120%)";
+          document.getElementById("search-query").style.filter =
+            "blur(0px) brightness(100%)";
+          document.getElementById("search-query").style.pointerEvents = 
+            "all";
+        }, 1000);
+      }
     }
   }
 }
