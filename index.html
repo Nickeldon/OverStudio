@@ -1672,14 +1672,16 @@
           id="leave"
           class="menu-icns"
           onclick="
-             if(localStorage.getItem('fadeAtClose') == 'true'){
-                document.getElementById('main').style.opacity = '0%';
-                setTimeout(() => {
-                    window.close();
-                }, 1500);}
-                else{
-                    window.close();
-                }
+            document.getElementById('main').style.transition = 'all 0.5s ease-out, scale 2s ease-out';
+            if(localStorage.getItem('fadeAtClose') == 'true'){
+              document.getElementById('main').style.opacity = '0%';
+              document.getElementById('main').style.scale = '0.95';
+              setTimeout(() => {
+                  window.close();
+              }, 500);}
+              else{
+                  window.close();
+              }
              "
         >
           <img
