@@ -465,6 +465,24 @@
       </div>
 
       <div
+        class="search-track"
+        id="search-track"
+        style="
+          position: absolute;
+          width: 70%;
+          height: 70%;
+          background-color: transparent;
+          top: 12%;
+          left: 20%;
+          border-radius: 10px;
+          filter: blur(0.5px) brightness(120%) sepia(10%);
+          opacity: 0%;
+        "
+      >
+        <div class="fadeout"></div>
+      </div>
+
+      <div
         class="eq-menu"
         id="eq-menu"
         style="
@@ -921,11 +939,13 @@
             class="opt-txt"
             style="opacity: 0%; bottom: 25px; width: 400px"
             onclick="
-                if(localStorage.getItem('fadeAtClose') == 'true'){
+              document.getElementById('main').style.transition = 'all 0.5s ease-out, scale 2s ease-out';
+              if(localStorage.getItem('fadeAtClose') == 'true'){
                 document.getElementById('main').style.opacity = '0%';
+                document.getElementById('main').style.scale = '0.95';
                 setTimeout(() => {
                     window.close();
-                }, 1500);}
+                }, 500);}
                 else{
                     window.close();
                 }
@@ -1675,7 +1695,7 @@
             document.getElementById('main').style.transition = 'all 0.5s ease-out, scale 2s ease-out';
             if(localStorage.getItem('fadeAtClose') == 'true'){
               document.getElementById('main').style.opacity = '0%';
-              document.getElementById('main').style.scale = '0.95';
+              document.getElementById('main').style.scale = '0.9';
               setTimeout(() => {
                   window.close();
               }, 500);}
@@ -1749,11 +1769,10 @@
             "
           />
         </i>
-        <div
-          id="search-query"
-          class="search-query"
-        >
-          <i style="height: 70px; width:70px; border-radius:50%" onclick="
+        <div id="search-query" class="search-query">
+          <i
+            style="height: 70px; width: 70px; border-radius: 50%"
+            onclick="
           if(document.getElementById('search-query').style.width == '600px'){
             document.getElementById('search-query-txtInput').style.opacity = '0%';
             document.getElementById('search-query-txtInput').disabled = true;
@@ -1772,9 +1791,13 @@
               document.getElementById('search-query').style.borderRadius = '50%';
             }, 1200);
           } else {
-            document.getElementById('search-query-txtInput').style.display = 'block';
-            document.getElementById('search-query-txtInput').style.opacity = '100%';
             document.getElementById('search-query-txtInput').disabled = false;
+            setTimeout(() => {
+              document.getElementById('search-query-txtInput').style.display = 'block';
+              setTimeout(() => {
+                document.getElementById('search-query-txtInput').style.opacity = '100%';
+              }, 100)
+            }, 600)
             if(document.getElementById('options').style.left !== '-380px'){
               openMENU(true);
             }
@@ -1786,15 +1809,21 @@
             document.getElementById('draggable').style.width = '40%';
             document.getElementById('draggable').style.right = '50%';
           }
-        ">
+        "
+          >
             <img
               id="search-icn"
               src="./Addons/icons/SVG/search.svg"
               ;
-              style="height: 50px; position: absolute; right: 10px; top: 8.5%"
+              style="height: 50px; position: absolute; right: 10px; top: 12%"
             />
           </i>
-          <input type="text" id="search-query-txtInput" disabled spellcheck="false"/>
+          <input
+            type="text"
+            id="search-query-txtInput"
+            disabled
+            spellcheck="false"
+          />
         </div>
       </div>
     </div>
@@ -2043,7 +2072,6 @@
 </body>
 
 <style>
-
   ::selection {
     background: var(--selBGcolor);
     color: var(--selTxtcolor);
@@ -2684,6 +2712,21 @@
     mask-position: 50% 100%;
     height: 150px;
     width: 300px;
+  }
+
+  .search-track {
+    color: white;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 50%,
+      transparent 100%
+    );
+    mask-size: 100% 100%;
+    mask-position: 50% 100%;
+    height: 150px;
+    width: 300px;
+    overflow-y: scroll;
   }
 
   .div-btn:hover {

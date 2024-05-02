@@ -73,6 +73,38 @@ function shuffleArray(array) {
   return array;
 }
 
+function GenerateSearchResults(resArray){
+  //console.log(resArray)
+  deleteSearchResults().then(() => {
+    const titleArray = []
+    resArray.forEach((elem) => {
+      if(elem.title)
+      titleArray.push(elem.title)
+    })
+
+    //console.log(titleArray)
+  
+    const finalSearchArray = []
+  if (document.getElementById('current-track').childNodes.length > 0) {
+    Array.from(document.getElementsByClassName('current-track-title')).forEach((elem) => {
+      if (titleArray.includes(elem.innerText)) {
+        console.log(elem.innerText)
+        document.getElementById('search-track').appendChild(elem)
+      }
+    });
+  }
+  
+    document.getElementById("current-track").style.opacity = "0%";
+    document.getElementById("search-track").style.opacity = "80%";
+  
+    /*finalSearchArray.forEach((elem) => {
+      document.getElementById('search-track').appendChild(elem)
+    })*/
+    
+    //console.log(finalSearchArray)
+  })
+}
+
 async function addPlaylist() {
   var response = "ok";
   try {
@@ -197,6 +229,15 @@ async function deletePLCache() {
   while (listnodes.lastElementChild) {
     document
       .getElementById("current-track")
+      .removeChild(listnodes.lastElementChild);
+  }
+}
+
+async function deleteSearchResults(){
+  var listnodes = document.getElementById("search-track");
+  while (listnodes.lastElementChild) {
+    document
+      .getElementById("search-track")
       .removeChild(listnodes.lastElementChild);
   }
 }
@@ -339,6 +380,7 @@ function getFullDataNode(raw) {
   title.style.filter = "invert(30%)";
   title.style.transition = "all 1s ease-out";
   title.innerHTML = raw.title || "Unknown";
+  title.className = "current-track-title"
   const artist = document.createElement("h3");
   artist.style.fontFamily = "PS, sans-serif";
   artist.style.position = "absolute";
@@ -349,6 +391,7 @@ function getFullDataNode(raw) {
   artist.style.filter = "invert(60%)";
   artist.style.transition = "all 1s ease-out";
   artist.innerHTML = raw.artist || "Unknown";
+  artist.className = "current-track-artist"
   const album = document.createElement("h3");
   album.style.fontFamily = "PS, sans-serif";
   album.style.position = "absolute";

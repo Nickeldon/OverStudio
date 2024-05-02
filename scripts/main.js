@@ -2,7 +2,6 @@ var RFreq = 1;
 //document.getElementById('SoundFrame').src = `./SoundFrame.html?random=${(new Date()).getTime() + Math.floor(Math.random() * 1000000)}`
 
 var localStorageData = localStorage;
-console.log(localStorageData)
 var EffectChangeTimeout = true;
 var completesplash = false;
 var corrupt = false;
@@ -108,15 +107,25 @@ if (!enAmpl) {
 localStorage.setItem("effectsState", JSON.stringify(effectsArray));
 
 var idle = 0;
-var idletimeout = parseInt(localStorageData["idletimeout"]) || 25;
-localStorage.setItem("idletimeout", idletimeout);
+var idletimeout;
 
-if (idletimeout == 25) {
-  document.getElementById("idle-txt0").innerText = "25s";
-} else if (idletimeout == 10) {
-  document.getElementById("idle-txt0").innerText = "10s";
+if (isNaN(parseInt(localStorageData["idletimeout"]))) {
+  localStorage.setItem("idletimeout", 25);
+  idletimeout = 25;
 } else {
-  document.getElementById("idle-txt0").innerText = `${idletimeout / 60} min`;
+  idletimeout = parseInt(localStorageData["idletimeout"]);
+  localStorage.setItem("idletimeout", idletimeout);
+}
+if (idletimeout != 0) {
+  if (idletimeout == 25) {
+    document.getElementById("idle-txt0").innerText = "25s";
+  } else if (idletimeout == 10) {
+    document.getElementById("idle-txt0").innerText = "10s";
+  } else {
+    document.getElementById("idle-txt0").innerText = `${idletimeout / 60} min`;
+  }
+} else {
+  document.getElementById("idle-txt0").innerText = "never";
 }
 
 document
@@ -1213,4 +1222,34 @@ function PlayShuffleSong(
     console.log("did not passed", position, playlist.length - 1, playlist);
     return undefined;
   }
+}
+
+let searchKeyOnHold = false;
+
+document
+  .getElementById("search-query-txtInput")
+  .addEventListener("input", (event) => {
+    let key = event.key;
+    if (!searchKeyOnHold && VerifyIfValidkey(key)) {
+      searchKeyOnHold = true;
+      ProcessSearch(document.getElementById("search-query-txtInput").value);
+    }
+  });
+
+document
+  .getElementById("search-query-txtInput")
+  .addEventListener("keyup", () => {
+    searchKeyOnHold = false;
+  });
+
+function VerifyIfValidkey(key) {
+  const InvalidKeys = [
+    "Alt", "Control", "Shift", "Enter", "F1", "F2", "F3", "F4", "F5", "F6", 
+    "F7", "F8", "F9", "F10", "F11", "F12", "Tab", "CapsLock", "Escape", "Insert", 
+    "Home", "End", "PageUp", "PageDown", "ArrowUp", "ArrowDown", "ArrowLeft", 
+    "ArrowRight", "ContextMenu", "Meta", "AltGraph", "ScrollLock", "Pause", 
+    "PrintScreen", "NumLock", "Clear"
+  ];
+
+  return !InvalidKeys.includes(key);
 }

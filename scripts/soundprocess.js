@@ -1531,3 +1531,31 @@ navigator.mediaSession.setActionHandler("seekbackward", () => {});
 navigator.mediaSession.setActionHandler("seekforward", () => {});
 navigator.mediaSession.setActionHandler("previoustrack", () => {});
 navigator.mediaSession.setActionHandler("nexttrack", () => {});
+
+function ProcessSearch(input){
+  if(input && playlist){
+    if(playlist.length > 0){
+    let searchResults = [];
+    input = input.toLowerCase();
+    playlist.forEach((track) => {
+      //console.log(track)
+
+      let trackTitle = track.title;
+      let trackArtist = track.artist;
+      if(trackTitle && trackArtist){
+        trackTitle = trackTitle.toLowerCase();
+        trackArtist = trackArtist.toLowerCase();
+      if(trackTitle.includes(input) || trackArtist.includes(input)){
+        searchResults.push(track);
+      }}
+      else if(trackTitle){
+        trackTitle = trackTitle.toLowerCase();
+        if(trackTitle.includes(input)){
+          searchResults.push(track);
+        }
+      }
+    });
+    GenerateSearchResults(searchResults)
+  }
+  }
+}
