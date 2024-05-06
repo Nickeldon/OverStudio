@@ -53,6 +53,17 @@ How to run OverStudio
 - Choose your favorite theme to create your own custom OverStudio client! (More themes are coming / Theme creator)
 
 </br>
+
+<b>Use the Integrated EQ</b>
+
+- Onto OverStudio, go to 'More Options' > 'Equalizer'
+
+- Onto 'Presets', choose the desired preset
+  
+- Create a custom Equalizer by choosing the custom EQ slots at the top of the list
+
+</br>
+
 <b>Add custom backgrounds</b>
 
 - Go inside the application file and navigate into ``ressouces\app\Media\CustomBackgrounds\``
