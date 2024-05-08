@@ -322,17 +322,13 @@ refreshbuttons.forEach((refresh) => {
     }
     started = false;
     ready = false;
-    parent.BGready = false;
+    BGready = false;
     document.getElementById("play-pause").style.opacity = "0%";
     document.getElementById("loading").style.opacity = "100%";
     playlist = null;
     deletePLCache().then(() => {
       fetchPlaylist().then((data) => {
-        if (data[0].length === 0 && data[1].length === 0) {
-          //console.log('nothing')
-        } else {
-          //console.log(data[0])
-          //console.log('refreshed')
+        if(data[0].length != 0 && data[1].length != 0){
           ManageData(data);
           playlist = data[0];
           poshistory = [];
@@ -347,12 +343,13 @@ refreshbuttons.forEach((refresh) => {
       } catch (e) {
         console.log(e);
       }
-      let WaitForBG = setInterval(() => {
+      /*let WaitForBG = setInterval(() => {
+        console.log("waiting for BG");
         if (BackgroundData) {
           clearInterval(WaitForBG);
           parent.BGready = true;
         }
-      }, 500);
+      }, 500);*/
     }
     if (audio) {
       let interval = setInterval(() => {
@@ -368,28 +365,32 @@ refreshbuttons.forEach((refresh) => {
               console.log("not in playlist");
               plpos = 0;
               if (audio.isLoaded()) {
+                if(audio.isPlaying()) state = "playing";
                 audio.stop();
-                audio.dispose();
               }
-              audio = new p5.SoundFile(playlist[plpos].url, loaded);
-              let interval2 = setInterval(() => {
-                if (audio.isLoaded()) {
+              if(!audio){
+                audio = new p5.SoundFile(playlist[plpos].url, () => {
                   document.getElementById("refr-alt").click();
-                  clearInterval(interval2);
-                  manageAudioData();
-                  audio.play();
-                }
-              }, 10);
+                    clearInterval(interval2);
+                    manageAudioData();
+                    if(state === "playing") audio.play();
+                });}
+              else{
+                audio.setPath(playlist[plpos].url, () => {
+                  document.getElementById("refr-alt").click();
+                    clearInterval(interval2);
+                    manageAudioData();
+                    if(state === "playing") audio.play();
+                });
+              }
             }
           }
-          //console.log(playlist)
           started = true;
           if (audio.isLoaded()) {
             let verifyifload = setInterval(() => {
               if (ready) {
                 plpos = MoveToCurrent(audio.url, playlist);
                 poshistory = [];
-                //console.log('playlist fetched')
                 clearInterval(verifyifload);
                 ready = false;
               }
@@ -1449,7 +1450,7 @@ let BGScanInterval = setInterval(() => {
 function ChangeBG() {
   let interval = setTimeout(() => {
     if (
-      parent.BGready &&
+      BGready &&
       document.getElementById("BG-choice-txt0").innerText === "BGCustom"
     ) {
       if (BackgroundData) {
@@ -1517,7 +1518,7 @@ setInterval(() => {
       let WaitForBG = setInterval(() => {
         if (BackgroundData) {
           clearInterval(WaitForBG);
-          parent.BGready = true;
+          BGready = true;
         }
       }, 500);
     }
