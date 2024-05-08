@@ -1,6 +1,7 @@
-let PORT = localStorage.getItem('Base_PORT') || 8000
+let PORT = localStorage.getItem("Base_PORT") || 8000;
 const ws = new WebSocket(`ws://localhost:${PORT}`);
 var data;
+var SETBypassBGScan = false;
 
 document.visibilityState = "visible";
 
@@ -73,36 +74,37 @@ function shuffleArray(array) {
   return array;
 }
 
-function GenerateSearchResults(resArray){
+function GenerateSearchResults(resArray) {
   //console.log(resArray)
   deleteSearchResults().then(() => {
-    const titleArray = []
+    const titleArray = [];
     resArray.forEach((elem) => {
-      if(elem.title)
-      titleArray.push(elem.title)
-    })
+      if (elem.title) titleArray.push(elem.title);
+    });
 
     //console.log(titleArray)
-  
-    const finalSearchArray = []
-  if (document.getElementById('current-track').childNodes.length > 0) {
-    Array.from(document.getElementsByClassName('current-track-title')).forEach((elem) => {
-      if (titleArray.includes(elem.innerText)) {
-        console.log(elem.innerText)
-        document.getElementById('search-track').appendChild(elem)
-      }
-    });
-  }
-  
+
+    const finalSearchArray = [];
+    if (document.getElementById("current-track").childNodes.length > 0) {
+      Array.from(
+        document.getElementsByClassName("current-track-title")
+      ).forEach((elem) => {
+        if (titleArray.includes(elem.innerText)) {
+          console.log(elem.innerText);
+          document.getElementById("search-track").appendChild(elem);
+        }
+      });
+    }
+
     document.getElementById("current-track").style.opacity = "0%";
     document.getElementById("search-track").style.opacity = "80%";
-  
+
     /*finalSearchArray.forEach((elem) => {
       document.getElementById('search-track').appendChild(elem)
     })*/
-    
+
     //console.log(finalSearchArray)
-  })
+  });
 }
 
 async function addPlaylist() {
@@ -233,7 +235,7 @@ async function deletePLCache() {
   }
 }
 
-async function deleteSearchResults(){
+async function deleteSearchResults() {
   var listnodes = document.getElementById("search-track");
   while (listnodes.lastElementChild) {
     document
@@ -268,6 +270,7 @@ function deldiv(nbr, link) {
             document.getElementById(`child-div-${nbr}`).style.opacity = "0%";
             setTimeout(() => {
               document.getElementById(`child-div-${nbr}`).remove();
+              SETBypassBGScan = true;
               document.getElementById("Refresh").click();
 
               setTimeout(() => {
@@ -287,7 +290,8 @@ function deldiv(nbr, link) {
                     localStorage.setItem("PlMenuOpened", true);
                   else localStorage.setItem("PlMenuOpened", false);
                   localStorage.setItem("emptyreload", true);
-                  window.location.reload();
+                  console.log("emptyreload 0");
+                  //window.location.reload();
                 }
               }, 500);
             }, 500);
@@ -309,6 +313,7 @@ function deldiv(nbr, link) {
               document.getElementById("no-div-err").style.opacity = "80%";
               document.getElementById("div-set-filter").style.opacity = "0%";
               document.getElementById("div-selector").style.opacity = "0%";
+              SETBypassBGScan = true;
               document.getElementById("Refresh").click();
               setTimeout(() => {
                 var trackarray = [];
@@ -327,7 +332,8 @@ function deldiv(nbr, link) {
                     localStorage.setItem("PlMenuOpened", true);
                   else localStorage.setItem("PlMenuOpened", false);
                   localStorage.setItem("emptyreload", true);
-                  window.location.reload();
+                  console.log("emptyreload 1");
+                  //window.location.reload();
                 }
               }, 500);
             }, 500);
@@ -380,7 +386,7 @@ function getFullDataNode(raw) {
   title.style.filter = "invert(30%)";
   title.style.transition = "all 1s ease-out";
   title.innerHTML = raw.title || "Unknown";
-  title.className = "current-track-title"
+  title.className = "current-track-title";
   const artist = document.createElement("h3");
   artist.style.fontFamily = "PS, sans-serif";
   artist.style.position = "absolute";
@@ -391,7 +397,7 @@ function getFullDataNode(raw) {
   artist.style.filter = "invert(60%)";
   artist.style.transition = "all 1s ease-out";
   artist.innerHTML = raw.artist || "Unknown";
-  artist.className = "current-track-artist"
+  artist.className = "current-track-artist";
   const album = document.createElement("h3");
   album.style.fontFamily = "PS, sans-serif";
   album.style.position = "absolute";

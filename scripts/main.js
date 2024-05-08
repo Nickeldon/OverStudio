@@ -15,6 +15,7 @@ var MenuTimeout = [0, 0, 0, 0, 0, 0, 0];
 
 var BackgroundData = [];
 var BGready = false;
+var BGChangeInterval;
 
 var BGrefresh = localStorageData["Background-Cooldown"] || 10000;
 localStorage.setItem("Background-Cooldown", BGrefresh);
@@ -264,7 +265,6 @@ function SwitchBackgrounds(choice) {
                 document.getElementById("Audio-react").style.opacity = "100%";
               }, 100);
               cooldownBGState = true;
-              BGready = true;
               document.getElementById("refr-alt").click();
             }, 1000);
           }, 100);
@@ -372,7 +372,6 @@ function FetchBackgrounds(State, Bypass) {
                     "none";
                   document.getElementById("Blob-Reactor-Obj").style.transition =
                     prevTransition;
-                  BGready = true;
                 }, 1000);
               } catch (e) {
                 console.log(e);
@@ -1244,11 +1243,42 @@ document
 
 function VerifyIfValidkey(key) {
   const InvalidKeys = [
-    "Alt", "Control", "Shift", "Enter", "F1", "F2", "F3", "F4", "F5", "F6", 
-    "F7", "F8", "F9", "F10", "F11", "F12", "Tab", "CapsLock", "Escape", "Insert", 
-    "Home", "End", "PageUp", "PageDown", "ArrowUp", "ArrowDown", "ArrowLeft", 
-    "ArrowRight", "ContextMenu", "Meta", "AltGraph", "ScrollLock", "Pause", 
-    "PrintScreen", "NumLock", "Clear"
+    "Alt",
+    "Control",
+    "Shift",
+    "Enter",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "Tab",
+    "CapsLock",
+    "Escape",
+    "Insert",
+    "Home",
+    "End",
+    "PageUp",
+    "PageDown",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ContextMenu",
+    "Meta",
+    "AltGraph",
+    "ScrollLock",
+    "Pause",
+    "PrintScreen",
+    "NumLock",
+    "Clear",
   ];
 
   return !InvalidKeys.includes(key);
