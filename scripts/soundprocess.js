@@ -145,18 +145,18 @@ function getRandom(min, max) {
 
 function setup() {
   fft = new p5.FFT();
-  angleMode(DEGREES);
+  /*angleMode(DEGREES);
   window.onload = () =>
     createCanvas(
       window.innerWidth,
       window.innerHeight,
       document.getElementById("Audio-Visulizer-Canv")
     );
-  background(0);
+  background(0);*/
   if (started) {
     try {
       if (playlist[plpos]) {
-        audio = new p5.SoundFile(playlist[plpos].url, loaded, () => {
+        audio = new p5.SoundFile(playlist[plpos].url, loaded, (e) => {
           console.log("error", e);
         });
       }
@@ -309,16 +309,16 @@ refreshbuttons.forEach((refresh) => {
       plpos = 0;
       prevnul = false;
       try {
-        audio = new new p5.SoundFile(
+        audio = new p5.SoundFile(
           playlist[plpos].url,
           () => {
-            document.getElementById("refr-alt").click();
+            //document.getElementById("refr-alt").click();
             manageAudioData();
           },
           (e) => {
             throw e;
           }
-        )();
+        );
       } catch (e) {
         retryTimeout += 5;
         if (
@@ -855,7 +855,8 @@ document.getElementById("timeslide").addEventListener("change", () => {
 
 var endedTimeout;
 
-function createEndedListener() {
+function EndedListener() {
+  changeMediaButtonsState(false)
   document.getElementById("timeslide").value = 0;
   if (!audio._paused) {
     if (plpos >= playlist.length - 1) {
@@ -1162,7 +1163,8 @@ function manageAudioData() {
 
       endedTimeout = setTimeout(() => {
         if (audio.isLoaded()) {
-          audio.onended(createEndedListener);
+          changeMediaButtonsState(true);
+          audio.onended(EndedListener);
         }
       }, 200);
 
@@ -1577,5 +1579,19 @@ function ProcessSearch(input) {
       });
       GenerateSearchResults(searchResults);
     }
+  }
+}
+
+function changeMediaButtonsState(state){
+  if(state){
+    document.getElementById('play-pause').style.pointerEvents = 'all'
+    document.getElementById('next').style.pointerEvents = 'all'
+    document.getElementById('back').style.pointerEvents = 'all'
+    document.getElementById('shuffle').style.pointerEvents = 'all'
+  }else{
+    document.getElementById('play-pause').style.pointerEvents = 'none'
+    document.getElementById('next').style.pointerEvents = 'none'
+    document.getElementById('back').style.pointerEvents = 'none'
+    document.getElementById('shuffle').style.pointerEvents = 'none'
   }
 }
