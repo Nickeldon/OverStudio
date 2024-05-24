@@ -856,8 +856,6 @@ document.getElementById("timeslide").addEventListener("change", () => {
 var endedTimeout;
 
 function EndedListener() {
-  changeMediaButtonsState(false)
-  document.getElementById("timeslide").value = 0;
   if (!audio._paused) {
     if (plpos >= playlist.length - 1) {
       document.getElementById("Blob-Reactor-Obj").style.transition =
@@ -873,8 +871,11 @@ function EndedListener() {
 
       clearTimeout(timeout);
     } else {
-      if (started && audio.isLoaded() && !audio._paused && release)
+      if (started && audio.isLoaded() && !audio._paused && release) {
         next.click();
+        document.getElementById("timeslide").value = 0;
+        changeMediaButtonsState(false);
+      }
 
       document.getElementById("Blob-Reactor-Obj").style.transition =
         "all 1s ease-out";
@@ -985,27 +986,31 @@ function KeydownEvent(event) {
 
         case " ":
           {
-            if (!holdPL) {
-              if (audio) {
-                if (audio.isLoaded()) {
-                  playpausebtn.click();
+            if (getMediaButtonsState()) {
+              if (!holdPL) {
+                if (audio) {
+                  if (audio.isLoaded()) {
+                    playpausebtn.click();
+                  }
                 }
+              } else {
+                next.click();
               }
-            } else {
-              next.click();
             }
           }
           break;
 
         case "ArrowDown":
           {
-            resetIdleTimer();
-            if (audio) {
-              if (audio.isLoaded()) {
-                if (reversed) {
-                  next.click();
-                } else {
-                  prev.click();
+            if (getMediaButtonsState()) {
+              resetIdleTimer();
+              if (audio) {
+                if (audio.isLoaded()) {
+                  if (reversed) {
+                    next.click();
+                  } else {
+                    prev.click();
+                  }
                 }
               }
             }
@@ -1014,19 +1019,21 @@ function KeydownEvent(event) {
 
         case "ArrowUp":
           {
-            resetIdleTimer();
-            if (!holdPL) {
-              if (audio) {
-                if (audio.isLoaded()) {
-                  if (reversed) {
-                    prev.click();
-                  } else {
-                    next.click();
+            if (getMediaButtonsState()) {
+              resetIdleTimer();
+              if (!holdPL) {
+                if (audio) {
+                  if (audio.isLoaded()) {
+                    if (reversed) {
+                      prev.click();
+                    } else {
+                      next.click();
+                    }
                   }
                 }
+              } else {
+                next.click();
               }
-            } else {
-              next.click();
             }
           }
           break;
@@ -1134,12 +1141,13 @@ var trackinterval = setInterval(() => {
   }
 }, 100);
 
+let timeslideresetTimeout
 function manageAudioData() {
+  clearTimeout(timeslideresetTimeout)
   clearTimeout(endedTimeout);
   if (audio) {
     if (audio.isLoaded()) {
       let temptime, totalseconds, totaltime;
-      document.getElementById("timeslide").value = 0;
       let duration = { value: audio.duration() };
       temptime = Math.max(Math.floor(duration.value % 60), 0);
       totalseconds = temptime < 10 ? "0" + temptime : temptime.toString();
@@ -1161,9 +1169,11 @@ function manageAudioData() {
         document.getElementById("track-name").innerHTML = "Unknown";
       }
 
+      changeMediaButtonsState(true);
       endedTimeout = setTimeout(() => {
         if (audio.isLoaded()) {
-          changeMediaButtonsState(true);
+          document.getElementById("timeslide").value = 0;
+          document.getElementById("timeslide").dispatchEvent(new Event("change", { bubbles: true }));
           audio.onended(EndedListener);
         }
       }, 200);
@@ -1463,6 +1473,7 @@ let BGScanInterval = setInterval(() => {
 }, 1000);
 
 function ChangeBG() {
+  clearTimeout(BGChangeInterval);
   BGChangeInterval = setTimeout(() => {
     if (
       BGready &&
@@ -1485,6 +1496,7 @@ function ChangeBG() {
           document.getElementById("Audio-react").style.opacity = "0%";
           setTimeout(() => {
             try {
+              console.log('BG Changed')
               document.getElementById("Audio-react").data =
                 BackgroundData[BGpos];
               const timeout2 = setTimeout(() => {
@@ -1582,16 +1594,28 @@ function ProcessSearch(input) {
   }
 }
 
-function changeMediaButtonsState(state){
-  if(state){
-    document.getElementById('play-pause').style.pointerEvents = 'all'
-    document.getElementById('next').style.pointerEvents = 'all'
-    document.getElementById('back').style.pointerEvents = 'all'
-    document.getElementById('shuffle').style.pointerEvents = 'all'
-  }else{
-    document.getElementById('play-pause').style.pointerEvents = 'none'
-    document.getElementById('next').style.pointerEvents = 'none'
-    document.getElementById('back').style.pointerEvents = 'none'
-    document.getElementById('shuffle').style.pointerEvents = 'none'
+function changeMediaButtonsState(state) {
+  if (state) {
+    document.getElementById("play-pause").style.pointerEvents = "all";
+    document.getElementById("next").style.pointerEvents = "all";
+    document.getElementById("back").style.pointerEvents = "all";
+    document.getElementById("shuffle").style.pointerEvents = "all";
+  } else {
+    document.getElementById("play-pause").style.pointerEvents = "none";
+    document.getElementById("next").style.pointerEvents = "none";
+    document.getElementById("back").style.pointerEvents = "none";
+    document.getElementById("shuffle").style.pointerEvents = "none";
   }
+}
+
+function getMediaButtonsState() {
+  if (
+    document.getElementById("play-pause").style.pointerEvents == "all" &&
+    document.getElementById("next").style.pointerEvents == "all" &&
+    document.getElementById("back").style.pointerEvents == "all" &&
+    document.getElementById("shuffle").style.pointerEvents == "all"
+  )
+    return true;
+
+  return false;
 }

@@ -490,11 +490,11 @@ app.get("/getBackgrounds", (req, res, next) => {
               elem = elem.split(".");
               elem[1] = elem[1].toLowerCase();
               if (
-                elem[1] === "webp" ||
-                elem[1] === "png" ||
-                elem[1] === "jpg" ||
-                elem[1] === "jpeg" ||
-                elem[1] === "gif"
+                elem[elem.length - 1] === "webp" ||
+                elem[elem.length - 1] === "png" ||
+                elem[elem.length - 1] === "jpg" ||
+                elem[elem.length - 1] === "jpeg" ||
+                elem[elem.length - 1] === "gif"
               ) {
                 data.push(`${Path}/${elem[0] + "." + elem[1]}`);
               }

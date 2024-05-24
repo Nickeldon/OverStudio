@@ -291,7 +291,7 @@ function deldiv(nbr, link) {
                   else localStorage.setItem("PlMenuOpened", false);
                   localStorage.setItem("emptyreload", true);
                   console.log("emptyreload 0");
-                  //window.location.reload();
+                  window.location.reload();
                 }
               }, 500);
             }, 500);
@@ -333,7 +333,7 @@ function deldiv(nbr, link) {
                   else localStorage.setItem("PlMenuOpened", false);
                   localStorage.setItem("emptyreload", true);
                   console.log("emptyreload 1");
-                  //window.location.reload();
+                  window.location.reload();
                 }
               }, 500);
             }, 500);
