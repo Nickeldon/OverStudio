@@ -66,6 +66,7 @@ let imageMetadata = [];
 var audioreact = document.getElementById("Blob-Reactor-Obj");
 var rs = getComputedStyle(audioreact);
 var timeoutplaypause = Date.now();
+let enable_btns = false;
 
 document.getElementById("timeslide").style.transition =
   "background-size 0.2s ease-out";
@@ -253,6 +254,12 @@ document.getElementById("div-inp").addEventListener("change", () => {
   } else {
     prevnul = true;
   }
+  document.getElementById("search-track").style.opacity = "0%";
+  document.getElementById("search-query-txtInput").value = "";
+  if (document.getElementById("search-query").style.width == "600px")
+    document.querySelector(".search-query i").click();
+
+  deleteSearchResults();
   console.log("changed");
   addPlaylist().then((response) => {
     if (response === "AlreadyExists") {
@@ -659,28 +666,35 @@ next.addEventListener("click", () => {
           {
             poshistory = [];
             if (playlist[plpos + 1] && started) {
+              enable_btns = false;
               plpos++;
               document.getElementById("play-pause").style.opacity = "0%";
               document.getElementById("loading").style.opacity = "100%";
               if (!audio.isPlaying()) state = "paused";
               else state = "playing";
+              follow = false;
+              goBackTimeStep();
+
               audio.stop();
               started = false;
               ready = false;
+              document.getElementById("timeslide").value = 0;
+              document
+                .getElementById("timeslide")
+                .dispatchEvent(new Event("change", { bubbles: true }));
+              console.log(document.getElementById("timeslide").value);
               NextSong(audio, playlist, plpos, state, () => {
                 started = true;
                 ready = true;
+
+                setTimeout(() => (follow = true), 100);
+                //follow = true
                 manageAudioData();
                 audio.play();
-                if (state === "paused") audio.pause();
+                if (state === "paused") {
+                  audio.pause();
+                }
               });
-              const timeout = setTimeout(() => {
-                document.getElementById(
-                  "Blob-Reactor-Obj"
-                ).style.transition = `all ${BGspeed}s ease-out`;
-                PrevSpeed = BGspeed;
-              }, 1000);
-              clearTimeout(timeout);
             }
           }
           break;
@@ -695,6 +709,7 @@ next.addEventListener("click", () => {
                 plpos = 0;
                 poshistory = [plpos];
               } else {
+                enable_btns = false;
                 function getRandomPos() {
                   ipos = plpos;
                   if (!poshistory[poshistory.indexOf(plpos) + 1]) {
@@ -741,7 +756,6 @@ next.addEventListener("click", () => {
                 ).style.transition = `all ${BGspeed}s ease-out`;
                 PrevSpeed = BGspeed;
               }, 1000);
-              clearTimeout(timeout);
             }
           }
           break;
@@ -782,6 +796,7 @@ next.addEventListener("click", () => {
 
 prev.addEventListener("click", () => {
   if (plpos > 0 && started) {
+    enable_btns = false;
     let ipos = plpos;
     let shuffleBack = false;
     if (
@@ -836,10 +851,12 @@ document.getElementById("timeslide").addEventListener("change", () => {
     document.getElementById("loading").style.opacity = "100%";
     if (!audio._paused) audio.jump(document.getElementById("timeslide").value);
     else {
+      audio.setVolume(0);
       audio.play();
       audio.jump(document.getElementById("timeslide").value);
       setTimeout(() => {
         audio.pause();
+        audio.setVolume(volumeSlider.value / 20);
       }, 100);
     }
     let interval = setInterval(() => {
@@ -858,20 +875,20 @@ var endedTimeout;
 function EndedListener() {
   if (!audio._paused) {
     if (plpos >= playlist.length - 1) {
+      console.log("passed there");
       document.getElementById("Blob-Reactor-Obj").style.transition =
         "all 1s ease-out";
       document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
 
-      const timeout = setTimeout(() => {
+      setTimeout(() => {
         document.getElementById(
           "Blob-Reactor-Obj"
         ).style.transition = `all ${BGspeed}s ease-out`;
         PrevSpeed = BGspeed;
       }, 1000);
-
-      clearTimeout(timeout);
     } else {
       if (started && audio.isLoaded() && !audio._paused && release) {
+        enable_btns = false;
         next.click();
         document.getElementById("timeslide").value = 0;
         changeMediaButtonsState(false);
@@ -881,13 +898,12 @@ function EndedListener() {
         "all 1s ease-out";
       document.getElementById("Blob-Reactor-Obj").style.transform = `scale(1)`;
 
-      const timeout = setTimeout(() => {
+      setTimeout(() => {
         document.getElementById(
           "Blob-Reactor-Obj"
         ).style.transition = `all ${BGspeed}s ease-out`;
         PrevSpeed = BGspeed;
       }, 1000);
-      clearTimeout(timeout);
     }
   }
 }
@@ -895,13 +911,23 @@ function EndedListener() {
 function loaded() {
   try {
     if (started) {
-      manageAudioData();
+      manageAudioData(true);
       audio.play();
       if (state === "paused") audio.pause();
     }
   } catch (e) {
     console.log("not loaded");
     console.log(e);
+  }
+}
+
+function goBackTimeStep() {
+  if (audio.isLoaded()) {
+    audio.setVolume(0);
+    document.getElementById("timeslide").value = 0;
+    document
+      .getElementById("timeslide")
+      .dispatchEvent(new Event("change", { bubbles: true }));
   }
 }
 
@@ -986,15 +1012,17 @@ function KeydownEvent(event) {
 
         case " ":
           {
-            if (getMediaButtonsState()) {
-              if (!holdPL) {
-                if (audio) {
-                  if (audio.isLoaded()) {
-                    playpausebtn.click();
+            if (enable_btns) {
+              if (getMediaButtonsState()) {
+                if (!holdPL) {
+                  if (audio) {
+                    if (audio.isLoaded()) {
+                      playpausebtn.click();
+                    }
                   }
+                } else {
+                  next.click();
                 }
-              } else {
-                next.click();
               }
             }
           }
@@ -1002,14 +1030,16 @@ function KeydownEvent(event) {
 
         case "ArrowDown":
           {
-            if (getMediaButtonsState()) {
-              resetIdleTimer();
-              if (audio) {
-                if (audio.isLoaded()) {
-                  if (reversed) {
-                    next.click();
-                  } else {
-                    prev.click();
+            if (enable_btns) {
+              if (getMediaButtonsState()) {
+                resetIdleTimer();
+                if (audio) {
+                  if (audio.isLoaded()) {
+                    if (reversed) {
+                      next.click();
+                    } else {
+                      prev.click();
+                    }
                   }
                 }
               }
@@ -1019,20 +1049,22 @@ function KeydownEvent(event) {
 
         case "ArrowUp":
           {
-            if (getMediaButtonsState()) {
-              resetIdleTimer();
-              if (!holdPL) {
-                if (audio) {
-                  if (audio.isLoaded()) {
-                    if (reversed) {
-                      prev.click();
-                    } else {
-                      next.click();
+            if (enable_btns) {
+              if (getMediaButtonsState()) {
+                resetIdleTimer();
+                if (!holdPL) {
+                  if (audio) {
+                    if (audio.isLoaded()) {
+                      if (reversed) {
+                        prev.click();
+                      } else {
+                        next.click();
+                      }
                     }
                   }
+                } else {
+                  next.click();
                 }
-              } else {
-                next.click();
               }
             }
           }
@@ -1141,10 +1173,16 @@ var trackinterval = setInterval(() => {
   }
 }, 100);
 
-let timeslideresetTimeout
-function manageAudioData() {
-  clearTimeout(timeslideresetTimeout)
+let timeslideresetTimeout;
+function manageAudioData(bypass_reset = true) {
+  clearTimeout(timeslideresetTimeout);
   clearTimeout(endedTimeout);
+
+  document.getElementById(
+    "Blob-Reactor-Obj"
+  ).style.transition = `all ${BGspeed}s ease-out`;
+  PrevSpeed = BGspeed;
+
   if (audio) {
     if (audio.isLoaded()) {
       let temptime, totalseconds, totaltime;
@@ -1157,6 +1195,29 @@ function manageAudioData() {
 
       audio.setVolume(volumeSlider.value / 20);
       audio.connect(eq);
+      if (state == "paused" && document.getElementById("timeslide").value > 0) {
+        audio.setVolume(0);
+        setTimeout(() => {
+          follow = false;
+          audio.play();
+          setTimeout(() => {
+            document.getElementById("timeslide").value = 0;
+            document
+              .getElementById("timeslide")
+              .dispatchEvent(new Event("change", { bubbles: true }));
+            setTimeout(() => {
+              audio.pause();
+              audio.setVolume(volumeSlider.value / 20);
+              follow = true;
+              enable_btns = true;
+            }, 50);
+          }, 50);
+        }, 50);
+      } else {
+        setTimeout(() => {
+          enable_btns = true;
+        }, 100);
+      }
 
       try {
         document.getElementById("track-artist").innerHTML =
@@ -1172,8 +1233,8 @@ function manageAudioData() {
       changeMediaButtonsState(true);
       endedTimeout = setTimeout(() => {
         if (audio.isLoaded()) {
-          document.getElementById("timeslide").value = 0;
-          document.getElementById("timeslide").dispatchEvent(new Event("change", { bubbles: true }));
+          //document.getElementById("timeslide").value = 0;
+          //document.getElementById("timeslide").dispatchEvent(new Event("change", { bubbles: true }));
           audio.onended(EndedListener);
         }
       }, 200);
@@ -1218,11 +1279,13 @@ function draw() {
 
             document.getElementById("current-time").innerHTML = Remainingtime;
           }
-          document.getElementById("timeslide").max = durationT;
-          document.getElementById("timeslide").style.backgroundSize = `${
-            (currentT / durationT) * 100 + 1
-          }% 100%`;
-          if (follow) document.getElementById("timeslide").value = currentT;
+          if (follow) {
+            document.getElementById("timeslide").max = durationT;
+            document.getElementById("timeslide").style.backgroundSize = `${
+              (currentT / durationT) * 100 + 1
+            }% 100%`;
+            document.getElementById("timeslide").value = currentT;
+          }
           if (
             document.getElementById("Blob-Reactor-Obj").style.display ===
               "block" &&
@@ -1496,7 +1559,7 @@ function ChangeBG() {
           document.getElementById("Audio-react").style.opacity = "0%";
           setTimeout(() => {
             try {
-              console.log('BG Changed')
+              console.log("BG Changed");
               document.getElementById("Audio-react").data =
                 BackgroundData[BGpos];
               const timeout2 = setTimeout(() => {
@@ -1572,24 +1635,65 @@ function ProcessSearch(input) {
       let searchResults = [];
       input = input.toLowerCase();
       playlist.forEach((track) => {
-        //console.log(track)
+        let trackTitle = track.title?.toLowerCase();
+        let trackArtist = track.artist?.toLowerCase();
+        let PLId = playlist.indexOf(track);
 
-        let trackTitle = track.title;
-        let trackArtist = track.artist;
         if (trackTitle && trackArtist) {
-          trackTitle = trackTitle.toLowerCase();
-          trackArtist = trackArtist.toLowerCase();
+          trackTitle = trackTitle;
+          trackArtist = trackArtist;
           if (trackTitle.includes(input) || trackArtist.includes(input)) {
-            searchResults.push(track);
+            searchResults.push({
+              title: trackTitle,
+              artist: trackArtist,
+              id: PLId,
+            });
           }
         } else if (trackTitle) {
-          trackTitle = trackTitle.toLowerCase();
+          trackTitle = trackTitle;
           if (trackTitle.includes(input)) {
-            searchResults.push(track);
+            searchResults.push({
+              title: trackTitle,
+              artist: "Unknown",
+              id: PLId,
+            });
           }
         }
       });
       GenerateSearchResults(searchResults);
+    }
+  }
+}
+
+function concludeSearch(title, artist, id) {
+  console.log("concluded");
+  console.log(title, artist, id);
+  if (playlist && playlist[id]) {
+    if (playlist[id].url) {
+      if (audio) {
+        diffpos = id - plpos;
+        document.getElementById("play-pause").style.opacity = "0%";
+        document.getElementById("loading").style.opacity = "100%";
+        if (!audio.isPlaying()) state = "paused";
+        else state = "playing";
+        audio.stop();
+        started = false;
+        ready = false;
+        console.log(playlist[id].url, plpos, id, diffpos);
+        PlayShuffleSong(audio, playlist, id, plpos, diffpos, () => {
+          plpos = id;
+          started = true;
+          manageAudioData();
+          audio.play();
+          if (state === "paused") audio.pause();
+        });
+        setTimeout(() => {
+          document.getElementById(
+            "Blob-Reactor-Obj"
+          ).style.transition = `all ${BGspeed}s ease-out`;
+          PrevSpeed = BGspeed;
+        }, 1000);
+      }
     }
   }
 }

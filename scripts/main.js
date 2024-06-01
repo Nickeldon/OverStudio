@@ -191,6 +191,7 @@ function SwitchBackgrounds(choice) {
     document.getElementById("Blob-Reactor-Obj").style.display = "none";
     cooldownBGState = false;
     if (choice === "BlobReactor") {
+      VisualMode = "BlobReactor";
       changeOptionState(document.getElementById("blob-speed-opt"), true);
       changeOptionState(document.getElementById("blob-speed-opt"), true);
       changeOptionState(document.getElementById("blob-react-parent"), true);
@@ -222,6 +223,7 @@ function SwitchBackgrounds(choice) {
         }, 1000);
       }, 100);
     } else if (choice === "BGCustom") {
+      VisualMode = "BGCustom";
       if (BackgroundData) {
         if (BackgroundData.length > 0) {
           changeOptionState(document.getElementById("blob-speed-opt"), false);
@@ -676,6 +678,12 @@ function openMENU(Bypass_menu_disp) {
 
   if (document.getElementById("search-query").style.width == "600px")
     document.querySelector(".search-query i").click();
+  document.getElementById("search-track").style.opacity = "0%";
+  document.getElementById("search-query-txtInput").value = "";
+  if (document.getElementById("search-query").style.width == "600px")
+    document.querySelector(".search-query i").click();
+
+  deleteSearchResults();
 
   var opt = document.getElementById("options");
   var optprev = document.getElementById("opt-preview");
@@ -1228,8 +1236,12 @@ let searchKeyOnHold = false;
 document
   .getElementById("search-query-txtInput")
   .addEventListener("input", (event) => {
-    let key = event.key;
-    if (!searchKeyOnHold && VerifyIfValidkey(key)) {
+    let key = event.data;
+    console.log(event);
+    if (document.getElementById("search-query-txtInput").value.length === 0) {
+      document.getElementById("current-track").style.opacity = "100%";
+      document.getElementById("search-track").style.opacity = "0%";
+    } else if (!searchKeyOnHold && VerifyIfValidkey(key)) {
       searchKeyOnHold = true;
       ProcessSearch(document.getElementById("search-query-txtInput").value);
     }

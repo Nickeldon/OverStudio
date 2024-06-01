@@ -1469,17 +1469,14 @@
                     txt.innerText = '.2'
                 }else if(txt.innerText == '.2' || txt.innerText == '0.2'){
                     txt.innerText = '.5'
-                    BGspeed = .5
                 } else if(txt.innerText == '.5' || txt.innerText == '0.5'){
                     txt.innerText = '1'
-                    BGspeed = 1
                 } else if(txt.innerText == '1'){
                     txt.innerText = '2'
-                    BGspeed = 2
                 } else if(txt.innerText == '2'){
                     txt.innerText = '.1'
-                    BGspeed = .1
                 }
+                BGspeed = parseFloat(txt.innerText)
                 localStorage.setItem('Reactor-Speed', BGspeed)
                 "
             >
@@ -1773,7 +1770,13 @@
           <i
             style="height: 70px; width: 70px; border-radius: 50%"
             onclick="
+            document
+            .getElementById('search-query-txtInput').value = ''
           if(document.getElementById('search-query').style.width == '600px'){
+            document.getElementById('search-track').style.willChange = 'unset'
+            document.getElementById('current-track').style.opacity = '100%';
+            document.getElementById('search-track').style.opacity = '0%';
+            document.getElementById('search-track').style.pointerEvents = 'none';
             document.getElementById('search-query-txtInput').style.opacity = '0%';
             document.getElementById('search-query-txtInput').disabled = true;
             setTimeout(() => {
@@ -1791,6 +1794,8 @@
               document.getElementById('search-query').style.borderRadius = '50%';
             }, 1200);
           } else {
+            document.getElementById('search-track').style.willChange = 'scroll-position';
+            document.getElementById('search-track').style.pointerEvents = 'all';
             document.getElementById('search-query-txtInput').disabled = false;
             setTimeout(() => {
               document.getElementById('search-query-txtInput').style.display = 'block';
@@ -2727,6 +2732,10 @@
     height: 150px;
     width: 300px;
     overflow-y: scroll;
+    overflow-x: hidden;
+    pointer-events: all;
+    user-select: all;
+    scrollbar-width: none;
   }
 
   .div-btn:hover {

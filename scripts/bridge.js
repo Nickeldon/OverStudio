@@ -3,8 +3,6 @@ const ws = new WebSocket(`ws://localhost:${PORT}`);
 var data;
 var SETBypassBGScan = false;
 
-document.visibilityState = "visible";
-
 ws.addEventListener("message", (response) => {
   data = JSON.parse(response.data);
   PORT = data.PORT;
@@ -76,34 +74,102 @@ function shuffleArray(array) {
 
 function GenerateSearchResults(resArray) {
   //console.log(resArray)
+  const finalSearchArray = [];
   deleteSearchResults().then(() => {
-    const titleArray = [];
-    resArray.forEach((elem) => {
-      if (elem.title) titleArray.push(elem.title);
+    resArray.forEach((item) => {
+      finalSearchArray.push({
+        title: item?.title || "Unknown",
+        artist: item?.artist || "Unknown",
+        id: item?.id || 0,
+      });
     });
 
-    //console.log(titleArray)
+    let parentContainer = document.getElementById("search-track");
+    parentContainer.style.display = "block";
 
-    const finalSearchArray = [];
-    if (document.getElementById("current-track").childNodes.length > 0) {
-      Array.from(
-        document.getElementsByClassName("current-track-title")
-      ).forEach((elem) => {
-        if (titleArray.includes(elem.innerText)) {
-          console.log(elem.innerText);
-          document.getElementById("search-track").appendChild(elem);
-        }
-      });
-    }
+    finalSearchArray.forEach((result, index) => {
+      let resultquery = document.createElement("div");
+      resultquery.style.width = "100%";
+      resultquery.style.height = "80px";
+      resultquery.style.paddingBottom = "20px";
+      if (index === 0) {
+        resultquery.style.marginTop = "25%";
+      } else if (index === finalSearchArray.length - 1) {
+        resultquery.style.marginBottom = "25%";
+      } else {
+        resultquery.style.marginTop = "20px";
+        resultquery.style.marginBottom = "20px";
+      }
+      resultquery.style.marginLeft = "0px";
+      resultquery.style.position = "relative";
+      resultquery.style.paddingTop = "20px";
+      resultquery.style.backgroundColor = "rgba(255, 255, 255, 0.0)";
+      resultquery.style.borderRadius = "10px";
+      resultquery.style.transition = "all 1s ease-out";
+      resultquery.onmouseover = () => {
+        resultquery.style.cursor = "pointer";
+        resultquery.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+        resultquery.style.marginLeft = "30px";
+      };
+      resultquery.onmouseout = () => {
+        resultquery.style.cursor = "default";
+        resultquery.style.backgroundColor = "rgba(255, 255, 255, 0.0)";
+        resultquery.style.marginLeft = "0px";
+      };
+      let currentresult = result
+      resultquery.onclick = () => {
+        document.getElementById("current-track").style.opacity = "100%";
+        document.getElementById("search-track").style.opacity = "0%";
+        document.getElementById("search-query-txtInput").value = "";
+        if (document.getElementById("search-query").style.width == "600px")
+          document.querySelector(".search-query i").click();
+
+        deleteSearchResults()
+
+        concludeSearch(currentresult.title, currentresult.artist, currentresult.id);
+      };
+
+      let resulttitle = document.createElement("h3");
+      resulttitle.innerHTML = result["title"];
+      resulttitle.style.fontFamily = "PS, sans-serif";
+      resulttitle.style.textAlign = "left";
+      resulttitle.style.marginTop = "20px";
+      resulttitle.style.marginLeft = "10px";
+      resulttitle.style.color = "white";
+      resulttitle.style.fontSize = "30px";
+      resulttitle.style.transition = "all 1s ease-out";
+      resulttitle.style.overflow = "hidden";
+      resulttitle.style.textOverflow = "ellipsis";
+      resulttitle.style.whiteSpace = "nowrap";
+      resulttitle.style.width = "80%";
+
+      let breakline = document.createElement("br");
+      resulttitle.appendChild(breakline);
+
+      let resultartist = document.createElement("span");
+      resultartist.innerHTML = result["artist"];
+      console.log(resultartist.innerHTML);
+      resultartist.style.fontFamily = "PS, sans-serif";
+      resultartist.style.color = "white";
+      resultartist.style.fontSize = "17px";
+      resultartist.style.filter = "invert(50%)";
+      resultartist.style.transition = "all 1s ease-out";
+      resultartist.style.overflow = "hidden";
+      resultartist.style.textOverflow = "ellipsis";
+      resultartist.style.whiteSpace = "nowrap";
+      resultartist.style.width = "200px";
+
+      resulttitle.appendChild(resultartist);
+
+      resultquery.appendChild(resulttitle);
+
+      parentContainer.appendChild(resultquery);
+    });
 
     document.getElementById("current-track").style.opacity = "0%";
     document.getElementById("search-track").style.opacity = "80%";
 
-    /*finalSearchArray.forEach((elem) => {
-      document.getElementById('search-track').appendChild(elem)
-    })*/
-
-    //console.log(finalSearchArray)
+    console.log(finalSearchArray);
   });
 }
 
