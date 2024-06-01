@@ -304,9 +304,11 @@ async function deletePLCache() {
 async function deleteSearchResults() {
   var listnodes = document.getElementById("search-track");
   while (listnodes.lastElementChild) {
+    if(listnodes.lastElementChild.id !== "no-result-scr")
     document
       .getElementById("search-track")
       .removeChild(listnodes.lastElementChild);
+    else break;
   }
 }
 

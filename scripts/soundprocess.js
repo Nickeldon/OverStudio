@@ -1660,6 +1660,11 @@ function ProcessSearch(input) {
           }
         }
       });
+      if(searchResults.length == 0)
+        document.getElementById("no-result-scr").style.display = "block";
+      else
+        document.getElementById("no-result-scr").style.display = "none";
+
       GenerateSearchResults(searchResults);
     }
   }
