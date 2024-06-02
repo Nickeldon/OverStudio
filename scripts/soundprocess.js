@@ -931,7 +931,18 @@ function goBackTimeStep() {
   }
 }
 
+function isCtrlcombo(event) {
+  if (event.ctrlKey && event.key == "f") {
+    if (document.getElementById("search-query").style.width != "600px")
+      document.querySelector(".search-query i").click();
+    return true;
+  }
+  return false;
+}
+
 function KeydownEvent(event) {
+
+  if(!isCtrlcombo(event)){
   let key;
   if (event.key.length === 1) {
     key = event.key.toLowerCase();
@@ -1142,10 +1153,10 @@ function KeydownEvent(event) {
         }, 1000);
       }
     }
-  }
+  }}
 }
 
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   KeydownEvent(event);
 });
 
@@ -1660,10 +1671,9 @@ function ProcessSearch(input) {
           }
         }
       });
-      if(searchResults.length == 0)
+      if (searchResults.length == 0)
         document.getElementById("no-result-scr").style.display = "block";
-      else
-        document.getElementById("no-result-scr").style.display = "none";
+      else document.getElementById("no-result-scr").style.display = "none";
 
       GenerateSearchResults(searchResults);
     }
