@@ -1,6 +1,5 @@
 var RFreq = 1;
 //document.getElementById('SoundFrame').src = `./SoundFrame.html?random=${(new Date()).getTime() + Math.floor(Math.random() * 1000000)}`
-
 var localStorageData = localStorage;
 var EffectChangeTimeout = true;
 var completesplash = false;

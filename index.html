@@ -529,14 +529,14 @@
         <h1
           style="
             text-align: left;
-            font-size: 300px;
-            margin-left: -40px;
-            margin-top: -100px;
+            font-size: 500px;
+            margin-left: -80px;
+            margin-top: -200px;
             font-family: PS, sans-serif;
             color: black;
-            width: 70%;
-            height: 70%;
-            opacity: 50%;
+            width: 200%;
+            height: 200%;
+            opacity: 23%;
             filter: invert(50%);
             text-shadow: rgb(255, 55, 0) 20px -20px 90px;
             pointer-events: none;
@@ -549,8 +549,14 @@
         <div
           id="eq-lines"
           class="eq-lines"
-          style="width: 100%; position: absolute; bottom: 0; height: 100%"
+          style="width: 100%; position: absolute; bottom: 0; height: 100%; left:2%"
         >
+          <i id="corner-top-right" style="position:absolute; top:22%; right:16%;">
+            <img src="./Addons/icons/SVG/corner-top-right.svg" style="height: 100px; filter:invert(30%)">
+          </i>
+          <i id="corner-bottom-left" style="position:absolute; bottom:9.5%; left:7.5%;  ">
+            <img src="./Addons/icons/SVG/corner-bottom-left.svg" style="height: 100px; filter:invert(30%)">
+          </i>
           <div
             style="
               position: absolute;
@@ -1820,6 +1826,7 @@
             document.getElementById('search-query-txtInput').disabled = false;
             setTimeout(() => {
               document.getElementById('search-query-txtInput').style.display = 'block';
+              document.getElementById('search-query-txtInput').focus();
               setTimeout(() => {
                 document.getElementById('search-query-txtInput').style.opacity = '100%';
               }, 100)
@@ -2466,12 +2473,8 @@
     h3 {
       /*font-family: PS, sans-serif;*/
       font-size: 25px;
-      /*background-color: linear-gradient(to bottom, rgba(74, 74, 74, 0.984), rgba(74, 74, 74, 0.3));*/
       font-weight: 100;
       filter: invert(50%);
-      /*overflow:hidden;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;*/
       text-overflow: ellipsis;
       white-space: nowrap;
       transform: scaleX(1.1) rotate(-90deg);
@@ -2486,6 +2489,7 @@
         rgba(63, 62, 62, 1),
         rgba(63, 62, 62, 0.3)
       );
+      box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.5);
     }
     input::-webkit-slider-thumb {
       appearance: none;

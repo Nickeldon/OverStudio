@@ -603,7 +603,7 @@ volbtn.addEventListener("click", () => {
 
 playpausebtn = document.getElementById("play-pause");
 playpausebtn.addEventListener("click", () => {
-  if (audio) {
+  if (audio && enable_btns) {
     if (Date.now() - timeoutplaypause > 50) {
       timeoutplaypause = Date.now();
       //console.log('CLICKED PLAYPAUSE BUTTON')
@@ -659,6 +659,7 @@ next = document.getElementById("next");
 prev = document.getElementById("back");
 
 next.addEventListener("click", () => {
+  if(enable_btns){
   if (!holdPL) {
     if (started) {
       switch (PlayBackMode) {
@@ -791,10 +792,11 @@ next.addEventListener("click", () => {
     PlayBackMode = "shuffle";
     next.click();
     PlayBackMode = previousmode;
-  }
+  }}
 });
 
 prev.addEventListener("click", () => {
+  if(enable_btns){
   if (plpos > 0 && started) {
     enable_btns = false;
     let ipos = plpos;
@@ -837,7 +839,7 @@ prev.addEventListener("click", () => {
       PrevSpeed = BGspeed;
     }, 1000);
     clearTimeout(timeout);
-  }
+  }}
 });
 
 document.getElementById("timeslide").addEventListener("input", () => {
@@ -1185,7 +1187,9 @@ var trackinterval = setInterval(() => {
 }, 100);
 
 let timeslideresetTimeout;
+let btnsTimeout
 function manageAudioData(bypass_reset = true) {
+  clearTimeout(btnsTimeout)
   clearTimeout(timeslideresetTimeout);
   clearTimeout(endedTimeout);
 
@@ -1220,14 +1224,14 @@ function manageAudioData(bypass_reset = true) {
               audio.pause();
               audio.setVolume(volumeSlider.value / 20);
               follow = true;
-              enable_btns = true;
+              btnsTimeout = setTimeout(() => enable_btns = true, 500)
             }, 50);
           }, 50);
         }, 50);
       } else {
-        setTimeout(() => {
+        btnsTimeout = setTimeout(() => {
           enable_btns = true;
-        }, 100);
+        }, 400);
       }
 
       try {
@@ -1632,13 +1636,8 @@ setInterval(() => {
   }
 }, 2000);
 
-navigator.mediaSession.setActionHandler("play", () => {});
-navigator.mediaSession.setActionHandler("pause", () => {});
-navigator.mediaSession.setActionHandler("stop", () => {});
-navigator.mediaSession.setActionHandler("seekbackward", () => {});
-navigator.mediaSession.setActionHandler("seekforward", () => {});
-navigator.mediaSession.setActionHandler("previoustrack", () => {});
-navigator.mediaSession.setActionHandler("nexttrack", () => {});
+["play", "pause", "stop", "seekbackward", "seekforward", "previoustrack", "nexttrack"]
+.forEach((e) => navigator.mediaSession.setActionHandler(e, () => {}))
 
 function ProcessSearch(input) {
   if (input && playlist) {
@@ -1651,8 +1650,6 @@ function ProcessSearch(input) {
         let PLId = playlist.indexOf(track);
 
         if (trackTitle && trackArtist) {
-          trackTitle = trackTitle;
-          trackArtist = trackArtist;
           if (trackTitle.includes(input) || trackArtist.includes(input)) {
             searchResults.push({
               title: trackTitle,
@@ -1661,7 +1658,6 @@ function ProcessSearch(input) {
             });
           }
         } else if (trackTitle) {
-          trackTitle = trackTitle;
           if (trackTitle.includes(input)) {
             searchResults.push({
               title: trackTitle,
@@ -1681,8 +1677,6 @@ function ProcessSearch(input) {
 }
 
 function concludeSearch(title, artist, id) {
-  console.log("concluded");
-  console.log(title, artist, id);
   if (playlist && playlist[id]) {
     if (playlist[id].url) {
       if (audio) {
@@ -1694,7 +1688,6 @@ function concludeSearch(title, artist, id) {
         audio.stop();
         started = false;
         ready = false;
-        console.log(playlist[id].url, plpos, id, diffpos);
         PlayShuffleSong(audio, playlist, id, plpos, diffpos, () => {
           plpos = id;
           started = true;
