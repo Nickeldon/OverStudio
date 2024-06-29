@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "electron": "^30.0.0"
+  },
+  "packagerConfig": {
+      "executableName": "overstudio"
   }
 }
