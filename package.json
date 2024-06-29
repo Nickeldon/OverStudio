@@ -2,7 +2,7 @@
   "name": "overstudio",
   "version": "1.5.0.0",
   "description": "Listen to music in a new way",
-  "main": "electron.js",
+  "main": "src/electron.js",
   "scripts": {
     "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverStudio",
     "package-win_x64": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=x64 --prune=true --out=OverStudio",

@@ -1,0 +1,2968 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+  <meta http-equiv="PRAGMA" content="NO-CACHE" />
+  <title>Document</title>
+  <style>
+    @font-face {
+      font-family: FlappyBirdy;
+      src: url("../../ressources/FlappyBirdy.ttf");
+    }
+    @font-face {
+      font-family: FlappyBirdFont;
+      src: url("../../ressources/FlappyBirdFont.ttf");
+    }
+    @font-face {
+      font-family: PS;
+      src: url("../../ressources/PixelifySans.ttf");
+    }
+    @font-face {
+      font-family: Blocky;
+      src: url("../../ressources/Blocky.TTF");
+    }
+  </style>
+  <script src="../../ressources/Packages/Soundhandler/p5/p5.js"></script>
+  <script src="../../ressources/Packages/Soundhandler/p5/addons/p5.sound.js"></script>
+  <script src="../../ressources/Packages/Soundhandler/howler.min.js"></script>
+  <script src="../../ressources/Packages/JQuery 3.1.1/jquery-3.1.1.min.js"></script>
+  <script src="scripts/bridge.js"></script>
+</head>
+<script src="../../ressources/BG/dist/script.js"></script>
+<link rel="stylesheet" href="../../ressources/BG/dist/Packages/normalize.min.css" />
+<link rel="stylesheet" href="../../ressources/BG/dist/style.css" />
+<link rel="stylesheet" href="../../ressources/BG/dust/styles.css" />
+<script src="../../ressources/BG/dist/Packages/prefixfree.min.js"></script>
+<body style="border-radius: 20px">
+  <audio src="../../ressources/SF/startup.mp3" style="visibility: hidden"></audio>
+
+  <!--<iframe id="SoundFrame" frameborder="0" style="display: none; pointer-events:none; user-select:none; visibility:hidden; z-index:1; width: 1777px; height:1000px; position:relative; background-color:transparent;">
+    </iframe>-->
+
+  <div
+    id="splash-scr"
+    style="
+      transition: all 0.6s ease-out;
+      opacity: 100%;
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 99;
+      background-color: black;
+      border-radius: 20px;
+    "
+  >
+    <object
+      data="./splashscr.html"
+      style="
+        width: 1777px;
+        height: 1000px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        pointer-events: none;
+        user-select: none;
+        border-radius: 20px;
+      "
+      id="splash-scr-obj"
+    ></object>
+  </div>
+
+  <div
+    id="vintage-filter"
+    style="pointer-events: none; user-select: none; height: 1000px; z-index: 98"
+  ></div>
+
+  <i style="pointer-events: all; z-index: 97">
+    <img
+      src="../../ressources/icons/SVG/minimize.svg"
+      style="
+        height: 60px;
+        filter: invert(70%);
+        position: absolute;
+        right: 195px;
+        top: 70px;
+        opacity: 80%;
+        pointer-events: all;
+        user-select: all;
+      "
+      id="min-app"
+      onclick="
+        document.querySelector('body').style.transition = 'all .3s ease-out';
+        document.querySelector('body').style.opacity = '0%'; 
+        setTimeout(() => {document.querySelector('body').style.opacity = '100%'; 
+        document.querySelector('body').style.transition = 'all .5s ease-out'; 
+        window.ipcRender.send('window:minimize');}, 400)
+        "
+    />
+  </i>
+
+  <div
+    class="main"
+    id="main"
+    style="
+      width: 1777px;
+      height: 1000px;
+      position: relative;
+      background-color: black;
+      border-radius: 20px;
+      top: 0;
+      left: 0;
+    "
+  >
+    <div
+      class="draggable"
+      id="draggable"
+      style="
+        background-color: transparent;
+        position: absolute;
+        top: 0;
+        right: 20%;
+        width: 60%;
+        height: 130px;
+      "
+    ></div>
+    <div
+      class="BG-anim"
+      id="BG-anim"
+      style="
+        position: relative;
+        width: 100%;
+        height: 100%;
+        user-select: none;
+        display: block;
+        overflow: hidden;
+      "
+    >
+      <object
+        id="Audio-react"
+        style="
+          width: 100%;
+          height: 100%;
+          background-color: transparent;
+          opacity: 70%;
+          filter: blur(0px) brightness(60%);
+          position: absolute;
+          transition: all 1s ease-out;
+          overflow: hidden;
+        "
+      ></object>
+
+      <div
+        id="Audio-Visulizer"
+        style="
+          width: 100%;
+          height: 100%;
+          background-color: black;
+          opacity: 100%;
+          filter: blur(0px) brightness(80%);
+          position: absolute;
+          transition: all 1s ease-out;
+          overflow: hidden;
+          border-radius: 20px;
+          display: none;
+        "
+      >
+        <canvas
+          id="Audio-Visulizer-Canv"
+          style="
+            display: block;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+          "
+        >
+        </canvas>
+
+        <div
+          style="
+            display: block;
+            border-width: 5px;
+            background-color: white;
+            border-color: blue;
+            border-style: solid;
+            border-radius: 50%;
+            position: absolute;
+            width: 200px;
+            height: 200px;
+          "
+          id="stroke"
+        >
+          <div
+            id="imgReact"
+            style="position: absolute; top: 0; height: 100%; width: 100%"
+          ></div>
+        </div>
+      </div>
+
+      <div id="alternative-background" style="display: block">
+        <div
+          id="dust"
+          style="position: absolute; bottom: 0; width: 100%; height: 100%"
+        >
+          <div
+            id="nc-main"
+            class="nc-main bg-cover bg-cc"
+            style="position: absolute; bottom: 0; width: 100%; height: 100%"
+          >
+            <div class="full-wh">
+              <!-- STAR ANIMATION -->
+              <div class="bg-animation" id="dust-animation">
+                <div class="stars" id="dust-element"></div>
+                <div class="stars2" id="dust-element"></div>
+                <div class="stars3" id="dust-element"></div>
+                <div class="stars4" id="dust-element"></div>
+              </div>
+              <!-- / STAR ANIMATION -->
+            </div>
+          </div>
+        </div>
+        <div
+          id="Blob-Reactor-Obj"
+          style="
+            transition: all 1s ease-out;
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+          "
+        >
+          <div
+            class="gradient"
+            id="gradient"
+            style="margin: auto; position: absolute; top: 27%; left: 36%"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        id="filter"
+        style="
+          opacity: 50%;
+          background-color: black;
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          transition: all 1s ease-out;
+        "
+      ></div>
+    </div>
+
+    <div
+      class="UI-scr1"
+      id="UI-scr1"
+      style="opacity: 100%; transition: all 1s ease-out"
+    >
+      <div
+        class="err-message"
+        id="err-message"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #974141;
+          opacity: 80%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
+      >
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="err-icon-parent"
+        >
+          <img
+            src="../../ressources/icons/warning.png"
+            style="height: 60px"
+            id="err-icon"
+          />
+        </i>
+
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px">
+            This directory already exists
+          </h3>
+        </div>
+      </div>
+
+      <div
+        class="deviceSwap-message"
+        id="deviceSwap-message"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #5b5b5b;
+          opacity: 60%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
+      >
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="deviceSwap-icon-parent"
+        >
+          <img
+            src="../../ressources/icons/SVG/headphones.svg"
+            style="height: 70px"
+            id="deviceSwap-icon"
+          />
+        </i>
+
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px">
+            Audio Output device has been changed
+          </h3>
+        </div>
+      </div>
+
+      <div
+        class="No-BG-message"
+        id="No-BG-message"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #417397;
+          opacity: 80%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
+      >
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="No-BG-icon-parent"
+        >
+          <img
+            src="../../ressources/icons/warning.png"
+            style="height: 60px"
+            id="No-BG-icon"
+          />
+        </i>
+
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px">
+            No Backgrounds detected on set directory
+          </h3>
+        </div>
+      </div>
+
+      <div
+        class="Reboot-condition"
+        id="Reboot-condition"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #4252bc;
+          opacity: 80%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
+      >
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="Reboot-cond-icon-parent"
+        >
+          <img
+            src="../../ressources/icons/SVG/info.svg"
+            style="height: 60px"
+            id="Reboot-cond-icon"
+          />
+        </i>
+
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px">
+            Changes will take effect after reboot
+          </h3>
+        </div>
+      </div>
+
+      <div
+        class="corrupt-message"
+        id="corrupt-message"
+        style="
+          position: absolute;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 120px;
+          background-color: #545454;
+          opacity: 80%;
+          border-radius: 20px;
+          border-top-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+          opacity: 0%;
+          color: white;
+          transition: all.5s ease-out;
+        "
+      >
+        <i
+          style="position: absolute; top: 20%; left: 10%; filter: invert(80%)"
+          id="corrupt-icon-parent"
+        >
+          <img
+            src="../../ressources/icons/warning.png"
+            style="height: 60px"
+            id="corrupt-icon"
+          />
+        </i>
+
+        <div style="position: absolute; top: 20%; right: 10%">
+          <h3 style="width: 200px; font-size: 23px; color: white">
+            The track may be corrupted
+          </h3>
+        </div>
+      </div>
+
+      <div
+        class="current-track"
+        id="current-track"
+        style="
+          position: absolute;
+          width: 70%;
+          height: 70%;
+          background-color: transparent;
+          top: 12%;
+          left: 20%;
+          border-radius: 10px;
+          filter: blur(0.5px) brightness(120%) sepia(10%);
+          opacity: 200%;
+        "
+      >
+        <div class="fadeout"></div>
+      </div>
+
+      <div
+        class="search-track"
+        id="search-track"
+        style="
+          position: absolute;
+          width: 70%;
+          height: 70%;
+          background-color: transparent;
+          top: 12%;
+          left: 20%;
+          border-radius: 10px;
+          filter: blur(0.5px) brightness(120%) sepia(10%);
+          opacity: 0%;
+        "
+      >
+        <div id="no-result-scr" style="display: none;">
+          <h1
+            style="
+              font-family: PS, sans-serif;
+              color: black;
+              position: absolute;
+              top: 50%;
+              left: 25%;
+              transform: translate(-50%, -50%);
+              font-size: 50px;
+              opacity: 100%;
+              filter: invert(80%);
+            "
+          >
+            There... is no result
+            <br>
+            <span style="font-size: 30px;">
+              Try searching for another track
+            </span>
+          </h1>
+        </div>
+        <div class="fadeout"></div>
+      </div>
+
+      <div
+        class="eq-menu"
+        id="eq-menu"
+        style="
+          position: absolute;
+          top: -500px;
+          width: 80%;
+          left: 11%;
+          background-image: linear-gradient(
+            to bottom,
+            rgba(63, 62, 62, 1),
+            rgba(63, 62, 62, 0.3)
+          );
+          border-bottom-right-radius: 20px;
+          border-top-right-radius: 10px;
+          border-top-left-radius: 10px;
+          border-bottom-left-radius: 20px;
+          height: 700px;
+          transition: all 1s ease-out;
+          opacity: 0%;
+          display: none;
+        "
+      >
+        <h1
+          style="
+            text-align: left;
+            font-size: 500px;
+            margin-left: -80px;
+            margin-top: -200px;
+            font-family: PS, sans-serif;
+            color: black;
+            width: 200%;
+            height: 200%;
+            opacity: 23%;
+            filter: invert(50%);
+            text-shadow: rgb(255, 55, 0) 20px -20px 90px;
+            pointer-events: none;
+            user-select: none;
+          "
+        >
+          EQ
+        </h1>
+
+        <div
+          id="eq-lines"
+          class="eq-lines"
+          style="width: 100%; position: absolute; bottom: 0; height: 100%; left:2%"
+        >
+          <i id="corner-top-right" style="position:absolute; top:22%; right:16%;">
+            <img src="../../ressources/icons/SVG/corner-top-right.svg" style="height: 100px; filter:invert(30%)">
+          </i>
+          <i id="corner-bottom-left" style="position:absolute; bottom:9.5%; left:7.5%;  ">
+            <img src="../../ressources/icons/SVG/corner-bottom-left.svg" style="height: 100px; filter:invert(30%)">
+          </i>
+          <div
+            style="
+              position: absolute;
+              bottom: -250px;
+              right: 400px;
+              width: 50%;
+              height: 150%;
+              transform: rotate(270deg);
+            "
+          >
+            <input
+              type="range"
+              id="range-1"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 110px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-2"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 230px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-3"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 350px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-4"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 470px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-5"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 590px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-6"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 710px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-7"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 830px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+            <input
+              type="range"
+              id="range-8"
+              class="eq-range"
+              style="position: absolute; left: 35%; top: 950px"
+              min="-12"
+              max="12"
+              step="1"
+              value="0"
+            />
+          </div>
+
+          <div
+            id="eq-values"
+            class="eq-values"
+            style="
+              position: absolute;
+              bottom: -57%;
+              right: 53%;
+              width: 5%;
+              height: 150%;
+              transform: rotate(90deg);
+            "
+          >
+            <h3
+              id="out-range-1"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 140px;
+              "
+            >
+              100Hz
+            </h3>
+            <h3
+              id="out-range-2"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 260px;
+              "
+            >
+              200Hz
+            </h3>
+            <h3
+              id="out-range-3"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 380px;
+              "
+            >
+              500Hz
+            </h3>
+            <h3
+              id="out-range-4"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 500px;
+              "
+            >
+              1.0KHz
+            </h3>
+            <h3
+              id="out-range-5"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 620px;
+              "
+            >
+              2.0KHz
+            </h3>
+            <h3
+              id="out-range-6"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 740px;
+              "
+            >
+              4.0KHz
+            </h3>
+            <h3
+              id="out-range-7"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 860px;
+              "
+            >
+              8.0KHz
+            </h3>
+            <h3
+              id="out-range-8"
+              style="
+                color: white;
+                position: absolute;
+                right: 10%;
+                bottom: 980px;
+              "
+            >
+              16.0KHz
+            </h3>
+          </div>
+
+          <div
+            style="
+              position: absolute;
+              bottom: 0;
+              left: 11%;
+              width: 3%;
+              height: 100%;
+            "
+          >
+            <h4
+              style="
+                color: white;
+                position: absolute;
+                font-size: 25px;
+                font-family: PS, sans-serif;
+                font-weight: 100;
+                top: 230px;
+                filter: invert(80%);
+                color: black;
+              "
+            >
+              12
+            </h4>
+            <h4
+              style="
+                color: white;
+                position: absolute;
+                font-size: 25px;
+                font-family: PS, sans-serif;
+                font-weight: 100;
+                top: 365px;
+                filter: invert(80%);
+                color: #000;
+              "
+            >
+              0
+            </h4>
+            <h4
+              style="
+                color: white;
+                position: absolute;
+                font-size: 25px;
+                font-family: PS, sans-serif;
+                font-weight: 100;
+                top: 500px;
+                filter: invert(80%);
+                color: #000;
+              "
+            >
+              -12
+            </h4>
+          </div>
+        </div>
+        <div
+          class="preset-select"
+          style="
+            background-color: transparent;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 210px;
+            height: 90%;
+          "
+        >
+          <a
+            id="eq-presets"
+            class="eq-presets"
+            onclick="
+                if(document.getElementById('eq-pres-ch').style.height !== '80%'){
+                    document.getElementById('eq-pres-ch').style.height = '80%';
+                    document.getElementById('draggable').style.display = 'none';
+                    document.getElementById('eq-pres-ch').style.willChange = 'scroll-position';
+                } else {
+                    document.getElementById('eq-pres-ch').style.willChange = 'unset';
+                    document.getElementById('eq-pres-ch').style.height = '0%';
+                    document.getElementById('draggable').style.display = 'block';
+                }
+                "
+          >
+            Presets
+          </a>
+
+          <div class="eq-presets-choices" id="eq-pres-ch">
+            <a id="eq-flat">Flat</a>
+            <a id="eq-bass">Bass Boost</a>
+            <a id="eq-muffledbass">Muffled Bass</a>
+            <a id="eq-treble">Treble</a>
+            <a id="eq-vocal">Vocal</a>
+            <a id="eq-rock">Rock</a>
+            <a id="eq-pop">Pop</a>
+            <a id="eq-jazz">Jazz</a>
+            <a id="eq-classical">Classical</a>
+            <a id="eq-metal">Metal</a>
+            <a id="eq-custom1">Custom 1</a>
+            <a id="eq-custom2">Custom 2</a>
+            <a id="eq-custom3">Custom 3</a>
+          </div>
+        </div>
+      </div>
+
+      <!--<div
+          id="font-menu"
+          class="font-menu"
+          style="
+            width: 500px;
+            height: 600px;
+            display: block;
+            transition: all 1s ease-in-out;
+            opacity: 100%;
+            position: absolute;
+            top: 250px;
+            right: 0;
+            border-radius:20px;
+            border-top-right-radius: 0px;
+            background-image: linear-gradient(
+            to left,
+            rgba(63, 62, 62, 1),
+            rgba(63, 62, 62, 0)
+          );
+          "
+        >
+
+        <div
+          class="font-select"
+          style="
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 500px;
+            height: 85%;
+          "
+        >
+          <a
+            id="font-presets-btn"
+            class="font-presets-btn"
+            onclick="
+                if(document.getElementById('font-pres-ch').style.height !== '80%'){
+                    document.getElementById('font-pres-ch').style.height = '80%';
+                } else {
+                    document.getElementById('font-pres-ch').style.height = '0%';
+                }
+                "
+          >
+            Choose a font
+          </a>
+
+          <div class="font-choices" id="font-pres-ch">
+            <a id="font-PS">Pixelify Sans</a>
+            <a id="font-CS">Comics Sans</a>
+            <a id="font-muffledbass">Test 1</a>
+            <a id="font-treble">Treble</a>
+            <a id="font-vocal">Vocal</a>
+            <a id="font-rock">Rock</a>
+            <a id="font-pop">Pop</a>
+            <a id="font-jazz">Jazz</a>
+            <a id="font-classical">Classical</a>
+            <a id="font-metal">Metal</a>
+            <a id="font-custom1">Custom 1</a>
+            <a id="font-custom2">Custom 2</a>
+            <a id="font-custom3">Custom 3</a>
+          </div>
+        </div>
+          
+        </div>-->
+
+      <div
+        id="options"
+        class="options"
+        style="
+          display: block;
+          height: 85%;
+          width: 600px;
+          position: absolute;
+          top: 0;
+          left: -380px;
+          border-radius: 20px;
+          border-bottom-left-radius: -10px;
+          transition: all 1s ease-in-out;
+          opacity: 30%;
+        "
+      >
+        <div
+          id="opt-menu1"
+          style="display: block; transition: all 0.7s ease-out"
+        >
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 210px; width: 470px"
+            onclick="options(1)"
+          >
+            <a style="left: 170px"> Add Directories </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 380px; width: 550px"
+            id="refr-alt"
+          >
+            <a style="left: 170px"> Refresh the selection </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 565px; width: 450px"
+            id="More-opt-context"
+            onclick="options(2)"
+          >
+            <a style="left: 170px"> More Options </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; bottom: 25px; width: 400px"
+            onclick="
+              document.getElementById('main').style.transition = 'all 0.5s ease-out, scale 2s ease-out';
+              if(localStorage.getItem('fadeAtClose') == 'true'){
+                document.getElementById('main').style.opacity = '0%';
+                document.getElementById('main').style.scale = '0.95';
+                setTimeout(() => {
+                    window.close();
+                }, 500);}
+                else{
+                    window.close();
+                }
+                "
+          >
+            <a style="left: 170px"> Close the app </a>
+          </div>
+        </div>
+
+        <div
+          id="opt-menu2"
+          class="opt-menu2"
+          style="
+            width: 100%;
+            height: 100%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+          "
+        >
+          <div
+            id="add-div"
+            class="add-div"
+            style="position: absolute; height: 180px; width: 100%; top: 200px"
+          >
+            <a
+              class="lbl-opt1"
+              style="
+                transition: all 0.7s ease-out;
+                top: 0;
+                left: 20px;
+                pointer-events: none;
+              "
+            >
+              Add a directory
+            </a>
+
+            <input
+              id="div-inp"
+              type="file"
+              style="visibility: hidden"
+              webkitdirectory
+            />
+
+            <div
+              id="btn-add-dir"
+              class="btn-add-dir"
+              style="
+                width: 70%;
+                height: 100px;
+                position: absolute;
+                background-color: rgb(135, 135, 135);
+                transition: all 1.2s ease-out;
+                opacity: 80%;
+                left: 40px;
+                border-radius: 10px;
+                bottom: 0;
+              "
+              onclick="document.getElementById('div-inp').click()"
+            >
+              <a style="top: 35%; left: 30px; color: white; filter: invert(80%)"
+                >Open explorer</a
+              >
+            </div>
+          </div>
+
+          <div
+            id="manage-div"
+            class="manage-div"
+            style="position: absolute; height: 400px; width: 100%; top: 430px"
+          >
+            <a
+              class="lbl-opt1"
+              style="transition: all 0.7s ease-out; top: 0; left: 20px"
+            >
+              Manage saved Directories
+            </a>
+
+            <div
+              id="div-selector"
+              class="div-select"
+              style="
+                width: 85%;
+                height: 340px;
+                position: absolute;
+                background-color: rgb(135, 135, 135);
+                transition: all 0.5s ease-out;
+                opacity: 80%;
+                left: 40px;
+                border-radius: 10px;
+                bottom: 0;
+                overflow-y: scroll;
+              "
+            ></div>
+
+            <div
+              class="div-sel-filter"
+              id="div-set-filter"
+              style="
+                width: 82.2%;
+                height: 340px;
+                position: absolute;
+                background-color: rgb(135, 135, 135);
+                transition: all 0.5s ease-out;
+                opacity: 30%;
+                left: 40px;
+                border-radius: 10px;
+                bottom: 0;
+              "
+            ></div>
+            <h1
+              id="no-div-err"
+              style="
+                font-family: PS, sans-serif;
+                display: block;
+                position: absolute;
+                width: 85%;
+                transition: all 0.5s ease-out;
+                left: 30px;
+                opacity: 0%;
+                color: white;
+                filter: invert(40%);
+                top: 30%;
+                pointer-events: none;
+              "
+            >
+              There is no saved directories <br />
+              <span style="font-size: 17px"
+                >Start adding directories by pressing the button above</span
+              >
+            </h1>
+          </div>
+        </div>
+
+        <div
+          id="opt-menu3"
+          class="opt-menu3"
+          style="
+            width: 100%;
+            height: 100%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+          "
+        >
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 190px; width: 450px"
+            id="theme-change"
+            onclick="options(3)"
+          >
+            <i>
+              <img
+                src="../../ressources/icons/SVG/themes.svg"
+                style="
+                  height: 65px;
+                  filter: invert(70%);
+                  left: 55px;
+                  top: 15px;
+                  position: absolute;
+                "
+              />
+            </i>
+
+            <a style="left: 147px"> Change the theme </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 310px; width: 450px"
+            onclick="
+                if(reversed){
+                    localStorage.setItem('reversed', false);} 
+                    else{localStorage.setItem('reversed', true)} 
+                    window.location.reload()"
+          >
+            <a style="left: 70px"> Reverse the selection </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 430px; width: 350px"
+            id="theme-change"
+            onclick="options(5)"
+          >
+            <i>
+              <img
+                src="../../ressources/icons/SVG/eq.svg"
+                style="
+                  height: 65px;
+                  filter: invert(70%);
+                  left: 55px;
+                  top: 15px;
+                  position: absolute;
+                "
+              />
+            </i>
+
+            <a style="left: 147px" id="eq"> Equalizer </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; top: 550px; width: 350px"
+            id="theme-change"
+            onclick="options(6)"
+          >
+            <i>
+              <img
+                src="../../ressources/icons/SVG/effects.svg"
+                style="
+                  height: 65px;
+                  filter: invert(70%);
+                  left: 55px;
+                  top: 15px;
+                  position: absolute;
+                "
+              />
+            </i>
+
+            <a style="left: 147px" id="effects"> Effects </a>
+          </div>
+
+          <div
+            class="opt-txt"
+            style="opacity: 0%; bottom: 50px; width: 330px"
+            id="credits"
+            onclick="options(4)"
+          >
+            <a style="left: 147px"> Credits </a>
+          </div>
+        </div>
+
+        <div
+          class="opt-menu4"
+          id="opt-menu4"
+          style="
+            width: 100%;
+            height: 100%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+          "
+        >
+          <h1
+            style="
+              position: absolute;
+              top: 150px;
+              left: 55px;
+              font-size: 40px;
+              font-family: PS, sans-serif;
+              background: linear-gradient(to right, white, rgb(146, 146, 255));
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            "
+          >
+            Themes
+          </h1>
+
+          <div
+            id="theme-selector"
+            style="
+              height: 80%;
+              width: 90%;
+              position: absolute;
+              top: 200px;
+              left: 55px;
+            "
+          >
+            <div id="themes" class="themes" style="width: 100%; height: 100%">
+              <i
+                id="thm1"
+                class="thm1"
+                style="top: 100px"
+                onclick="
+                            localStorage.setItem('theme', 'default');
+                            changeTheme('default')
+                            "
+              >
+              </i>
+              <i
+                id="thm2"
+                class="thm2"
+                style="top: 230px"
+                onclick="
+                            localStorage.setItem('theme', 'dark');
+                            changeTheme('dark')
+                            "
+              >
+              </i>
+              <i
+                id="thm3"
+                class="thm3"
+                style="top: 360px"
+                onclick="
+                            localStorage.setItem('theme', 'orangeRed');
+                            changeTheme('orangeRed')
+                            "
+              >
+              </i>
+              <i
+                id="thm4"
+                class="thm4"
+                style="top: 490px"
+                onclick="
+                            localStorage.setItem('theme', 'pinkPurple');
+                            changeTheme('pinkPurple')
+                            "
+              >
+              </i>
+              <i
+                id="thm5"
+                class="vintage-filter"
+                style="top: 100px; left: 175px"
+                onclick="
+                            localStorage.setItem('theme', 'Vintage');
+                            changeTheme('Vintage')
+                            "
+              >
+              </i>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="opt-menu5"
+          class="opt-menu5"
+          style="
+            width: 100%;
+            height: 100%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+          "
+        ></div>
+
+        <div
+          id="opt-menu6"
+          class="opt-menu6"
+          style="
+            width: 100%;
+            height: 80%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+            overflow-y: hidden;
+            overflow-x: hidden;
+            top: 150px;
+          "
+        >
+          <div
+            id="opt-menu6-child-container"
+            style="
+              width: 100%;
+              height: 100%;
+              overflow-y: scroll;
+              position: absolute;
+              top: 0;
+            "
+          >
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 40px; width: 450px"
+              onclick="
+                if(EffectChangeTimeout){
+                    EffectChangeTimeout = false;
+                    var txt = document.getElementById('dust-txt0');
+                    txt.innerText = txt.innerText === 'Disable dust particles' ? 'Enable dust particles' : 'Disable dust particles';
+                    var state = txt.innerText === 'Disable dust particles' ? true : false;
+
+                    var txt2 = document.getElementById('ampl-txt0');
+                    var state2 = txt2.innerText === 'Disable Amplitude BlobReactor' ? true : false;
+
+                    console.log(state, state2)
+
+                    if(state){
+                        document.getElementById('dust').style.display = 'block';
+                        EffectChangeTimeout = true;
+                    } else {
+                        document.getElementById('dust').style.opacity = '0%';
+                        setTimeout(() => {
+                            document.getElementById('dust').style.display = 'none';
+                            document.getElementById('dust').style.opacity = '70%';
+                            EffectChangeTimeout = true;
+                        }, 500);
+                    }
+                    localStorage.setItem('effectsState', JSON.stringify({dust: state, amplitude: state2}))}
+                "
+            >
+              <a style="left: 70px" id="dust-txt0"> Disable dust particles </a>
+            </div>
+
+            <div
+              id="blob-react-parent"
+              class="opt-txt"
+              style="opacity: 0%; top: 150px; width: 490px"
+              onclick="
+                if(EffectChangeTimeout){
+                    EffectChangeTimeout = false;
+                    var txt = document.getElementById('ampl-txt0');
+                    txt.innerText = txt.innerText === 'Disable Amplitude BlobReactor' ? 'Enable Amplitude BlobReactor' : 'Disable Amplitude BlobReactor';
+                    var state = txt.innerText === 'Disable Amplitude BlobReactor' ? true : false;
+                    
+                    var txt2 = document.getElementById('dust-txt0');
+                    var state2 = txt2.innerText == 'Disable dust particles' ? true : false;
+
+                    console.log(state, state2)
+
+                    if(state){
+                        document.getElementById('Blob-Reactor-Obj').style.display = 'block';
+                        EffectChangeTimeout = true;
+                    } else {
+                        document.getElementById('Blob-Reactor-Obj').style.opacity = '0%';
+                        setTimeout(() => {
+                            document.getElementById('Blob-Reactor-Obj').style.display = 'none';
+                            document.getElementById('Blob-Reactor-Obj').style.opacity = '70%';
+                            EffectChangeTimeout = true;
+                        }, 200);
+                    }
+                    localStorage.setItem('effectsState', JSON.stringify({dust: state2, amplitude: state}))}
+                "
+            >
+              <a style="left: 70px" id="ampl-txt0">
+                Disable Amplitude BlobReactor
+              </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 260px; width: 450px"
+              onclick="
+                var txt = document.getElementById('anim-txt0');
+                if(txt.innerText === 'normal'){
+                  chosenSpeed = 'fast'
+                  animationSpeeds(speeds['fast'])
+                  txt.innerText = 'fast'
+                } else if(txt.innerText === 'fast'){
+                  chosenSpeed = 'FroxceyFast'
+                  animationSpeeds(speeds['FroxceyFast'])
+                  txt.innerText = 'FroxceyFast'
+                } else if(txt.innerText === 'FroxceyFast'){
+                  chosenSpeed = 'normal'
+                  animationSpeeds(speeds['normal'])
+                  txt.innerText = 'normal'
+                }
+                localStorage.setItem('animations', (chosenSpeed))
+                "
+            >
+              <a style="left: 70px">
+                Animations speed:<br /><span id="anim-txt0">normal</span></a
+              >
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 370px; width: 450px"
+              onclick="
+                var txt = document.getElementById('boot-snd-txt0');
+                txt.innerText = txt.innerText === 'Enable Sound at boot' ? 'Disable Sound at boot' : 'Enable Sound at boot';
+                var state = txt.innerText === 'Enable Sound at boot' ? false : true;
+                console.log(state)
+                localStorage.setItem('Sound_boot', state)
+                "
+            >
+              <a style="left: 70px" id="boot-snd-txt0">
+                Disable Sound at boot
+              </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 480px; width: 450px"
+              onclick="
+                var txt = document.getElementById('idle-txt0');
+                var value
+                idle = 0
+                if(txt.innerText == '10s'){
+                    txt.innerText = '25s'
+                    value = 25
+                }
+                else if(txt.innerText == '25s'){
+                    txt.innerText = '1 min';
+                    value = 60;
+                } else if(txt.innerText == '1 min'){
+                    txt.innerText = '5 min';
+                    value = 300;
+                } else if(txt.innerText == '5 min'){
+                    txt.innerText = 'never';
+                    value = 0;
+                } else if(txt.innerText == 'never'){
+                    txt.innerText = '10s';
+                    value = 10;
+                }
+                idletimeout = value
+                localStorage.setItem('idletimeout', value)
+                "
+            >
+              <a style="left: 70px">
+                Idle Timeout: <span id="idle-txt0">25s</span>
+              </a>
+            </div>
+
+            <div
+              id="blob-speed-opt"
+              class="opt-txt"
+              style="opacity: 0%; top: 590px; width: 450px"
+              onclick="
+                var txt = document.getElementById('amp-speed-txt0');
+                console.log(txt.innerText, localStorage.getItem('Reactor-Speed'))
+                if(txt.innerText == '.1' || txt.innerText == '0.1'){
+                    txt.innerText = '.2'
+                }else if(txt.innerText == '.2' || txt.innerText == '0.2'){
+                    txt.innerText = '.5'
+                } else if(txt.innerText == '.5' || txt.innerText == '0.5'){
+                    txt.innerText = '1'
+                } else if(txt.innerText == '1'){
+                    txt.innerText = '2'
+                } else if(txt.innerText == '2'){
+                    txt.innerText = '.1'
+                }
+                BGspeed = parseFloat(txt.innerText)
+                localStorage.setItem('Reactor-Speed', BGspeed)
+                "
+            >
+              <a style="left: 70px">
+                Reactor Speed: <span id="amp-speed-txt0">0.2</span>s
+              </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 700px; width: 450px"
+              onclick="
+                if(cooldownBGState && BackgroundData.length > 0){
+                var txt = document.getElementById('BG-choice-txt0');
+                txt.innerText = txt.innerText === 'BlobReactor' ? 'BGCustom' : 'BlobReactor';
+                if(txt.innerText === 'BlobReactor'){
+                    SwitchBackgrounds('BlobReactor')
+                } else if(txt.innerText === 'BGCustom') {
+                    SwitchBackgrounds('BGCustom')
+                } else if(txt.innerText === 'ActiveReactor'){
+                    //SwitchBackgrounds('ActiveReactor')
+                }
+                localStorage.setItem('Background-Type', (txt.innerText))}
+                else{
+                    displayERR('No-Background-file')
+                }
+                "
+            >
+              <a style="left: 70px">
+                Background choice: <span id="BG-choice-txt0">BlobReactor</span>
+              </a>
+            </div>
+
+            <div
+              id="Custom-BG-speed"
+              class="opt-txt"
+              style="opacity: 0%; top: 810px; width: 450px"
+              onclick="
+                var txt = document.getElementById('BG-cooldown-txt0');
+                if(txt.innerText === '5s'){
+                    txt.innerText = '10s';
+                    BGrefresh = 10000;
+                } else if(txt.innerText === '10s'){
+                    txt.innerText = '30s';
+                    BGrefresh = 30000;
+                } else if(txt.innerText === '30s'){
+                    txt.innerText = '45s';
+                    BGrefresh = 45000;
+                } else if(txt.innerText === '45s'){
+                    txt.innerText = '1min';
+                    BGrefresh = 60000;
+                } else if(txt.innerText === '1min'){
+                    txt.innerText = '5s';
+                    BGrefresh = 5000;
+                }
+                localStorage.setItem('Background-Cooldown', BGrefresh)
+                "
+            >
+              <a style="left: 70px">
+                Background speed: <span id="BG-cooldown-txt0">25s</span>
+              </a>
+            </div>
+
+            <div
+              id="ActiveVisulizer-opt-choice"
+              class="opt-txt"
+              style="opacity: 0%; top: 920px; width: 450px"
+              onclick="
+                options(7)
+                "
+            >
+              <a style="left: 70px"> ActiveVisulizer settings </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 1030px; width: 450px"
+              onclick="
+                    let txt = document.getElementById('smooth-track-txt0');
+                    trackScrollSmoothing = txt.innerText == 'Enable' ? 'false' : 'true';
+                    txt.innerText = txt.innerText === 'Enable' ? 'Disable' : 'Enable';
+
+                    txt.innerText == 'Enable' ? () => {
+                    document.getElementById('current-track').style.scrollBehavior = 'smooth'
+                    document.getElementById('current-track').style.willChange = 'scroll-position'
+                    } : () => {
+                    document.getElementById('current-track').style.scrollBehavior = 'auto';
+                    document.getElementById('current-track').style.willChange = 'auto';}
+
+                    localStorage.setItem('smoothTrack', trackScrollSmoothing)
+                "
+            >
+              <a style="left: 70px"
+                ><span id="smooth-track-txt0">Enable</span> smooth list<br />scrolling
+              </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 1140px; width: 450px"
+              onclick="
+                    var txt = document.getElementById('fade-txt0');
+                    txt.innerText = txt.innerText === 'true' ? 'false' : 'true';
+                    localStorage.setItem('fadeAtClose', txt.innerText)
+                "
+            >
+              <a style="left: 70px">
+                Fade when closing: <span id="fade-txt0">true</span>
+              </a>
+            </div>
+
+            <div
+              class="opt-txt"
+              style="opacity: 0%; top: 1250px; width: 450px"
+              onclick="
+                    localStorage.clear()
+
+                    displayERR('Reset-Settings')
+                "
+            >
+              <a style="left: 70px"> Reset all settings </a>
+            </div>
+          </div>
+          <!--<div class="opt-menu6-mask"></div>-->
+        </div>
+
+        <div
+          id="opt-menu7"
+          class="opt-menu7"
+          style="
+            width: 100%;
+            height: 100%;
+            display: none;
+            transition: all 1s ease-in-out;
+            opacity: 0%;
+            position: absolute;
+            left: 20px;
+          "
+        ></div>
+      </div>
+
+      <div
+        id="opt-preview"
+        class="opt-preview"
+        style="
+          display: block;
+          height: 80%;
+          width: 100px;
+          background-color: transparent;
+          position: absolute;
+          top: 130px;
+          left: 55px;
+          opacity: 20%;
+        "
+      >
+        <i
+          class="menu-icns"
+          onclick="
+             if(document.getElementById('options').style.left === '-380px') openMENU(true); 
+             options(1)"
+          id="menu-folder"
+        >
+          <img
+            src="../../ressources/icons/SVG/folder.svg"
+            style="
+              height: 65px;
+              filter: invert(70%);
+              left: 20px;
+              top: 100px;
+              position: absolute;
+            "
+          />
+        </i>
+
+        <i class="menu-icns">
+          <img
+            id="Refresh"
+            src="../../ressources/icons/SVG/refresh.svg"
+            style="
+              height: 55px;
+              filter: invert(70%);
+              left: 30px;
+              top: 280px;
+              position: absolute;
+            "
+          />
+        </i>
+
+        <i
+          class="menu-icns"
+          onclick="
+             if(document.getElementById('options').style.left === '-380px') openMENU(true); 
+             options(2)"
+          id="menu-add"
+        >
+          <img
+            id="MoreContext"
+            src="../../ressources/icons/SVG/add.svg"
+            style="
+              height: 70px;
+              filter: invert(70%);
+              left: 25px;
+              top: 452px;
+              position: absolute;
+            "
+          />
+        </i>
+
+        <i
+          id="leave"
+          class="menu-icns"
+          onclick="
+            document.getElementById('main').style.transition = 'all 0.5s ease-out, scale 2s ease-out';
+            if(localStorage.getItem('fadeAtClose') == 'true'){
+              document.getElementById('main').style.opacity = '0%';
+              document.getElementById('main').style.scale = '0.9';
+              setTimeout(() => {
+                  window.close();
+              }, 500);}
+              else{
+                  window.close();
+              }
+             "
+        >
+          <img
+            src="../../ressources/icons/SVG/leave.svg"
+            style="
+              height: 55px;
+              filter: invert(70%);
+              left: 35px;
+              bottom: 120px;
+              position: absolute;
+            "
+          />
+        </i>
+      </div>
+
+      <div
+        class="nav-bar"
+        id="nav-bar"
+        style="width: 100%; height: 100px; position: absolute; top: 60px"
+      >
+        <h1
+          id="app-title"
+          style="
+            text-align: center;
+            font-family: PS, sans-serif;
+            color: rgb(98, 57, 57);
+            margin-top: 20px;
+          "
+        >
+          Over<span>Studio</span>
+        </h1>
+
+        <i
+          class="side"
+          style="
+            position: absolute;
+            top: -5px;
+            left: 60px;
+            height: 100px;
+            width: 100px;
+          "
+        >
+          <img
+            onclick="
+                    openMENU(false)
+                    document.getElementById('side').style.pointerEvents = 'none'
+                    setTimeout(() => {
+                        document.getElementById('side').style.pointerEvents = 'all'
+                      }, (parseInt(speeds[chosenSpeed][5]) + 100))
+                    document.getElementsByClassName('menu-icns').forEach((elem) => {
+                    elem.style.pointerEvents = 'none'
+                    setTimeout(() => {
+                        elem.style.pointerEvents = 'all'
+                        console.log('passed')
+                    }, (parseInt(speeds[chosenSpeed][5]) + 400))
+                    })"
+            id="side"
+            src="../../ressources/icons/menu.png"
+            style="
+              height: 50px;
+              transition: all 1.5s ease-out;
+              position: absolute;
+              top: 25px;
+              left: 25px;
+            "
+          />
+        </i>
+        <div id="search-query" class="search-query">
+          <i
+            style="height: 70px; width: 70px; border-radius: 50%"
+            onclick="
+            document
+            .getElementById('search-query-txtInput').value = ''
+          if(document.getElementById('search-query').style.width == '600px'){
+            document.getElementById('search-track').style.willChange = 'unset'
+            document.getElementById('current-track').style.opacity = '100%';
+            document.getElementById('search-track').style.opacity = '0%';
+            document.getElementById('search-track').style.pointerEvents = 'none';
+            document.getElementById('search-query-txtInput').style.opacity = '0%';
+            document.getElementById('search-query-txtInput').disabled = true;
+            setTimeout(() => {
+              document.getElementById('search-query-txtInput').style.display = 'none';
+            }, 1000);
+            document.getElementById('draggable').style.width = '60%';
+            document.getElementById('draggable').style.right = '20%';
+            document.getElementById('search-query').style.width = '70px';
+            //document.getElementById('search-query').classList.remove('search-query-opened')
+            document.getElementById('search-query').style.opacity = '40%';
+            document.getElementById('app-title').style.marginRight = '0px';
+            document.getElementById('draggable').style.width = '60%';
+            document.getElementById('draggable').style.right = '20%';
+            setTimeout(() => {
+              document.getElementById('search-query').style.borderRadius = '50%';
+            }, 1200);
+          } else {
+            document.getElementById('search-track').style.willChange = 'scroll-position';
+            document.getElementById('search-track').style.pointerEvents = 'all';
+            document.getElementById('search-query-txtInput').disabled = false;
+            setTimeout(() => {
+              document.getElementById('search-query-txtInput').style.display = 'block';
+              document.getElementById('search-query-txtInput').focus();
+              setTimeout(() => {
+                document.getElementById('search-query-txtInput').style.opacity = '100%';
+              }, 100)
+            }, 600)
+            if(document.getElementById('options').style.left !== '-380px'){
+              openMENU(true);
+            }
+            document.getElementById('app-title').style.marginRight = '670px';
+            document.getElementById('search-query').style.width = '600px';
+            document.getElementById('search-query').style.borderRadius = '15px';
+            //document.getElementById('search-query').classList.add('search-query-opened')
+            document.getElementById('search-query').style.opacity = '100%';
+            document.getElementById('draggable').style.width = '40%';
+            document.getElementById('draggable').style.right = '50%';
+          }
+        "
+          >
+            <img
+              id="search-icn"
+              src="../../ressources/icons/SVG/search.svg"
+              ;
+              style="height: 50px; position: absolute; right: 10px; top: 12%"
+            />
+          </i>
+          <input
+            type="text"
+            id="search-query-txtInput"
+            disabled
+            spellcheck="false"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="control-bar"
+      id="cont-bar"
+      style="width: 100%; height: 150px; position: absolute; bottom: 0"
+    >
+      <div class="control" style="position: absolute; left: 45%; bottom: 40%">
+        <i>
+          <img src="../../ressources/icons/back.png" id="back" />
+        </i>
+
+        <i>
+          <img
+            src="../../ressources/icons/pause.png"
+            id="play-pause"
+            style="opacity: 100%; transition: all 0.5s ease-out"
+          />
+          <div
+            id="loading"
+            class="loading"
+            style="
+              width: 35px;
+              height: 35px;
+              border-width: 7px;
+              border-style: solid;
+              border-color: white;
+              background-color: transparent;
+              border-radius: 50%;
+              position: absolute;
+              top: 0;
+              left: 33.5%;
+              border-right: 0;
+              border-left: 0;
+              opacity: 0%;
+              display: block;
+              pointer-events: none;
+              user-select: none;
+              border-bottom: 0;
+            "
+          ></div>
+        </i>
+
+        <i>
+          <img src="../../ressources/icons/next.png" id="next" />
+        </i>
+      </div>
+
+      <i
+        style="
+          position: absolute;
+          bottom: 40%;
+          right: 10%;
+          transform: rotate(-20deg);
+        "
+        id="change-state"
+        onclick="changeState()"
+      >
+        <img src="../../ressources/icons/zoom-in.png" style="height: 40px" />
+      </i>
+
+      <div
+        id="time-bar"
+        style="
+          position: absolute;
+          width: 800px;
+          height: 50px;
+          bottom: 15px;
+          left: 28%;
+        "
+      >
+        <div id="timer" class="timer">
+          <h3
+            style="
+              font-family: PS, sans-serif;
+              font-size: 20px;
+              color: white;
+              position: absolute;
+              bottom: 19%;
+              left: 20px;
+              pointer-events: all;
+            "
+            id="current-time"
+            onmouseover="this.style.cursor = 'pointer'"
+          >
+            0:00
+          </h3>
+          <h3
+            style="
+              font-family: PS, sans-serif;
+              font-size: 20px;
+              color: white;
+              position: absolute;
+              bottom: 19%;
+              right: 20px;
+            "
+            id="total-time"
+          >
+            0:00
+          </h3>
+        </div>
+
+        <div
+          id="input-time"
+          class="time-bar"
+          style="
+            height: 100%;
+            width: 70%;
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+          "
+        >
+          <input
+            type="range"
+            id="timeslide"
+            class="timeslide"
+            name="time"
+            min="0"
+            max="100"
+            style="width: 95%; position: absolute; bottom: 30%; left: 2.5%"
+            value="0"
+            step="1"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        position: absolute;
+        right: 40%;
+        bottom: 5.8%;
+        width: fit-content;
+        height: 70px;
+        transform-origin: right;
+        transform: rotate(180deg);
+      "
+      id="volume-slider"
+    >
+      <div
+        id="bg-vol"
+        style="
+          height: 50px;
+          width: 70px;
+          border-radius: 40px;
+          border-style: solid;
+          background-color: transparent;
+          opacity: 70%;
+          border-color: transparent;
+          transition: all 1s ease-in-out;
+        "
+      >
+        <i
+          style="height: 40px; position: absolute; bottom: 28px; right: 5%"
+          class="vol-btn"
+        >
+          <img
+            src="../../ressources/icons/SVG/volume.svg"
+            style="height: 50px; filter: invert(70%); transform: rotate(180deg)"
+            id="vol-btn"
+          />
+        </i>
+        <div
+          id="input-vol"
+          class="input-vol"
+          style="
+            height: 57px;
+            width: 260px;
+            position: absolute;
+            right: 70px;
+            transform: rotate(180deg);
+          "
+        >
+          <input
+            type="range"
+            id="volslide"
+            class="volslide"
+            name="volume"
+            min="0"
+            max="20"
+            style="
+              width: 240px;
+              position: absolute;
+              top: 22px;
+              left: 5px;
+              z-index: 99;
+            "
+            value="50"
+            step="1"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div style="position: absolute; left: 37%; bottom: 5.3%" id="shuffle-menu">
+      <i>
+        <img
+          src="../../ressources/icons/SVG/linear.svg"
+          style="height: 50px; filter: invert(70%); transform: rotate(-90deg)"
+          class="shuffle-btn"
+          id="shuffle"
+        />
+      </i>
+    </div>
+
+    <div
+      class="track-info"
+      id="track-info"
+      style="
+        position: absolute;
+        height: 250px;
+        width: 700px;
+        top: 200px;
+        display: block;
+        opacity: 0%;
+        pointer-events: none;
+        user-select: none;
+        transform: scale(0.95);
+      "
+    >
+      <h3 id="state-track" style="font-size: 30px; right: 120px; top: 0">
+        Paused
+      </h3>
+
+      <div id="disk" class="disk"></div>
+
+      <div
+        style="
+          position: absolute;
+          right: 40px;
+          top: 15%;
+          width: 90%;
+          height: 70%;
+        "
+      >
+        <h3 id="track-name">Unknown</h3>
+        <h3 style="font-size: 20px; top: 60px; right: 20px" id="track-artist">
+          Unknown
+        </h3>
+      </div>
+    </div>
+  </div>
+</body>
+
+<style>
+
+  .highlight-search-res{
+    color: var(--selTxtcolor);
+  }
+
+  ::selection {
+    background: var(--selBGcolor);
+    color: var(--selTxtcolor);
+  }
+
+  #search-query-txtInput {
+    width: 80%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    font-family: PS, sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 15px;
+    transition: all 0.5s ease-out;
+    opacity: 0%;
+    display: none;
+  }
+
+  #search-query-txtInput:focus {
+    outline: none;
+    outline-width: 0;
+  }
+
+  .search-query-opened {
+    opacity: 100%;
+  }
+  .search-query {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    top: 10px;
+    right: 270px;
+    background-color: #5a5a5a;
+    border-radius: 50%;
+    opacity: 40%;
+    /*filter: invert(100%);*/
+    transition: all 1.5s ease-in-out, border-radius 0.5s ease-out;
+  }
+  .search-query:hover {
+    cursor: pointer;
+    opacity: 70%;
+    /*filter: invert(0%);*/
+  }
+
+  .opt-menu6-mask {
+    border-top-left-radius: 0;
+    border-top-right-radius: 20px;
+    width: 80%;
+    height: 15%;
+    position: absolute;
+    top: 0;
+    left: -50px;
+    opacity: 30%;
+    background: rgba(0, 0, 0, 0.6);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(73, 73, 73, 0.71) 10%,
+      transparent 100%
+    );
+    backdrop-filter: blur(3000px);
+    pointer-events: none;
+    user-select: none;
+    display: block;
+  }
+
+  #min-app:hover {
+    cursor: pointer;
+    filter: blur(1px), brightness(110%);
+    transform: scale(0.91);
+  }
+
+  #imgReact {
+    background-image: url("./test/images.jpeg");
+    animation: rotate 300s linear infinite;
+    background-size: cover;
+  }
+
+  #stroke {
+    box-shadow: 0 0 50px #ccc;
+    user-select: none;
+    pointer-events: none;
+    transition: all 1s;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(-360deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .shake {
+    animation: shake 0.2s infinite;
+  }
+
+  .shakelvl2 {
+    animation: shakelvl2 0.1s infinite;
+  }
+
+  @keyframes shake {
+    0% {
+      transform: translate(1px, 1px) rotate(0deg);
+    }
+    10% {
+      transform: translate(-1px, -2px) rotate(-1deg);
+    }
+    20% {
+      transform: translate(-3px, 0px) rotate(1deg);
+    }
+    30% {
+      transform: translate(3px, 2px) rotate(0deg);
+    }
+    40% {
+      transform: translate(1px, -1px) rotate(1deg);
+    }
+    50% {
+      transform: translate(-1px, 2px) rotate(-1deg);
+    }
+    60% {
+      transform: translate(-3px, 1px) rotate(0deg);
+    }
+    70% {
+      transform: translate(3px, 1px) rotate(-1deg);
+    }
+    80% {
+      transform: translate(-1px, -1px) rotate(1deg);
+    }
+    90% {
+      transform: translate(1px, 2px) rotate(0deg);
+    }
+    100% {
+      transform: translate(1px, -2px) rotate(-1deg);
+    }
+  }
+
+  @keyframes shakelvl2 {
+    0% {
+      transform: translate(5px, 5px) rotate(3deg);
+    }
+    20% {
+      transform: translate(-5px, -6px) rotate(-4deg);
+    }
+    20% {
+      transform: translate(-6px, 1px) rotate(4deg);
+    }
+    30% {
+      transform: translate(4px, 5px) rotate(3deg);
+    }
+    40% {
+      transform: translate(5px, -5px) rotate(4deg);
+    }
+    50% {
+      transform: translate(-5px, 5px) rotate(-4deg);
+    }
+    60% {
+      transform: translate(-6px, 5px) rotate(3deg);
+    }
+    70% {
+      transform: translate(6px, 5px) rotate(-4deg);
+    }
+    80% {
+      transform: translate(-5px, -5px) rotate(4deg);
+    }
+    90% {
+      transform: translate(5px, 6px) rotate(0deg);
+    }
+    200% {
+      transform: translate(5px, -6px) rotate(-4deg);
+    }
+  }
+
+  .current-time:hover {
+    cursor: pointer;
+  }
+
+  .vintage-filter {
+    border-radius: 20px;
+    width: 1777px;
+    height: 1000px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+    margin: 2px;
+    background-image: radial-gradient(ellipse, #0000, #0007),
+      linear-gradient(0deg, #9725, #9725), url(../../ressources/SF/noisy-texture.png);
+    background-size: auto, auto, auto, cover;
+    background-repeat: repeat;
+    background-position: center;
+    filter: blur(0.05em) saturate(0.7) contrast(1.5) brightness(1.2)
+      opacity(60%);
+  }
+
+  .font-presets-btn {
+    position: absolute;
+    top: 100px;
+    right: 0;
+    height: 50px;
+    width: 400px;
+    font-family: PS, sans-serif;
+    font-size: 25px;
+    color: white;
+    text-align: center;
+  }
+
+  .font-choices {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    height: 0%;
+    width: 400px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: height 1s ease-in-out;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    a {
+      font-family: PS, sans-serif;
+      font-size: 20px;
+      text-align: center;
+      display: block;
+      padding-bottom: 5px;
+      padding-top: 15px;
+      border-bottom-width: 1px;
+      border-right-width: 0px;
+      border-left-width: 0px;
+      color: white;
+      border-top-width: 1px;
+      border-style: solid;
+      border-color: #000;
+      width: 100%;
+      height: 50px;
+      transition: all 1s ease-in-out;
+    }
+
+    a:hover {
+      cursor: pointer;
+      background-color: rgba(139, 139, 139, 0.686);
+      color: black;
+    }
+  }
+
+  .eq-presets {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 50px;
+    width: 200px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 20px;
+    background-color: rgba(139, 139, 139, 0.686);
+    font-family: PS, sans-serif;
+    font-size: 25px;
+    color: rgb(56, 56, 56);
+    text-align: center;
+    padding-top: 30px;
+  }
+
+  .eq-presets:hover {
+    cursor: pointer;
+    background-color: rgba(169, 169, 169, 0.785);
+  }
+
+  .eq-presets-choices::-webkit-scrollbar-track {
+    border: 1px solid #000;
+    padding: 2px 0;
+    background-color: #404040;
+  }
+
+  .eq-presets-choices::-webkit-scrollbar {
+    position: absolute;
+    right: 0;
+    visibility: hidden;
+    display: none;
+    border-radius: 20px;
+    width: 20px;
+  }
+
+  .eq-presets-choices::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #737272;
+    border: 1px solid #000;
+  }
+
+  .eq-presets-choices {
+    border-top-right-radius: 20px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 20px;
+    transform: rotate(180deg);
+    position: absolute;
+    right: 0;
+    bottom: 80px;
+    width: 200px;
+    transition: height 1s ease-in-out;
+    height: 0%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0.305)
+    );
+    a {
+      font-family: PS, sans-serif;
+      font-size: 20px;
+      text-align: center;
+      transform: rotate(180deg);
+      display: block;
+      padding-bottom: 5px;
+      padding-top: 15px;
+      border-bottom-width: 1px;
+      border-right-width: 0px;
+      border-left-width: 0px;
+      color: black;
+      filter: invert(70%);
+      border-top-width: 1px;
+      border-style: solid;
+      border-color: #000;
+      width: 100%;
+      height: 50px;
+      transition: all 1s ease-in-out;
+    }
+
+    a:hover {
+      cursor: pointer;
+      background-color: rgba(139, 139, 139, 0.686);
+      color: white;
+      filter: invert(0%);
+    }
+  }
+
+  .eq-range:hover {
+    cursor: pointer;
+    .eq-range::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 100%;
+      transform: scale(2.2);
+    }
+  }
+
+  .eq-lines {
+    h1 {
+      background-image: linear-gradient(
+        to bottom,
+        rgba(74, 74, 74, 0.984),
+        rgba(74, 74, 74, 0.3)
+      );
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h3 {
+      /*font-family: PS, sans-serif;*/
+      font-size: 25px;
+      font-weight: 100;
+      filter: invert(50%);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transform: scaleX(1.1) rotate(-90deg);
+    }
+    input {
+      width: 300px;
+      height: 30px;
+      appearance: none;
+      border-radius: 20px;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(63, 62, 62, 1),
+        rgba(63, 62, 62, 0.3)
+      );
+      box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.5);
+    }
+    input::-webkit-slider-thumb {
+      appearance: none;
+      height: 16px;
+      width: 10px;
+      border-width: 1px;
+      border-style: solid;
+      border-color: rgb(24, 24, 24);
+      background-image: linear-gradient(
+        to top,
+        rgba(63, 62, 62, 1),
+        rgba(63, 62, 62, 0.5)
+      );
+      border-radius: 3px;
+      transform: scale(2);
+    }
+  }
+
+  .thm1 {
+    background-image: linear-gradient(rgba(55, 235, 169, 0.85), #5b37eb);
+  }
+
+  .thm2 {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.881), #545454);
+  }
+
+  .thm3 {
+    background-image: linear-gradient(rgba(235, 181, 55, 0.85), #eb3737);
+  }
+
+  .thm4 {
+    background-image: linear-gradient(rgba(166, 55, 235, 0.85), #eb37c9);
+  }
+
+  .themes {
+    i {
+      left: 10px;
+      height: 80px;
+      width: 80px;
+      position: absolute;
+      border-radius: 50%;
+      border-width: 3px;
+      border-color: white;
+      border-style: solid;
+      position: absolute;
+      transition: all 0.5s ease-out;
+      animation: load 2s linear infinite;
+      animation-play-state: paused;
+    }
+    i:hover {
+      cursor: pointer;
+      animation-play-state: running;
+    }
+  }
+
+  .track-info {
+    right: -550px;
+    transition: all 1s ease-out;
+    background: linear-gradient(to left blue, transparent 90%);
+    background-size: 100% 100%;
+
+    h3 {
+      font-family: PS, sans-serif;
+      font-size: 25px;
+      color: white;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .disk {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      height: 60px;
+      width: 65px;
+      border-radius: 50%;
+      background-color: transparent;
+      opacity: 100%;
+      transition: all 1s ease-out;
+      border-width: 5px;
+      border-style: solid;
+      border-color: white;
+      border-right-width: 0;
+      border-left-width: 0;
+      animation: load 1.5s linear infinite;
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes load {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading {
+    display: block;
+    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+    animation: load 0.8s var(--easing) infinite;
+  }
+
+  input {
+    user-select: none;
+  }
+
+  .timeslide {
+    user-select: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 20px;
+    appearance: none;
+    transition: none;
+    /*background-image: linear-gradient(#ff4500, #ff4500);*/
+    background-image: linear-gradient(rgb(255, 255, 255), #73aafa);
+    background-repeat: no-repeat;
+  }
+
+  .timeslide::-webkit-slider-runnable-track {
+    background-color: rgba(255, 255, 255, 0.275);
+    border-radius: 20px;
+  }
+
+  .time-bar:hover {
+    input::-webkit-slider-thumb {
+      border-radius: 100%;
+      transform: scaleY(2) scale(1.3);
+    }
+  }
+
+  .time-bar {
+    input::-webkit-slider-thumb {
+      --bgthumb: linear-gradient(rgb(255, 255, 255), #73aafa);
+      transition: all 0.7s ease-out;
+      appearance: none;
+      /*background-image: linear-gradient(#ff4500, #ff4500);*/
+      background-image: var(--bgthumb);
+      background-repeat: no-repeat;
+      width: 20px;
+      transform: scaleY(0.85);
+      height: 10px;
+      border-radius: 0;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    input::-webkit-slider-thumb:hover {
+      cursor: pointer;
+    }
+
+    input {
+      background-color: transparent;
+    }
+  }
+
+  .volslide {
+    border-radius: 30px;
+    appearance: none;
+    background-color: white;
+    transition: all 1s ease-in-out;
+  }
+
+  .shuffle-btn:hover {
+    cursor: pointer;
+    transform: scale(0.9);
+    filter: invert(70%) blur(1px);
+  }
+
+  .input-vol:hover {
+    input::-webkit-slider-thumb {
+      transform: scale(2);
+    }
+  }
+
+  .volslide::-webkit-slider-thumb {
+    transition: all 0.7s ease-out;
+    transform: scale(1);
+    color: #7ed1fb;
+    border-color: #737272;
+    border-style: solid;
+    border-width: 1px;
+  }
+
+  .vol-btn img:hover {
+    cursor: pointer;
+    transform: scale(0.9);
+    filter: invert(60%) blur(0.5px);
+  }
+
+  @keyframes jumping {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes shake {
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(5deg);
+    }
+    50% {
+      transform: rotate(0deg);
+    }
+    75% {
+      transform: rotate(-5deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .jump {
+    transition: all 0.2s ease-in;
+    animation: jumping 0.4s alternate infinite;
+  }
+
+  .shake {
+    animation: shake 0.2s alternate infinite;
+  }
+
+  .track-info {
+    transition: all 1s ease-out;
+
+    h3 {
+      font-size: 25px;
+    }
+  }
+
+  .current-track {
+    color: white;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 50%,
+      transparent 100%
+    );
+    mask-size: 100% 100%;
+    mask-position: 50% 100%;
+    height: 150px;
+    width: 300px;
+  }
+
+  .search-track {
+    color: white;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 50%,
+      transparent 100%
+    );
+    mask-size: 100% 100%;
+    mask-position: 50% 100%;
+    height: 150px;
+    width: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    pointer-events: all;
+    user-select: all;
+    scrollbar-width: none;
+  }
+
+  .div-btn:hover {
+    cursor: pointer;
+    transform: scale(0.9);
+    filter: invert(15%);
+  }
+
+  .btn-add-dir:hover {
+    cursor: pointer;
+    width: 100%;
+    transform: scale(0.95);
+    filter: invert(15%);
+    letter-spacing: 1px;
+  }
+
+  .div-select::-webkit-scrollbar-track {
+    border: 1px solid #000;
+    padding: 2px 0;
+    background-color: #404040;
+  }
+
+  .div-select::-webkit-scrollbar {
+    border-radius: 20px;
+    width: 20px;
+  }
+
+  .div-select::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #737272;
+    border: 1px solid #000;
+  }
+
+  .div-sel-filter {
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 80%);
+    mask-image: linear-gradient(to top, black 0%, transparent 80%);
+  }
+
+  .opt-menu2 {
+    .child-div {
+      margin-bottom: 20px;
+      width: 100%;
+      height: 30px;
+    }
+  }
+
+  h3 {
+    font-family: PS, sans-serif;
+  }
+
+  .draggable {
+    pointer-events: all;
+    user-select: all;
+    -webkit-app-region: drag;
+  }
+
+  body {
+    transition: all 1s ease-out;
+    background-color: transparent;
+    transform: scale(0.7);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 20px;
+    transform-origin: 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .options {
+    background-image: linear-gradient(
+      to right,
+      rgba(63, 62, 62, 1),
+      rgba(63, 62, 62, 0)
+    );
+
+    .opt-txt {
+      left: 0;
+      height: 100px;
+      position: absolute;
+
+      a {
+        transition: all 0.5s ease-out;
+        top: 35%;
+      }
+    }
+    .opt-txt:hover {
+      cursor: pointer;
+      width: 100%;
+      transform: scale(0.9);
+
+      filter: invert(85%);
+      letter-spacing: 1px;
+    }
+    a {
+      pointer-events: none;
+      font-family: PS, sans-serif;
+      text-decoration: none;
+      font-size: 30px;
+      color: black;
+      filter: invert(70%);
+      position: absolute;
+    }
+  }
+
+  .pop {
+    animation: 1s pop both;
+  }
+
+  @keyframes pop {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0.7);
+    }
+  }
+
+  .BG-anim {
+    pointer-events: none;
+    object {
+      user-select: none;
+      cursor: none;
+    }
+  }
+
+  .opt-preview {
+    i {
+      img:hover {
+        cursor: pointer;
+        transform: scale(0.9);
+        filter: blur(1px) invert(70%);
+      }
+    }
+  }
+
+  .rotate {
+    position: absolute;
+    transform: rotate(-40deg);
+  }
+
+  .control-bar {
+    border-color: rgba(255, 255, 255, 0.273);
+    border-width: 0;
+    border-style: solid;
+    border-top-width: 1px;
+    border-radius: 20px;
+    i {
+      margin-right: 30px;
+      img {
+        background-color: transparent;
+        height: 35px;
+        filter: invert(70%);
+      }
+      img:hover {
+        cursor: pointer;
+        transform: scale(0.9);
+        filter: blur(1px) invert(70%);
+      }
+    }
+  }
+
+  .side img:hover {
+    cursor: pointer;
+    transform: scale(0.95) rotate(20deg);
+    filter: blur(0.8px) grayscale(70%);
+  }
+
+  * {
+    user-select: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: all 1.5s ease-out;
+  }
+  .nav-bar h1 {
+    color: lightseagreen;
+    background: linear-gradient(
+      to right,
+      rgb(255, 255, 255),
+      #73aafa,
+      #7ed1fb,
+      #86ecfc
+    );
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-bar h1:hover {
+    filter: blur(1px) grayscale(20%);
+    letter-spacing: 1px;
+  }
+</style>
+
+<script src="scripts/themeselect.js"></script>
+<script src="scripts/main.js"></script>
+<script src="scripts/soundprocess.js"></script>
