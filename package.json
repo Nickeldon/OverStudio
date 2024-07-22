@@ -2,7 +2,7 @@
   "name": "overstudio",
   "version": "1.5.0.0",
   "description": "Listen to music in a new way",
-  "main": "src/electron.js",
+  "main": "src/index.js",
   "scripts": {
     "package-win": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=ia32 --prune=true --out=OverStudio",
     "package-win_x64": "electron-packager . --overwrite --platform=win32 --icon=Addons/logo/logowin.ico --arch=x64 --prune=true --out=OverStudio",
@@ -12,20 +12,16 @@
   "author": "Nickeldon",
   "license": "ISC",
   "dependencies": {
-    "auto-git-update": "^2.1.2",
     "cors": "^2.8.5",
-    "electron-reload": "^2.0.0-alpha.1",
     "express": "^4.19.2",
     "jsmediatags": "^3.9.7",
-    "update-electron-app": "^3.0.0",
     "url": "^0.11.3",
-    "ws": "^8.16.0",
-    "youtube-sr": "^4.3.11"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "electron": "^30.0.0"
   },
   "packagerConfig": {
-      "executableName": "overstudio"
+    "executableName": "overstudio"
   }
 }

@@ -7,7 +7,6 @@ let PORT = 8000;
 const path = require("path");
 var server;
 var PlaylistURL;
-const YoutubeParser = require("youtube-sr");
 var prevNoPLFlag = false;
 var prevNoBGFlag = false;
 
@@ -47,6 +46,9 @@ server = app
           `PORT ${PORT} was already in use. \nAborting app Execution...` +
           "\n\n"
       );
+
+      //process.exit(1)
+
       PORT++;
       server.closeAllConnections();
       server.listen(PORT);
@@ -215,7 +217,7 @@ app.get("/addPL", (req, res, next) => {
             enableTray: true,
             enableAutoUpdate: true,
             resetLogAtStartup: true,
-            IgnoreCerificates: true
+            IgnoreCerificates: true,
           };
         }
         object.meta = {
@@ -476,34 +478,38 @@ app.get("/getBackgrounds", (req, res, next) => {
   var data = [];
 
   try {
-    var Path = path.resolve(__dirname + "/../../ressources/Media/CustomBackgrounds");
-    fs.readdirSync(__dirname + "/../../ressources/Media/CustomBackgrounds").forEach(
-      (elem) => {
-        if (
-          !fs
-            .statSync(__dirname + `/../../ressources/Media/CustomBackgrounds/${elem}`)
-            .isDirectory()
-        ) {
-          var cont = true;
-          for (let i = elem.length; i > 0 && cont; i--) {
-            if (elem[i] === ".") {
-              elem = elem.split(".");
-              elem[1] = elem[1].toLowerCase();
-              if (
-                elem[elem.length - 1] === "webp" ||
-                elem[elem.length - 1] === "png" ||
-                elem[elem.length - 1] === "jpg" ||
-                elem[elem.length - 1] === "jpeg" ||
-                elem[elem.length - 1] === "gif"
-              ) {
-                data.push(`${Path}/${elem[0] + "." + elem[1]}`);
-              }
-              cont = false;
+    var Path = path.resolve(
+      __dirname + "/../../ressources/Media/CustomBackgrounds"
+    );
+    fs.readdirSync(
+      __dirname + "/../../ressources/Media/CustomBackgrounds"
+    ).forEach((elem) => {
+      if (
+        !fs
+          .statSync(
+            __dirname + `/../../ressources/Media/CustomBackgrounds/${elem}`
+          )
+          .isDirectory()
+      ) {
+        var cont = true;
+        for (let i = elem.length; i > 0 && cont; i--) {
+          if (elem[i] === ".") {
+            elem = elem.split(".");
+            elem[1] = elem[1].toLowerCase();
+            if (
+              elem[elem.length - 1] === "webp" ||
+              elem[elem.length - 1] === "png" ||
+              elem[elem.length - 1] === "jpg" ||
+              elem[elem.length - 1] === "jpeg" ||
+              elem[elem.length - 1] === "gif"
+            ) {
+              data.push(`${Path}/${elem[0] + "." + elem[1]}`);
             }
+            cont = false;
           }
         }
       }
-    );
+    });
   } catch (e) {
     console.error(e);
     const CurrentTime = new Date().toUTCString();
