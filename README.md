@@ -1,4 +1,4 @@
-<p align="center" width="300" style="margin-bottom:0"><img src="https://github.com/Nickeldon/OverStudio/blob/main/Addons/logo/logowin.png" alt="Logo" width="300"></img></p>
+<p align="center" width="300" style="margin-bottom:0"><img src="https://github.com/Nickeldon/OverStudio/blob/main/ressources/logo/logowin.png" alt="Logo" width="300"></img></p>
 
 # <p align="center">OverStudio</p>
 
